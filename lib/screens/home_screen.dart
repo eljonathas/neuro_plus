@@ -44,31 +44,24 @@ class _HomeScreenState extends State<HomeScreen> {
               onValueChanged: (i) => setState(() => _selectedSegment = i),
             ),
             const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
-                Expanded(
-                  child: StatsCard(
-                    icon: Icons.sticky_note_2_outlined,
-                    label: 'Consultas realizadas',
-                    count: '10',
-                  ),
+            Wrap(
+              direction: Axis.horizontal,
+              runSpacing: 16,
+              children: [
+                StatsCard(
+                  icon: Icons.sticky_note_2_outlined,
+                  label: 'Consultas realizadas',
+                  count: '10',
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: StatsCard(
-                    icon: Icons.person_add_outlined,
-                    label: 'Pacientes cadastrados',
-                    count: '5',
-                  ),
+                StatsCard(
+                  icon: Icons.person_add_outlined,
+                  label: 'Pacientes cadastrados',
+                  count: '5',
                 ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: StatsCard(
-                    icon: Icons.assignment_outlined,
-                    label: 'Protocolos criados',
-                    count: '3',
-                  ),
+                StatsCard(
+                  icon: Icons.assignment_outlined,
+                  label: 'Protocolos criados',
+                  count: '3',
                 ),
               ],
             ),

@@ -20,15 +20,15 @@ class StatsCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
             decoration: BoxDecoration(
               color: AppColors.blueRibbon[50],
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(12),
             ),
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.all(12),
             child: Icon(icon, color: AppColors.primarySwatch),
           ),
           const SizedBox(width: 12),
