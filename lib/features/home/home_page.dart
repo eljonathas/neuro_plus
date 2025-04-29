@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import '../widgets/segment_control.dart';
-import '../widgets/stats_card.dart';
-import '../widgets/recent_item.dart';
-import '../widgets/bottom_nav_bar.dart';
+
+import '../../core/widgets/custom_app_bar.dart';
+import 'widgets/segment_control.dart';
+import 'widgets/stats_card.dart';
+import 'widgets/recent_item.dart';
+import '../../core/widgets/bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,15 +22,12 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {},
-        ),
-        title: const Text('Tela inicial'),
-        centerTitle: true,
+      appBar: CustomAppBar(
+        title: 'Tela inicial',
+        onBack: () => Navigator.of(context).pop(),
+        isBackButtonVisible: false,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,7 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
               'Visão geral',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             SegmentControl(
               segments: _ranges,
               selectedIndex: _selectedSegment,
@@ -45,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 16),
             Wrap(
-              direction: Axis.horizontal,
+              spacing: 16,
               runSpacing: 16,
               children: [
                 StatsCard(
@@ -65,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -76,18 +75,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 TextButton(onPressed: () {}, child: const Text('Ver todos')),
               ],
             ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: ListView(
-                children: const [
-                  RecentItem(
-                    title: 'João Pedro Almeida',
-                    subtitle: '987.654.321-00',
-                  ),
-                  RecentItem(title: 'Maria Silva', subtitle: '123.456.789-00'),
-                  RecentItem(title: 'Ana Costa', subtitle: '321.654.987-00'),
-                ],
-              ),
+            const SizedBox(height: 8),
+            Column(
+              children: const [
+                RecentItem(
+                  title: 'João Pedro Almeida',
+                  subtitle: '987.654.321-00',
+                ),
+                RecentItem(title: 'Maria Silva', subtitle: '123.456.789-00'),
+                RecentItem(title: 'Ana Costa', subtitle: '321.654.987-00'),
+              ],
             ),
           ],
         ),
