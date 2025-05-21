@@ -6,11 +6,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool? isBackButtonVisible;
 
   const CustomAppBar({
-    Key? key,
+    super.key,
     required this.title,
     required this.onBack,
     this.isBackButtonVisible,
-  }) : super(key: key);
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(56); // Altura ajustada a fit-content (48 de conteúdo + 16 padding top/bottom)

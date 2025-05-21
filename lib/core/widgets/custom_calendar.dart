@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neuro_plus/core/config/theme.dart';
+import 'package:neuro_plus/data/appointments_data.dart';
+import 'package:neuro_plus/models/appointment.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CustomCalendar extends StatelessWidget {
@@ -15,6 +17,8 @@ class CustomCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appointments = AppointmentsData.getAppointments();
+    
     return Card(
       color: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -31,6 +35,7 @@ class CustomCalendar extends StatelessWidget {
           calendarFormat: CalendarFormat.month,
           daysOfWeekHeight: 32,
           rowHeight: 44,
+          eventLoader: (day) => _getEventsForDay(day, appointments),
           headerStyle: HeaderStyle(
             formatButtonVisible: false,
             titleCentered: true,
@@ -77,6 +82,12 @@ class CustomCalendar extends StatelessWidget {
               color: AppColors.gray[300],
               fontWeight: FontWeight.w600,
             ),
+            markerDecoration: BoxDecoration(
+              color: AppColors.blueRibbon[400],
+              shape: BoxShape.circle,
+            ),
+            markerSize: 6,
+            markersMaxCount: 3,
           ),
           calendarBuilders: CalendarBuilders(
             dowBuilder: (context, day) {
@@ -95,5 +106,13 @@ class CustomCalendar extends StatelessWidget {
         ),
       ),
     );
+  }
+  
+  List<Appointment> _getEventsForDay(DateTime day, List<Appointment> appointments) {
+    return appointments.where((appointment) => 
+      appointment.date.year == day.year && 
+      appointment.date.month == day.month && 
+      appointment.date.day == day.day
+    ).toList();
   }
 }
