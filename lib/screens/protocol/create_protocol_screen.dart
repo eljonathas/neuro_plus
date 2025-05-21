@@ -18,8 +18,8 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _categoriesController = TextEditingController();
-  String _selectedTemplate = '';
-  
+  String _selectedTemplate = 'NOVO';
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -31,41 +31,44 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
   void _goToEditScreen() {
     if (_formKey.currentState!.validate()) {
       final uuid = const Uuid().v4();
-      
+
       // Criar um novo protocolo
       final protocol = Protocol(
         id: uuid,
         name: _nameController.text,
         description: _descriptionController.text,
-        categories: _categoriesController.text.split(',')
-            .map((e) => e.trim())
-            .where((e) => e.isNotEmpty)
-            .toList(),
+        categories:
+            _categoriesController.text
+                .split(',')
+                .map((e) => e.trim())
+                .where((e) => e.isNotEmpty)
+                .toList(),
         template: _selectedTemplate.isEmpty ? 'NOVO' : _selectedTemplate,
         items: [],
       );
-      
+
       // Salvar o protocolo
       try {
         ProtocolService.saveProtocol(protocol);
-        
+
         // Navegar para a tela de edição
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EditProtocolScreen(
-              protocolId: protocol.id,
-              name: protocol.name,
-              description: protocol.description,
-              categories: protocol.categories,
-              template: protocol.template,
-            ),
+            builder:
+                (context) => EditProtocolScreen(
+                  protocolId: protocol.id,
+                  name: protocol.name,
+                  description: protocol.description,
+                  categories: protocol.categories,
+                  template: protocol.template,
+                ),
           ),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao criar protocolo: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao criar protocolo: $e')));
       }
     }
   }
@@ -76,9 +79,7 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
       title: "Novo protocolo",
       navIndex: 2, // Protocolos tab
       isBackButtonVisible: true,
-      onNavTap: (index) {
-        // Here you would handle navigation based on the tab index
-      },
+      onNavTap: (index) {},
       child: Form(
         key: _formKey,
         child: Column(
@@ -111,7 +112,10 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: AppColors.primarySwatch),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -149,7 +153,10 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: AppColors.primarySwatch),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -182,7 +189,10 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(color: AppColors.primarySwatch),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
+                ),
                 filled: true,
                 fillColor: Colors.white,
               ),
@@ -199,11 +209,20 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
             const SizedBox(height: 16),
             Row(
               children: [
-                _buildTemplateOption('CRIAR NOVO', isSelected: _selectedTemplate == 'NOVO'),
+                _buildTemplateOption(
+                  'CRIAR NOVO',
+                  isSelected: _selectedTemplate == 'NOVO',
+                ),
                 const SizedBox(width: 12),
-                _buildTemplateOption('PROTEA', isSelected: _selectedTemplate == 'PROTEA'),
+                _buildTemplateOption(
+                  'PROTEA',
+                  isSelected: _selectedTemplate == 'PROTEA',
+                ),
                 const SizedBox(width: 12),
-                _buildTemplateOption('DENVER II', isSelected: _selectedTemplate == 'DENVER'),
+                _buildTemplateOption(
+                  'DENVER II',
+                  isSelected: _selectedTemplate == 'DENVER',
+                ),
               ],
             ),
             const SizedBox(height: 40),
@@ -222,10 +241,7 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
                 ),
                 child: const Text(
                   'Ir para edição',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
@@ -234,39 +250,41 @@ class _CreateProtocolScreenState extends State<CreateProtocolScreen> {
       ),
     );
   }
-  
+
   Widget _buildTemplateOption(String label, {required bool isSelected}) {
     return InkWell(
       onTap: () {
         setState(() {
-          _selectedTemplate = label == 'CRIAR NOVO' ? 'NOVO' : 
-                             label == 'PROTEA' ? 'PROTEA' : 'DENVER';
+          if (label == 'CRIAR NOVO') {
+            _selectedTemplate = 'NOVO';
+          } else if (label == 'PROTEA') {
+            _selectedTemplate = 'PROTEA';
+          } else if (label == 'DENVER II') {
+            _selectedTemplate = 'DENVER';
+          }
         });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? AppColors.primarySwatch.withOpacity(0.2) 
-              : (label == 'CRIAR NOVO' ? AppColors.primarySwatch.withOpacity(0.1) : Colors.white),
+          color:
+              isSelected
+                  ? AppColors.primarySwatch.withOpacity(0.2)
+                  : Colors.white,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected 
-                ? AppColors.primarySwatch 
-                : (label == 'CRIAR NOVO' ? AppColors.primarySwatch.withOpacity(0.3) : Colors.grey[300]!),
+            color: isSelected ? AppColors.primarySwatch : Colors.grey[300]!,
             width: 1,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected 
-                ? AppColors.primarySwatch 
-                : (label == 'CRIAR NOVO' ? AppColors.primarySwatch : Colors.black),
+            color: isSelected ? AppColors.primarySwatch : Colors.black,
             fontWeight: FontWeight.w500,
           ),
         ),
       ),
     );
   }
-} 
+}
