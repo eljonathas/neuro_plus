@@ -85,25 +85,30 @@ class _EditProtocolScreenState extends State<EditProtocolScreen> {
     });
   }
   
-  void _saveProtocol() {
-    // Atualizar o modelo com os valores dos controladores de texto e salvar
-    final updatedItems = _items.map((item) {
-      // Na implementação completa, seria necessário capturar os valores dos controladores
-      // de texto para cada item e atualizar o título, instrução, etc.
-      return item;
-    }).toList();
-    
-    final protocol = Protocol(
-      id: widget.protocolId,
-      name: widget.name,
-      description: widget.description,
-      categories: widget.categories,
-      template: widget.template,
-      items: updatedItems,
-    );
-    
+  void _saveProtocol() async {
     try {
-      ProtocolService.saveProtocol(protocol);
+      // Atualizar o modelo com os valores dos controladores de texto e salvar
+      final updatedItems = _items.map((item) {
+        // Na implementação completa, seria necessário capturar os valores dos controladores
+        // de texto para cada item e atualizar o título, instrução, etc.
+        return item;
+      }).toList();
+      
+      final protocol = Protocol(
+        id: widget.protocolId,
+        name: widget.name,
+        description: widget.description,
+        categories: widget.categories,
+        template: widget.template,
+        items: updatedItems,
+        createdAt: DateTime.now(), // Adicionando valores para createdAt e updatedAt
+        updatedAt: DateTime.now(),
+      );
+      
+      await ProtocolService.saveProtocol(protocol);
+      
+      if (!mounted) return;
+      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Protocolo salvo com sucesso!')),
       );

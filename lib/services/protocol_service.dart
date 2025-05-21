@@ -1,74 +1,132 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:neuro_plus/models/protocol.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'dart:io';
 
 class ProtocolService {
   static const String _boxName = 'protocols';
   static bool _initialized = false;
+  
+  // Cache de protocolos para evitar leituras repetidas
+  static List<Protocol>? _protocolsCache;
+  static final Map<String, Protocol> _protocolsByIdCache = {};
 
-  /// Inicializa o Hive e registra os adaptadores
   static Future<void> init() async {
     if (_initialized) return;
 
-    // Inicializa o Hive
     final appDocDir = await getApplicationDocumentsDirectory();
     await Hive.initFlutter(appDocDir.path);
     
-    // Registra os adaptadores
     Hive.registerAdapter(ProtocolAdapter());
     Hive.registerAdapter(ProtocolItemAdapter());
     Hive.registerAdapter(ResponseTypeAdapter());
 
-    // Abre a box
     await Hive.openBox<Protocol>(_boxName);
     
     _initialized = true;
   }
 
-  /// Obtém todos os protocolos
+  // Limpar cache quando os dados mudarem
+  static void _clearCache() {
+    _protocolsCache = null;
+    _protocolsByIdCache.clear();
+  }
+
   static List<Protocol> getAllProtocols() {
+    // Verificar cache primeiro
+    if (_protocolsCache != null) {
+      return List.from(_protocolsCache!);
+    }
+    
+    // Garantir que o Hive esteja inicializado
+    if (!_initialized) {
+      throw Exception('ProtocolService não foi inicializado. Chame ProtocolService.init() primeiro.');
+    }
+    
     final box = Hive.box<Protocol>(_boxName);
-    return box.values.toList();
+    final protocols = box.values.toList();
+    
+    // Atualizar cache
+    _protocolsCache = protocols;
+    
+    // Atualizar cache por ID
+    for (final protocol in protocols) {
+      _protocolsByIdCache[protocol.id] = protocol;
+    }
+    
+    return List.from(protocols);
   }
 
-  /// Obtém um protocolo pelo ID
   static Protocol? getProtocolById(String id) {
+    // Verificar cache primeiro
+    if (_protocolsByIdCache.containsKey(id)) {
+      return _protocolsByIdCache[id];
+    }
+    
+    // Garantir que o Hive esteja inicializado
+    if (!_initialized) {
+      throw Exception('ProtocolService não foi inicializado. Chame ProtocolService.init() primeiro.');
+    }
+    
     final box = Hive.box<Protocol>(_boxName);
-    return box.values.firstWhere((protocol) => protocol.id == id, orElse: () => null as Protocol);
+    final protocol = box.values.cast<Protocol?>().firstWhere(
+      (protocol) => protocol?.id == id,
+      orElse: () => null,
+    );
+    
+    // Atualizar cache se encontrado
+    if (protocol != null) {
+      _protocolsByIdCache[id] = protocol;
+    }
+    
+    return protocol;
   }
 
-  /// Salva um protocolo
   static Future<void> saveProtocol(Protocol protocol) async {
+    // Garantir que o Hive esteja inicializado
+    if (!_initialized) {
+      throw Exception('ProtocolService não foi inicializado. Chame ProtocolService.init() primeiro.');
+    }
+    
     final box = Hive.box<Protocol>(_boxName);
     await box.put(protocol.id, protocol);
+    
+    // Atualizar cache
+    _clearCache();
   }
 
-  /// Atualiza um protocolo
   static Future<void> updateProtocol(Protocol protocol) async {
     await saveProtocol(protocol);
   }
 
-  /// Exclui um protocolo
   static Future<void> deleteProtocol(String id) async {
+    // Garantir que o Hive esteja inicializado
+    if (!_initialized) {
+      throw Exception('ProtocolService não foi inicializado. Chame ProtocolService.init() primeiro.');
+    }
+    
     final box = Hive.box<Protocol>(_boxName);
     await box.delete(id);
+    
+    // Atualizar cache
+    _clearCache();
   }
 
-  /// Compartilha um protocolo como JSON via share
+  // Método assíncrono para compartilhar protocolo como JSON
   static Future<void> shareProtocolAsJson(Protocol protocol, BuildContext context) async {
     try {
+      // Executar a serialização em um isolate
+      final jsonData = await compute(_protocolToJson, protocol);
+      
       final tempDir = await getTemporaryDirectory();
       final file = File('${tempDir.path}/protocol_${protocol.id}.json');
       
-      // Converte para JSON e salva no arquivo
-      final jsonData = jsonEncode(protocol.toJson());
       await file.writeAsString(jsonData);
       
-      // Compartilha o arquivo
       await Share.shareXFiles(
         [XFile(file.path)],
         text: 'Protocolo: ${protocol.name}',
@@ -80,11 +138,16 @@ class ProtocolService {
     }
   }
 
-  /// Importa um protocolo a partir de um arquivo JSON
+  // Função estática para ser executada em um isolate
+  static String _protocolToJson(Protocol protocol) {
+    return jsonEncode(protocol.toJson());
+  }
+
+  // Método assíncrono para importar protocolo de JSON
   static Future<Protocol?> importProtocolFromJson(String jsonString) async {
     try {
-      final Map<String, dynamic> data = jsonDecode(jsonString);
-      final protocol = Protocol.fromJson(data);
+      // Executar o parsing e a conversão em um isolate
+      final protocol = await compute(_jsonToProtocol, jsonString);
       await saveProtocol(protocol);
       return protocol;
     } catch (e) {
@@ -93,20 +156,30 @@ class ProtocolService {
     }
   }
 
-  /// Exporta todos os protocolos como JSON
+  // Função estática para ser executada em um isolate
+  static Protocol _jsonToProtocol(String jsonString) {
+    final Map<String, dynamic> data = jsonDecode(jsonString);
+    return Protocol.fromJson(data);
+  }
+
+  // Método assíncrono para exportar todos os protocolos como JSON
   static Future<String> exportAllProtocolsAsJson() async {
     final protocols = getAllProtocols();
+    // Executar a serialização em um isolate
+    return compute(_protocolsListToJson, protocols);
+  }
+
+  // Função estática para ser executada em um isolate
+  static String _protocolsListToJson(List<Protocol> protocols) {
     final List<Map<String, dynamic>> jsonList = protocols.map((p) => p.toJson()).toList();
     return jsonEncode(jsonList);
   }
 
-  /// Gera uma string para o QR Code
   static String generateQrCodeData(Protocol protocol) {
     final jsonData = jsonEncode(protocol.toJson());
     return jsonData;
   }
 
-  /// Importa um protocolo a partir de dados de QR Code
   static Future<Protocol?> importProtocolFromQrCode(String qrData, BuildContext context) async {
     try {
       return await importProtocolFromJson(qrData);
@@ -119,7 +192,6 @@ class ProtocolService {
   }
 }
 
-// Estes adaptadores são necessários para o Hive, mas serão gerados pelo build_runner
 class ProtocolAdapter extends TypeAdapter<Protocol> {
   @override
   final int typeId = 0;
@@ -212,4 +284,4 @@ class ResponseTypeAdapter extends TypeAdapter<ResponseType> {
   void write(BinaryWriter writer, ResponseType obj) {
     writer.writeByte(obj.index);
   }
-} 
+}

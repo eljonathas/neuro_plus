@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:neuro_plus/core/main_layout.dart';
 import 'package:neuro_plus/core/config/theme.dart';
 import 'package:neuro_plus/models/protocol.dart';
@@ -16,34 +17,37 @@ class ProtocolsScreen extends StatefulWidget {
 }
 
 class _ProtocolsScreenState extends State<ProtocolsScreen> {
-  List<Protocol> _protocols = [];
-  bool _isLoading = true;
+  // Future para carregar protocolos de forma assíncrona
+  late Future<List<Protocol>> _protocolsFuture;
+
+  // Memoize text styles
+  static const _titleStyle = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    color: Color(0xFF333333),
+  );
 
   @override
   void initState() {
     super.initState();
-    _loadProtocols();
+    _protocolsFuture = _fetchProtocols();
   }
 
-  Future<void> _loadProtocols() async {
-    setState(() {
-      _isLoading = true;
-    });
-
+  // Carrega os protocolos de forma assíncrona, mas sem isolate
+  Future<List<Protocol>> _fetchProtocols() async {
     try {
-      final protocols = ProtocolService.getAllProtocols();
-      setState(() {
-        _protocols = protocols;
-        _isLoading = false;
-      });
+      return ProtocolService.getAllProtocols();
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar protocolos: $e')),
-      );
+      debugPrint("Erro ao carregar protocolos: $e");
+      rethrow;
     }
+  }
+
+  // Método para atualizar a lista de protocolos
+  Future<void> _refreshProtocols() async {
+    setState(() {
+      _protocolsFuture = _fetchProtocols();
+    });
   }
 
   void _deleteProtocol(Protocol protocol) async {
@@ -71,7 +75,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Protocolo excluído com sucesso!')),
         );
-        _loadProtocols();
+        _refreshProtocols();
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erro ao excluir protocolo: $e')),
@@ -92,11 +96,10 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
           template: protocol.template,
         ),
       ),
-    ).then((_) => _loadProtocols());
+    ).then((_) => _refreshProtocols());
   }
 
-  void _shareProtocol(Protocol protocol) async {
-    // Compartilhar via QR Code
+  void _shareProtocol(Protocol protocol) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -113,86 +116,111 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
       onNavTap: (index) {
         // Handle navigation
       },
-      child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _protocols.isEmpty
-              ? _buildEmptyState()
-              : _buildProtocolsList(),
+      child: RefreshIndicator(
+        onRefresh: _refreshProtocols,
+        child: FutureBuilder<List<Protocol>>(
+          future: _protocolsFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            
+            if (snapshot.hasError) {
+              return Center(
+                child: Text('Erro ao carregar protocolos: ${snapshot.error}'),
+              );
+            }
+
+            final protocols = snapshot.data ?? [];
+            
+            if (protocols.isEmpty) {
+              return _buildEmptyState();
+            }
+            
+            return _buildProtocolsList(protocols);
+          },
+        ),
+      ),
     );
   }
 
   Widget _buildEmptyState() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const SizedBox(height: 40),
-        Container(
-          width: 72,
-          height: 72,
-          decoration: BoxDecoration(
-            color: AppColors.primarySwatch.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Center(
-            child: Icon(
-              Icons.assignment_outlined,
-              size: 36,
-              color: AppColors.primarySwatch,
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        const Text(
-          'Crie seu primeiro protocolo',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF333333),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            'Para começar a acompanhar pacientes, primeiro você precisa criar um protocolo. Personalize seus formulários de acordo com as necessidades da sua prática clínica.',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: 40),
-        SizedBox(
-          width: 200,
-          child: ElevatedButton(
-            onPressed: () => _navigateToCreateProtocol(),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: AppColors.primarySwatch,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+    return Center(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 40),
+            Container(
+              width: 72,
+              height: 72,
+              decoration: BoxDecoration(
+                color: AppColors.primarySwatch.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Center(
+                child: Icon(
+                  Icons.assignment_outlined,
+                  size: 36,
+                  color: AppColors.primarySwatch,
+                ),
               ),
             ),
-            child: const Text(
-              'Novo protocolo',
+            const SizedBox(height: 24),
+            const Text(
+              'Crie seu primeiro protocolo',
               style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF333333),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'Para começar a acompanhar pacientes, primeiro você precisa criar um protocolo. Personalize seus formulários de acordo com as necessidades da sua prática clínica.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
-          ),
+            const SizedBox(height: 40),
+            SizedBox(
+              width: 200,
+              child: ElevatedButton(
+                onPressed: _navigateToCreateProtocol,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: AppColors.primarySwatch,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: const Text(
+                  'Novo protocolo',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildProtocolsList() {
+  Widget _buildProtocolsList(List<Protocol> protocols) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -200,24 +228,17 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Seus protocolos',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF333333),
-              ),
-            ),
+            const Text('Seus protocolos', style: _titleStyle),
             Row(
               children: [
                 IconButton(
-                  icon: Icon(Icons.qr_code_scanner, color: AppColors.primarySwatch),
-                  onPressed: () => _scanQrCode(),
+                  icon: const Icon(Icons.qr_code_scanner, color: AppColors.primarySwatch),
+                  onPressed: _scanQrCode,
                   tooltip: 'Escanear QR Code',
                 ),
                 IconButton(
-                  icon: Icon(Icons.add, color: AppColors.primarySwatch),
-                  onPressed: () => _navigateToCreateProtocol(),
+                  icon: const Icon(Icons.add, color: AppColors.primarySwatch),
+                  onPressed: _navigateToCreateProtocol,
                   tooltip: 'Novo protocolo',
                 ),
               ],
@@ -225,118 +246,22 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _protocols.length,
-          itemBuilder: (context, index) {
-            final protocol = _protocols[index];
-            return _buildProtocolCard(protocol);
-          },
-        ),
-      ],
-    );
-  }
-
-  Widget _buildProtocolCard(Protocol protocol) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[200]!),
-      ),
-      child: InkWell(
-        onTap: () => _editProtocol(protocol),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      protocol.name,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF333333),
-                      ),
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.share, color: AppColors.primarySwatch),
-                        onPressed: () => _shareProtocol(protocol),
-                        tooltip: 'Compartilhar',
-                        constraints: const BoxConstraints(),
-                        padding: const EdgeInsets.all(8),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () => _deleteProtocol(protocol),
-                        tooltip: 'Excluir',
-                        constraints: const BoxConstraints(),
-                        padding: const EdgeInsets.all(8),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              if (protocol.description != null && protocol.description!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  protocol.description!,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '${protocol.items.length} ${protocol.items.length == 1 ? 'item' : 'itens'}',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  // Mostrar categorias
-                  if (protocol.categories.isNotEmpty)
-                    Wrap(
-                      spacing: 4,
-                      children: protocol.categories.take(2).map((category) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primarySwatch.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            category,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.primarySwatch,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                ],
-              ),
-            ],
+        Expanded(
+          child: ListView.builder(
+            itemCount: protocols.length,
+            itemBuilder: (context, index) {
+              final protocol = protocols[index];
+              return ProtocolCard(
+                key: ValueKey(protocol.id),
+                protocol: protocol,
+                onEdit: () => _editProtocol(protocol),
+                onShare: () => _shareProtocol(protocol),
+                onDelete: () => _deleteProtocol(protocol),
+              );
+            },
           ),
         ),
-      ),
+      ],
     );
   }
 
@@ -346,7 +271,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
       MaterialPageRoute(
         builder: (context) => const CreateProtocolScreen(),
       ),
-    ).then((_) => _loadProtocols());
+    ).then((_) => _refreshProtocols());
   }
 
   void _scanQrCode() {
@@ -355,6 +280,142 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
       MaterialPageRoute(
         builder: (context) => const ScanQrScreen(),
       ),
-    ).then((_) => _loadProtocols());
+    ).then((_) => _refreshProtocols());
+  }
+}
+
+// Widget separado para cartão de protocolo
+class ProtocolCard extends StatelessWidget {
+  final Protocol protocol;
+  final VoidCallback onEdit;
+  final VoidCallback onShare;
+  final VoidCallback onDelete;
+
+  static const _nameStyle = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Color(0xFF333333),
+  );
+  
+  static const _descriptionStyle = TextStyle(
+    fontSize: 14,
+    color: Color(0xFF666666),
+  );
+  
+  static const _metaTextStyle = TextStyle(
+    fontSize: 14,
+    color: Color(0xFF666666),
+  );
+  
+  static const _categoryStyle = TextStyle(
+    fontSize: 12,
+    color: AppColors.primarySwatch,
+  );
+
+  const ProtocolCard({
+    super.key,
+    required this.protocol,
+    required this.onEdit,
+    required this.onShare,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Usar RepaintBoundary para isolar repaints
+    return RepaintBoundary(
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: Colors.grey[200]!),
+        ),
+        child: InkWell(
+          onTap: onEdit,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        protocol.name,
+                        style: _nameStyle,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.share, color: AppColors.primarySwatch),
+                          onPressed: onShare,
+                          tooltip: 'Compartilhar',
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.all(8),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
+                          onPressed: onDelete,
+                          tooltip: 'Excluir',
+                          constraints: const BoxConstraints(),
+                          padding: const EdgeInsets.all(8),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                if (protocol.description != null && protocol.description!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    protocol.description!,
+                    style: _descriptionStyle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${protocol.items.length} ${protocol.items.length == 1 ? 'item' : 'itens'}',
+                      style: _metaTextStyle,
+                    ),
+                    if (protocol.categories.isNotEmpty)
+                      _buildCategories(protocol.categories),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategories(List<String> categories) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: categories.take(2).map((category) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 4),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: AppColors.primarySwatch.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              category,
+              style: _categoryStyle,
+            ),
+          ),
+        );
+      }).toList(),
+    );
   }
 } 
