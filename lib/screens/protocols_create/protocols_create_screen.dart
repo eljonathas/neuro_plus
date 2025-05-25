@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
-import 'package:neuro_plus/common/widgets/custom_form_field.dart';
-import 'package:neuro_plus/common/widgets/custom_tags_field.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:neuro_plus/screens/protocols/protocols_screen.dart';
-import 'package:neuro_plus/screens/protocols_create/widgets/template_option.dart';
+import 'package:neuro_plus/screens/protocols_create/widgets/protocol_basic_fields.dart';
+import 'package:neuro_plus/screens/protocols_create/widgets/protocol_template_selector.dart';
+import 'package:neuro_plus/screens/protocols_create/widgets/protocol_items_section.dart';
 import 'package:uuid/uuid.dart';
 
 class ProtocolsCreateScreen extends StatefulWidget {
-  const ProtocolsCreateScreen({super.key});
+  final Protocol? protocol;
+
+  const ProtocolsCreateScreen({super.key, this.protocol});
 
   @override
   State<ProtocolsCreateScreen> createState() => _ProtocolsCreateScreenState();
@@ -18,82 +19,189 @@ class ProtocolsCreateScreen extends StatefulWidget {
 
 class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  List<String> _categories = [];
-  String _selectedTemplate = 'NOVO';
+  late final TextEditingController _nameController;
+  late final TextEditingController _descriptionController;
+  late List<String> _categories;
+  late String _selectedTemplate;
+  late List<ProtocolItem> _items;
+  final Map<String, TextEditingController> _itemControllers = {};
   bool _isProcessing = false;
 
-  void _selectTemplate(String template) {
-    setState(() {
-      _selectedTemplate = template;
-    });
+  bool get _isEditing => widget.protocol != null;
+
+  // Cache para validadores
+  late final String? Function(String?) _requiredValidator;
+  late final String? Function(List<String>?) _categoriesValidator;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeValidators();
+    _initializeData();
   }
 
+  void _initializeValidators() {
+    _requiredValidator = (String? value) => 
+      (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
+    _categoriesValidator = (List<String>? categories) => 
+      (categories?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
+  }
+
+  void _initializeData() {
+    final protocol = widget.protocol;
+    _nameController = TextEditingController(text: protocol?.name ?? '');
+    _descriptionController = TextEditingController(text: protocol?.description ?? '');
+    _categories = List.from(protocol?.categories ?? []);
+    _selectedTemplate = protocol?.template ?? 'NOVO';
+    _items = List.from(protocol?.items ?? []);
+    
+    _initializeItemControllers();
+  }
+
+  void _initializeItemControllers() {
+    for (final item in _items) {
+      _itemControllers['${item.id}_title'] = TextEditingController(text: item.title);
+      _itemControllers['${item.id}_instruction'] = TextEditingController(text: item.instruction ?? '');
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    for (final controller in _itemControllers.values) {
+      controller.dispose();
+    }
+    super.dispose();
+  }
+
+  // Otimizado: callback único para categorias
   void _onCategoriesChanged(List<String> categories) {
-    setState(() {
-      _categories = categories;
-    });
+    _categories = categories;
   }
 
-  String? _textFieldValidator(String? text) {
-    if (text == null || text.isEmpty) {
-      return 'Este campo é obrigatório';
-    }
-
-    return null;
+  // Otimizado: callback único para template
+  void _onTemplateChanged(String template) {
+    _selectedTemplate = template;
   }
 
-  String? _categoriesValidator(List<String>? categories) {
-    print(categories);
-
-    if (categories == null || categories.isEmpty) {
-      return 'Este campo é obrigatório';
-    }
-
-    return null;
-  }
-
-  Future<void> _createProtocol() async {
-    setState(() {
-      _isProcessing = true;
-    });
-
-    print(_categories);
-
-    final protocol = Protocol(
-      id: Uuid().v4(),
-      name: _nameController.text,
-      description: _descriptionController.text,
-      categories: _categories,
-      items: [],
-      template: _selectedTemplate,
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
+  void _addNewItem() {
+    final newItem = ProtocolItem(
+      id: const Uuid().v4(),
+      title: '',
+      instruction: '',
+      responseType: ResponseType.checklist,
+      options: const [],
     );
+    
+    setState(() {
+      _items.add(newItem);
+      _itemControllers['${newItem.id}_title'] = TextEditingController();
+      _itemControllers['${newItem.id}_instruction'] = TextEditingController();
+    });
+  }
+
+  void _removeItem(String itemId) {
+    setState(() {
+      _items.removeWhere((item) => item.id == itemId);
+      _itemControllers['${itemId}_title']?.dispose();
+      _itemControllers['${itemId}_instruction']?.dispose();
+      _itemControllers.remove('${itemId}_title');
+      _itemControllers.remove('${itemId}_instruction');
+    });
+  }
+
+  void _updateItemResponseType(ProtocolItem item, ResponseType responseType) {
+    setState(() {
+      final index = _items.indexWhere((i) => i.id == item.id);
+      if (index != -1) {
+        _items[index] = item.copyWith(responseType: responseType);
+      }
+    });
+  }
+
+  void _updateItemOptions(ProtocolItem item, List<String> options) {
+    final index = _items.indexWhere((i) => i.id == item.id);
+    if (index != -1) {
+      _items[index] = item.copyWith(options: options);
+      // Não precisa de setState aqui - apenas atualiza dados
+    }
+  }
+
+  List<ProtocolItem> _buildUpdatedItems() {
+    return _items.map((item) {
+      final titleController = _itemControllers['${item.id}_title'];
+      final instructionController = _itemControllers['${item.id}_instruction'];
+      
+      return item.copyWith(
+        title: titleController?.text ?? item.title,
+        instruction: instructionController?.text.isEmpty == true ? null : instructionController?.text,
+      );
+    }).toList();
+  }
+
+  Future<void> _saveProtocol() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    // Validação específica para checklist sem opções
+    final updatedItems = _buildUpdatedItems();
+    for (final item in updatedItems) {
+      if (item.responseType == ResponseType.checklist && item.options.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('O item "${item.title.isEmpty ? 'sem título' : item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
+    setState(() => _isProcessing = true);
 
     try {
-      await ProtocolsService.addProtocol(protocol);
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const ProtocolsScreen()),
-      );
+      final protocol = _isEditing 
+        ? widget.protocol!.copyWith(
+            name: _nameController.text,
+            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+            categories: _categories,
+            items: updatedItems,
+          )
+        : Protocol(
+            name: _nameController.text,
+            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+            categories: _categories,
+            items: updatedItems,
+            template: _selectedTemplate,
+          );
+
+      await (_isEditing 
+        ? ProtocolsService.updateProtocol(protocol)
+        : ProtocolsService.addProtocol(protocol));
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Protocolo ${_isEditing ? 'atualizado' : 'criado'} com sucesso!')),
+        );
+        Navigator.pop(context, true);
+      }
     } catch (e) {
-      print(e);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(e.toString())));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao ${_isEditing ? 'atualizar' : 'criar'} protocolo: $e')),
+        );
+      }
     } finally {
-      setState(() {
-        _isProcessing = false;
-      });
+      if (mounted) {
+        setState(() => _isProcessing = false);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: "Novo protocolo",
+      title: "${_isEditing ? 'Editar' : 'Novo'} protocolo",
       isBackButtonVisible: true,
       navIndex: 2,
       child: Form(
@@ -104,68 +212,36 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              const Text('Nome do protocolo'),
-              const SizedBox(height: 8),
-              CustomFormField(
-                controller: _nameController,
-                variant: InputVariant.outlined,
-                hintText: 'Digite o nome do protocolo',
-                validator: _textFieldValidator,
+              ProtocolBasicFields(
+                nameController: _nameController,
+                descriptionController: _descriptionController,
+                categories: _categories,
+                onCategoriesChanged: _onCategoriesChanged,
+                nameValidator: _requiredValidator,
+                categoriesValidator: _categoriesValidator,
               ),
+              if (!_isEditing)
+                ProtocolTemplateSelector(
+                  selectedTemplate: _selectedTemplate,
+                  onTemplateChanged: _onTemplateChanged,
+                ),
               const SizedBox(height: 24),
-              const Text('Descrição (opcional)'),
-              const SizedBox(height: 8),
-              CustomFormField(
-                variant: InputVariant.outlined,
-                controller: _descriptionController,
-                hintText: 'Digite a descrição do protocolo',
-                minLines: 3,
-                maxLines: 10,
-              ),
-              const SizedBox(height: 24),
-              const Text('Categorias'),
-              const SizedBox(height: 8),
-              CustomTagsField(
-                onChanged: _onCategoriesChanged,
-                initialTags: _categories,
-                hintText: 'Digite as categorias separadas por vírgula',
-                validator: _categoriesValidator,
-              ),
-              const SizedBox(height: 24),
-              const Text('Escolha um modelo'),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  TemplateOption(
-                    label: 'CRIAR NOVO',
-                    isSelected: _selectedTemplate == 'NOVO',
-                    onTap: () => _selectTemplate('NOVO'),
-                  ),
-                  const SizedBox(width: 12),
-                  TemplateOption(
-                    label: 'PROTEA',
-                    isSelected: _selectedTemplate == 'PROTEA',
-                    onTap: () => _selectTemplate('PROTEA'),
-                  ),
-                  const SizedBox(width: 12),
-                  TemplateOption(
-                    label: 'DENVER II',
-                    isSelected: _selectedTemplate == 'DENVER',
-                    onTap: () => _selectTemplate('DENVER'),
-                  ),
-                ],
+              ProtocolItemsSection(
+                items: _items,
+                itemControllers: _itemControllers,
+                onAddItem: _addNewItem,
+                onRemoveItem: _removeItem,
+                onUpdateItemResponseType: _updateItemResponseType,
+                onUpdateItemOptions: _updateItemOptions,
               ),
               const SizedBox(height: 32),
               CustomButton(
-                text: 'Criar protocolo',
-                onPressed: () {
-                  if (!_isProcessing) {
-                    _createProtocol();
-                  }
-                },
+                text: _isEditing ? 'Salvar alterações' : 'Criar protocolo',
+                onPressed: _saveProtocol,
                 isLoading: _isProcessing,
                 width: double.infinity,
               ),
+              const SizedBox(height: 16),
             ],
           ),
         ),

@@ -45,7 +45,7 @@ class AppointmentDetailScreen extends StatefulWidget {
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   int _currentTabIndex = 0;
-  int _navIndex = 0;
+  final int _navIndex = 0;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_calendar.dart';
 import 'package:neuro_plus/data/appointments_data.dart';
@@ -53,11 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   },
-                  child: const Text('View all'),
+                  child: const Text(
+                    'Ver todas',
+                    style: TextStyle(color: AppColors.primarySwatch),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
             CustomCalendar(
               selectedDate: selectedDate,
               onDateSelected: (date) {
