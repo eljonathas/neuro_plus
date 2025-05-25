@@ -34,19 +34,17 @@ class AppColors {
   );
 }
 
-final ThemeData appTheme = ThemeData(
-  primarySwatch: AppColors.primarySwatch,
-  scaffoldBackgroundColor: AppColors.gray[50],
-  textTheme: GoogleFonts.poppinsTextTheme(),
-  appBarTheme: const AppBarTheme(
-    backgroundColor: Colors.white,
-    elevation: 0,
-    iconTheme: IconThemeData(color: Color(0xFF3D3D3D)),
-    titleTextStyle: TextStyle(
-      color: Color(0xFF3D3D3D),
-      fontSize: 18,
-      fontWeight: FontWeight.w600,
-      fontFamily: 'Poppins',
+ThemeData generateTheme(BuildContext context) {
+  final ThemeData appTheme = ThemeData(
+    primarySwatch: AppColors.primarySwatch,
+    scaffoldBackgroundColor: AppColors.gray[50],
+    textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Colors.white,
+      elevation: 0,
+      iconTheme: IconThemeData(color: Color(0xFF3D3D3D)),
     ),
-  ),
-);
+  );
+
+  return appTheme;
+}

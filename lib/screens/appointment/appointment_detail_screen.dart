@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_plus/core/config/theme.dart';
-import 'package:neuro_plus/core/main_layout.dart';
+import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/common/main_layout.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final String date;
@@ -20,7 +20,7 @@ class AppointmentDetailScreen extends StatefulWidget {
   final int duration;
 
   const AppointmentDetailScreen({
-    Key? key,
+    super.key,
     required this.date,
     required this.time,
     required this.appointmentId,
@@ -36,10 +36,11 @@ class AppointmentDetailScreen extends StatefulWidget {
     required this.distance,
     required this.isMultiple,
     required this.duration,
-  }) : super(key: key);
+  });
 
   @override
-  State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
+  State<AppointmentDetailScreen> createState() =>
+      _AppointmentDetailScreenState();
 }
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
@@ -77,11 +78,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           _buildActiveTabContent(),
         ],
       ),
-      onNavTap: (index) {
-        setState(() {
-          _navIndex = index;
-        });
-      },
     );
   }
 
@@ -114,7 +110,8 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(
-              color: isSelected ? AppColors.blueRibbon[500]! : Colors.transparent,
+              color:
+                  isSelected ? AppColors.blueRibbon[500]! : Colors.transparent,
               width: 2,
             ),
           ),
@@ -131,7 +128,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   }
 
   Widget _buildActiveTabContent() {
-    return _currentTabIndex == 0 ? _buildReservationDetail() : _buildBillDetail();
+    return _currentTabIndex == 0
+        ? _buildReservationDetail()
+        : _buildBillDetail();
   }
 
   Widget _buildReservationDetail() {
@@ -148,10 +147,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
             children: [
               Text(
                 '#${widget.appointmentId}',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.gray[600],
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
               ),
               const SizedBox(width: 16),
               Container(
@@ -165,10 +161,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               const SizedBox(width: 8),
               const Text(
                 'Registered',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -202,10 +195,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                   color: AppColors.gray[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(
-                  Icons.business,
-                  color: AppColors.gray[400],
-                ),
+                child: Icon(Icons.business, color: AppColors.gray[400]),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -236,11 +226,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Icon(
-                          Icons.star,
-                          size: 14,
-                          color: Colors.amber,
-                        ),
+                        Icon(Icons.star, size: 14, color: Colors.amber),
                         const SizedBox(width: 4),
                         Text(
                           '${widget.rating} (${widget.reviewCount} reviews)',
@@ -259,10 +245,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           const SizedBox(height: 16),
           Text(
             '${widget.address}, ${widget.city}, ${widget.state}, ${widget.zipCode}',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.gray[700],
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.gray[700]),
           ),
         ],
       ),
@@ -281,10 +264,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         children: [
           const Text(
             'Treatment information',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
           _buildTreatmentItem(),
@@ -315,14 +295,12 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 3,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: widget.isMultiple
-                      ? AppColors.blueRibbon[100]
-                      : Colors.green[50],
+                  color:
+                      widget.isMultiple
+                          ? AppColors.blueRibbon[100]
+                          : Colors.green[50],
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -330,9 +308,10 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: widget.isMultiple
-                        ? AppColors.blueRibbon[600]
-                        : Colors.green[700],
+                    color:
+                        widget.isMultiple
+                            ? AppColors.blueRibbon[600]
+                            : Colors.green[700],
                   ),
                 ),
               ),
@@ -344,18 +323,12 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
               Expanded(
                 child: Text(
                   widget.treatmentDetail,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.gray[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
                 ),
               ),
               Text(
                 '±${widget.duration} hours',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.gray[500],
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
               ),
             ],
           ),
@@ -372,11 +345,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
-        child: Icon(
-          Icons.map,
-          size: 48,
-          color: AppColors.gray[400],
-        ),
+        child: Icon(Icons.map, size: 48, color: AppColors.gray[400]),
       ),
     );
   }
@@ -393,13 +362,10 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
         children: [
           Text(
             'Bill information would go here',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
         ],
       ),
     );
   }
-} 
+}

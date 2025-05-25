@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_plus/core/config/theme.dart';
+import 'package:neuro_plus/common/config/theme.dart';
 
 class ScheduleSection extends StatefulWidget {
   final String title;
@@ -8,12 +8,12 @@ class ScheduleSection extends StatefulWidget {
   final bool initiallyExpanded;
 
   const ScheduleSection({
-    Key? key,
+    super.key,
     required this.title,
     required this.count,
     required this.children,
     this.initiallyExpanded = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ScheduleSection> createState() => _ScheduleSectionState();
@@ -42,10 +42,7 @@ class _ScheduleSectionState extends State<ScheduleSection> {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(
-                  color: AppColors.gray[200]!,
-                  width: 1,
-                ),
+                bottom: BorderSide(color: AppColors.gray[200]!, width: 1),
               ),
             ),
             child: Row(
@@ -80,12 +77,13 @@ class _ScheduleSectionState extends State<ScheduleSection> {
         AnimatedCrossFade(
           firstChild: Column(children: widget.children),
           secondChild: const SizedBox(height: 0),
-          crossFadeState: _isExpanded
-              ? CrossFadeState.showFirst
-              : CrossFadeState.showSecond,
+          crossFadeState:
+              _isExpanded
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
           duration: const Duration(milliseconds: 300),
         ),
       ],
     );
   }
-} 
+}

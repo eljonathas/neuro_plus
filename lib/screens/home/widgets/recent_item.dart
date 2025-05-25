@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/config/theme.dart';
+import '../../../common/config/theme.dart';
 
 class RecentItem extends StatelessWidget {
   final String title;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_plus/core/config/theme.dart';
+import 'package:neuro_plus/common/config/theme.dart';
 
 class AppointmentCard extends StatelessWidget {
   final String date;
@@ -13,7 +13,7 @@ class AppointmentCard extends StatelessWidget {
   final double? paymentAmount;
 
   const AppointmentCard({
-    Key? key,
+    super.key,
     required this.date,
     required this.time,
     required this.title,
@@ -23,7 +23,7 @@ class AppointmentCard extends StatelessWidget {
     this.isMultiple = false,
     this.isPaid = false,
     this.paymentAmount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -206,4 +206,4 @@ class AppointmentCard extends StatelessWidget {
       ),
     );
   }
-} 
+}

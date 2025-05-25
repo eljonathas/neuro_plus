@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neuro_plus/common/config/theme.dart';
+import '../config/theme.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
