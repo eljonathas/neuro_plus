@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
+import 'package:neuro_plus/screens/patients/patients_screen.dart';
 import 'package:neuro_plus/screens/protocols/protocols_screen.dart';
 import 'package:neuro_plus/screens/home/schedule_screen.dart';
-// import 'package:neuro_plus/screens/old_protocol/protocols_screen.dart';
-// import 'package:neuro_plus/services/protocol_service.dart';
 import 'common/config/theme.dart';
 import 'screens/home/home_page.dart';
 
@@ -33,12 +32,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/schedule': (context) => const ScheduleScreen(),
         '/protocols': (context) => const ProtocolsScreen(),
-        '/patients':
-            (context) => const Scaffold(
-              body: Center(
-                child: Text('Tela de Pacientes - Em desenvolvimento'),
-              ),
-            ),
+        '/patients': (context) => const PatientsScreen(),
       },
     );
   }
