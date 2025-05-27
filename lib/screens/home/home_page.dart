@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_calendar.dart';
-import 'package:neuro_plus/data/appointments_data.dart';
+import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/screens/appointment/appointment_detail_screen.dart';
-import 'package:neuro_plus/screens/home/schedule_screen.dart';
+import 'package:neuro_plus/screens/appointments/appointment_detail/appointment_detail_screen.dart';
+import 'package:neuro_plus/screens/appointments/appointments_list/appointments_list_screen.dart';
 import 'package:neuro_plus/screens/home/widgets/appointment_card.dart';
-import 'package:neuro_plus/screens/home/widgets/appointments_empty_state.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,14 +18,61 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
-  late List<Appointment> filteredAppointments;
+  List<Appointment> filteredAppointments = [];
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    filteredAppointments = AppointmentsData.getAppointmentsForDate(
-      selectedDate,
-    );
+    _loadAppointments();
+  }
+
+  Future<void> _loadAppointments() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      await AppointmentsService.init();
+      final appointments = AppointmentsService.getAppointmentsByDate(selectedDate);
+      
+      if (mounted) {
+        setState(() {
+          filteredAppointments = appointments;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar consultas: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _onDateSelected(DateTime date) async {
+    setState(() {
+      selectedDate = date;
+      _isLoading = true;
+    });
+    
+    try {
+      final appointments = AppointmentsService.getAppointmentsByDate(date);
+      
+      if (mounted) {
+        setState(() {
+          filteredAppointments = appointments;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar consultas: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -50,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ScheduleScreen(),
+                        builder: (context) => const AppointmentsScreen(),
                       ),
                     );
                   },
@@ -63,13 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             CustomCalendar(
               selectedDate: selectedDate,
-              onDateSelected: (date) {
-                setState(() {
-                  selectedDate = date;
-                  filteredAppointments =
-                      AppointmentsData.getAppointmentsForDate(date);
-                });
-              },
+              onDateSelected: _onDateSelected,
             ),
             const SizedBox(height: 24),
             Row(
@@ -83,25 +124,87 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Text(
-                  '${filteredAppointments.length} found',
+                  '${filteredAppointments.length} encontrada${filteredAppointments.length != 1 ? 's' : ''}',
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
-            filteredAppointments.isEmpty
-                ? AppointmentsEmptyState()
-                : Column(
-                  children:
-                      filteredAppointments
-                          .map(
-                            (appointment) => _buildAppointmentCard(appointment),
-                          )
-                          .toList(),
-                ),
+            const SizedBox(height: 8),
+            _buildAppointmentsList(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildAppointmentsList() {
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (filteredAppointments.isEmpty) {
+      return Center(
+        child: Column(
+          children: [
+            const SizedBox(height: 32),
+            Icon(
+              Icons.calendar_today_outlined,
+              size: 64,
+              color: AppColors.gray[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Nenhuma consulta agendada',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: AppColors.gray[600],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Não há consultas para ${_formatDate(selectedDate)}',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.gray[500],
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AppointmentsScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('Agendar consulta'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primarySwatch,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
+        ),
+      );
+    }
+
+    return Column(
+      children: filteredAppointments
+          .map((appointment) => _buildAppointmentCard(appointment))
+          .toList(),
     );
   }
 
@@ -109,12 +212,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return AppointmentCard(
       date: appointment.date.day.toString(),
       time: appointment.time,
-      title: appointment.title,
-      subtitle: appointment.subtitle,
-      appointmentId: appointment.appointmentId,
-      isMultiple: appointment.isMultiple,
-      isPaid: appointment.isPaid,
-      paymentAmount: appointment.paymentAmount,
+      title: appointment.typeText,
+      subtitle: appointment.patientName,
+      appointmentId: appointment.id.substring(0, 8),
+      isMultiple: appointment.type == AppointmentType.therapy,
+      isPaid: appointment.status == AppointmentStatus.completed,
       onTap: () => _navigateToDetail(appointment),
     );
   }
@@ -134,51 +236,17 @@ class _HomeScreenState extends State<HomeScreen> {
       'Novembro',
       'Dezembro',
     ];
-    return '${date.day} ${months[date.month - 1]}';
+    return '${date.day} de ${months[date.month - 1]}';
   }
 
   void _navigateToDetail(Appointment appointment) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => AppointmentDetailScreen(
-              date: _formatFullDate(appointment.date),
-              time: appointment.time,
-              appointmentId: appointment.appointmentId,
-              clinicName: appointment.subtitle,
-              address: '1400 Parkview Avenue',
-              city: 'Manhattan Beach',
-              state: 'CA',
-              zipCode: '90266',
-              treatment: appointment.title,
-              treatmentDetail: 'Visit #2 - ${appointment.title} (Q1+Q2)',
-              rating: 4.5,
-              reviewCount: 120,
-              distance: 1.2,
-              isMultiple: appointment.isMultiple,
-              duration: 1,
-            ),
+        builder: (context) => AppointmentDetailScreen(
+          appointment: appointment,
+        ),
       ),
     );
-  }
-
-  String _formatFullDate(DateTime date) {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${days[date.weekday - 1]}, ${date.day} ${months[date.month - 1]}';
   }
 }

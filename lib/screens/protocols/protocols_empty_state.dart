@@ -31,7 +31,7 @@ class ProtocolsEmptyState extends StatelessWidget {
                 width: 72,
                 height: 72,
                 decoration: BoxDecoration(
-                  color: AppColors.primarySwatch.withOpacity(0.1),
+                  color: AppColors.primarySwatch.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Center(

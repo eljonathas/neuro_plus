@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:neuro_plus/common/config/theme.dart';
-import 'package:neuro_plus/data/appointments_data.dart';
+import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -17,7 +17,7 @@ class CustomCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appointments = AppointmentsData.getAppointments();
+    final appointments = AppointmentsService.getAllAppointments();
 
     return Card(
       color: Colors.white,
