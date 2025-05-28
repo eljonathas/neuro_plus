@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
 
@@ -62,7 +63,7 @@ class ProtocolTab extends StatelessWidget {
   }
 
   Widget _buildProtocolInfoCard(BuildContext context) {
-    return Card(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -91,7 +92,7 @@ class ProtocolTab extends StatelessWidget {
                       );
                     },
                     fontSize: 14,
-                    padding: 8,
+                    padding: const EdgeInsets.all(8),
                   ),
               ],
             ),
@@ -126,7 +127,7 @@ class ProtocolTab extends StatelessWidget {
   }
 
   Widget _buildProtocolResponsesCard() {
-    return Card(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

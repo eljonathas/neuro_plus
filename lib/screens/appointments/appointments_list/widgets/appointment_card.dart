@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 
 class AppointmentCard extends StatelessWidget {
@@ -20,111 +21,111 @@ class AppointmentCard extends StatelessWidget {
                    appointment.date.month == DateTime.now().month &&
                    appointment.date.year == DateTime.now().year;
 
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              appointment.patientName,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            if (isToday) ...[
-                              const SizedBox(width: 8),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primarySwatch.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(4),
+      child: CustomCard(
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                appointment.patientName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                child: Text(
-                                  'HOJE',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.primarySwatch,
+                              ),
+                              if (isToday) ...[
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primarySwatch.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    'HOJE',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.primarySwatch,
+                                    ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ],
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${appointment.formattedDate} às ${appointment.time}',
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${appointment.formattedDate} às ${appointment.time}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.gray[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _buildStatusChip(appointment.status),
+                    _buildPopupMenu(),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(Icons.medical_services, size: 16, color: AppColors.gray[500]),
+                    const SizedBox(width: 4),
+                    Text(
+                      appointment.typeText,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.gray[600],
+                      ),
+                    ),
+                    if (appointment.hasProtocol) ...[
+                      const SizedBox(width: 16),
+                      Icon(Icons.assignment, size: 16, color: AppColors.gray[500]),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          appointment.protocolName!,
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.gray[600],
                           ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    ),
-                  ),
-                  _buildStatusChip(appointment.status),
-                  _buildPopupMenu(),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Icon(Icons.medical_services, size: 16, color: AppColors.gray[500]),
-                  const SizedBox(width: 4),
-                  Text(
-                    appointment.typeText,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppColors.gray[600],
-                    ),
-                  ),
-                  if (appointment.hasProtocol) ...[
-                    const SizedBox(width: 16),
-                    Icon(Icons.assignment, size: 16, color: AppColors.gray[500]),
-                    const SizedBox(width: 4),
-                    Expanded(
-                      child: Text(
-                        appointment.protocolName!,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppColors.gray[600],
-                        ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                    ],
                   ],
-                ],
-              ),
-              if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
-                const SizedBox(height: 8),
-                Text(
-                  appointment.notes!,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: AppColors.gray[500],
-                    fontStyle: FontStyle.italic,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
+                if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    appointment.notes!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: AppColors.gray[500],
+                      fontStyle: FontStyle.italic,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

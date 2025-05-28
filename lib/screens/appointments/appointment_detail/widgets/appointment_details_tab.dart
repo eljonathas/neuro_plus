@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
 
@@ -37,7 +38,7 @@ class AppointmentDetailsTab extends StatelessWidget {
   }
 
   Widget _buildAppointmentInfoCard() {
-    return Card(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -67,7 +68,7 @@ class AppointmentDetailsTab extends StatelessWidget {
   }
 
   Widget _buildProtocolInfoCard() {
-    return Card(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -111,7 +112,7 @@ class AppointmentDetailsTab extends StatelessWidget {
   }
 
   Widget _buildNotesCard() {
-    return Card(
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

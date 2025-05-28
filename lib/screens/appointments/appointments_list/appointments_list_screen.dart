@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/appointments_create_screen.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/appointment_detail_screen.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_header.dart';
 import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_filters.dart';
 import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_search_bar.dart';
@@ -88,11 +87,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   Future<void> _navigateToCreateAppointment() async {
-    final result = await Navigator.push(
+    final result = await AppRoutes.navigateTo(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AppointmentsCreateScreen(),
-      ),
+      AppRoutes.appointmentsCreate,
     );
     
     if (result == true) {
@@ -101,30 +98,28 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 
   Future<void> _navigateToEditAppointment(Appointment appointment) async {
-    final result = await Navigator.push(
+    final result = await AppRoutes.navigateTo(
       context,
-      MaterialPageRoute(
-        builder: (context) => AppointmentsCreateScreen(appointment: appointment),
-      ),
+      AppRoutes.appointmentsCreate,
+      arguments: appointment,
     );
     
+    if (result == true) {
+      _loadAppointments();
+    } 
+  }
+
+  Future<void> _navigateToAppointmentDetail(Appointment appointment) async {
+    final result = await AppRoutes.navigateTo(
+      context,
+      AppRoutes.appointmentsDetail,
+      arguments: appointment,
+    );
     if (result == true) {
       _loadAppointments();
     }
   }
 
-  Future<void> _navigateToAppointmentDetail(Appointment appointment) async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AppointmentDetailScreen(appointment: appointment),
-      ),
-    );
-    
-    if (result == true) {
-      _loadAppointments();
-    }
-  }
 
   Future<void> _updateAppointmentStatus(Appointment appointment, AppointmentStatus newStatus) async {
     try {
@@ -168,11 +163,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
         content: Text('Tem certeza que deseja excluir a consulta com "${appointment.patientName}"?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => AppRoutes.goBack(context, false),
             child: const Text('Cancelar'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => AppRoutes.goBack(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Excluir'),
           ),

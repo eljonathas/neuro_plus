@@ -3,8 +3,8 @@ import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/patients/patients_service.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/patient.dart';
-import 'package:neuro_plus/screens/patients/patients_create_screen.dart';
 import 'package:intl/intl.dart';
 
 class PatientsScreen extends StatefulWidget {
@@ -63,11 +63,9 @@ class _PatientsScreenState extends State<PatientsScreen> {
   }
 
   Future<void> _navigateToCreatePatient() async {
-    final result = await Navigator.push(
+    final result = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => const PatientsCreateScreen(),
-      ),
+      '/patients/create',
     );
     
     if (result == true) {
@@ -76,11 +74,10 @@ class _PatientsScreenState extends State<PatientsScreen> {
   }
 
   Future<void> _navigateToEditPatient(Patient patient) async {
-    final result = await Navigator.push(
+    final result = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => PatientsCreateScreen(patient: patient),
-      ),
+      '/patients/create',
+      arguments: patient,
     );
     
     if (result == true) {
@@ -280,17 +277,9 @@ class _PatientsScreenState extends State<PatientsScreen> {
   Widget _buildPatientCard(Patient patient) {
     final dateFormat = DateFormat('dd/MM/yyyy');
     
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.gray[200]!),
-      ),
-      child: InkWell(
-        onTap: () => _navigateToEditPatient(patient),
-        borderRadius: BorderRadius.circular(12),
+      child: CustomCard(
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

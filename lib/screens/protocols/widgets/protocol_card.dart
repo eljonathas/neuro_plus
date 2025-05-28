@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/protocol.dart';
 
 class ProtocolCard extends StatelessWidget {
@@ -16,13 +17,7 @@ class ProtocolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.gray[200]!),
-      ),
+    return CustomCard(
       child: InkWell(
         onTap: onEdit,
         borderRadius: BorderRadius.circular(12),

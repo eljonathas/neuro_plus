@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/common/services/patients/patients_service.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
-import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/models/protocol.dart';
@@ -369,6 +370,12 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                         color: AppColors.gray[500],
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    CustomButton(
+                      text: 'Cadastrar paciente',
+                      onPressed: () => Navigator.pushNamed(context, '/patients/create'),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    ),
                   ],
                 ),
               ),
@@ -381,33 +388,35 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                   final patient = _patients[index];
                   final isSelected = _selectedPatient?.id == patient.id;
                   
-                  return Card(
+                  return Container(
                     margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: isSelected 
-                            ? AppColors.primarySwatch 
-                            : AppColors.gray[300],
-                        child: Icon(
-                          Icons.person,
-                          color: isSelected ? Colors.white : AppColors.gray[600],
+                    child: CustomCard(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: isSelected 
+                              ? AppColors.primarySwatch 
+                              : AppColors.gray[300],
+                          child: Icon(
+                            Icons.person,
+                            color: isSelected ? Colors.white : AppColors.gray[600],
+                          ),
                         ),
-                      ),
-                      title: Text(
-                        patient.fullName,
-                        style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        title: Text(
+                          patient.fullName,
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          ),
                         ),
+                        subtitle: Text('${patient.age} anos • ${patient.guardians}'),
+                        trailing: isSelected
+                            ? Icon(Icons.check_circle, color: AppColors.primarySwatch)
+                            : null,
+                        onTap: () {
+                          setState(() {
+                            _selectedPatient = patient;
+                          });
+                        },
                       ),
-                      subtitle: Text('${patient.age} anos • ${patient.guardians}'),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle, color: AppColors.primarySwatch)
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          _selectedPatient = patient;
-                        });
-                      },
                     ),
                   );
                 },
@@ -443,7 +452,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 24),
           
           // Seleção de data
-          Card(
+          CustomCard(
             child: ListTile(
               leading: Icon(Icons.calendar_today, color: AppColors.primarySwatch),
               title: const Text('Data da consulta'),
@@ -470,7 +479,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           
           // Seleção de horário
-          Card(
+          CustomCard(
             child: ListTile(
               leading: Icon(Icons.access_time, color: AppColors.primarySwatch),
               title: const Text('Horário da consulta'),
@@ -495,7 +504,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           
           // Tipo de consulta
-          Card(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -531,7 +540,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           
           // Duração
-          Card(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -597,7 +606,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 24),
           
           // Seleção de protocolo
-          Card(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -644,7 +653,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           
           // Local
-          Card(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -677,7 +686,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           
           // Observações
-          Card(
+          CustomCard(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -727,6 +736,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               ),
             ),
           if (_currentStep > 0) const SizedBox(width: 16),
+          if (_patients.isNotEmpty)
           Expanded(
             child: CustomButton(
               text: _currentStep == _totalSteps - 1 

@@ -4,6 +4,7 @@ import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 
 class CustomCalendar extends StatelessWidget {
   final DateTime selectedDate;
@@ -19,13 +20,7 @@ class CustomCalendar extends StatelessWidget {
   Widget build(BuildContext context) {
     final appointments = AppointmentsService.getAllAppointments();
 
-    return Card(
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: AppColors.gray[200]!),
-      ),
-      elevation: 0,
+    return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: TableCalendar(

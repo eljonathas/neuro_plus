@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/protocol.dart';
 
 class ProtocolItemCard extends StatefulWidget {
@@ -127,43 +128,39 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: AppColors.gray[200]!),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 16),
-            _buildItemField(
-              label: 'Título/Habilidade',
-              controller: widget.titleController,
-              hintText: 'Ex: Fala pelo menos 6 palavras reconhecíveis?',
-            ),
-            const SizedBox(height: 16),
-            _buildItemField(
-              label: 'Instrução (opcional)',
-              controller: widget.instructionController,
-              hintText: 'Ex: Pergunte aos responsáveis ou incentive a nomeação de objetos.',
-              minLines: 2,
-              maxLines: 4,
-            ),
-            const SizedBox(height: 16),
-            const Text('Tipo de resposta'),
-            const SizedBox(height: 8),
-            _buildResponseTypeSelector(),
-            if (widget.item.responseType == ResponseType.checklist) ...[
+      child: CustomCard(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
               const SizedBox(height: 16),
-              _buildChecklistOptions(),
+              _buildItemField(
+                label: 'Título/Habilidade',
+                controller: widget.titleController,
+                hintText: 'Ex: Fala pelo menos 6 palavras reconhecíveis?',
+              ),
+              const SizedBox(height: 16),
+              _buildItemField(
+                label: 'Instrução (opcional)',
+                controller: widget.instructionController,
+                hintText: 'Ex: Pergunte aos responsáveis ou incentive a nomeação de objetos.',
+                minLines: 2,
+                maxLines: 4,
+              ),
+              const SizedBox(height: 16),
+              const Text('Tipo de resposta'),
+              const SizedBox(height: 8),
+              _buildResponseTypeSelector(),
+              if (widget.item.responseType == ResponseType.checklist) ...[
+                const SizedBox(height: 16),
+                _buildChecklistOptions(),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

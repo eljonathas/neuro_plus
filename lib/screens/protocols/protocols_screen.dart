@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 import 'package:neuro_plus/models/protocol.dart';
 import 'package:neuro_plus/screens/protocols/protocols_empty_state.dart';
 import 'package:neuro_plus/screens/protocols/widgets/protocol_card.dart';
-import 'package:neuro_plus/screens/protocols_create/protocols_create_screen.dart';
 
 class ProtocolsScreen extends StatefulWidget {
   const ProtocolsScreen({super.key});
@@ -86,30 +86,27 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
     }
   }
 
-  void _editProtocol(Protocol protocol) {
-    Navigator.push(
+  void _editProtocol(Protocol protocol) async {
+    final result = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => ProtocolsCreateScreen(protocol: protocol),
-      ),
-    ).then((result) {
-      if (result == true) {
-        _loadProtocols();
-      }
-    });
+      AppRoutes.protocolsCreate,
+      arguments: protocol,
+    );
+    
+    if (result == true) {
+      _loadProtocols();
+    }
   }
 
-  void _navigateToCreateProtocol() {
-    Navigator.push(
+  void _navigateToCreateProtocol() async {
+    final result = await Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (context) => const ProtocolsCreateScreen(),
-      ),
-    ).then((result) {
-      if (result == true) {
-        _loadProtocols();
-      }
-    });
+      AppRoutes.protocolsCreate,
+    );
+    
+    if (result == true) {
+      _loadProtocols();
+    }
   }
 
   @override

@@ -4,9 +4,9 @@ import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_calendar.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/appointment_detail_screen.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/appointments_list_screen.dart';
+
 import 'package:neuro_plus/screens/home/widgets/appointment_card.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -94,11 +94,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.push(
+                    AppRoutes.navigateTo(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const AppointmentsScreen(),
-                      ),
+                      AppRoutes.appointmentsList,
                     );
                   },
                   child: const Text(
@@ -177,11 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.push(
+                AppRoutes.navigateTo(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const AppointmentsScreen(),
-                  ),
+                  AppRoutes.appointmentsCreate,
                 );
               },
               icon: const Icon(Icons.add),
@@ -240,13 +236,10 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _navigateToDetail(Appointment appointment) {
-    Navigator.push(
+    AppRoutes.navigateTo(
       context,
-      MaterialPageRoute(
-        builder: (context) => AppointmentDetailScreen(
-          appointment: appointment,
-        ),
-      ),
+      AppRoutes.appointmentsDetail,
+      arguments: appointment,
     );
   }
 }

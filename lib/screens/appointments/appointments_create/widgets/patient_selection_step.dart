@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class PatientSelectionStep extends StatelessWidget {
@@ -61,6 +63,11 @@ class PatientSelectionStep extends StatelessWidget {
                         color: AppColors.gray[500],
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    CustomButton(
+                      text: 'Cadastrar paciente',
+                      onPressed: () => Navigator.pushNamed(context, '/patients/create'),
+                    ),
                   ],
                 ),
               ),
@@ -73,29 +80,31 @@ class PatientSelectionStep extends StatelessWidget {
                   final patient = patients[index];
                   final isSelected = selectedPatient?.id == patient.id;
                   
-                  return Card(
+                  return Container(
                     margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: isSelected 
-                            ? AppColors.primarySwatch 
-                            : AppColors.gray[300],
-                        child: Icon(
-                          Icons.person,
-                          color: isSelected ? Colors.white : AppColors.gray[600],
+                    child: CustomCard(
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: isSelected 
+                              ? AppColors.primarySwatch 
+                              : AppColors.gray[300],
+                          child: Icon(
+                            Icons.person,
+                            color: isSelected ? Colors.white : AppColors.gray[600],
+                          ),
                         ),
-                      ),
-                      title: Text(
-                        patient.fullName,
-                        style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        title: Text(
+                          patient.fullName,
+                          style: TextStyle(
+                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                          ),
                         ),
+                        subtitle: Text('${patient.age} anos • ${patient.guardians}'),
+                        trailing: isSelected
+                            ? Icon(Icons.check_circle, color: AppColors.primarySwatch)
+                            : null,
+                        onTap: () => onPatientSelected(patient),
                       ),
-                      subtitle: Text('${patient.age} anos • ${patient.guardians}'),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle, color: AppColors.primarySwatch)
-                          : null,
-                      onTap: () => onPatientSelected(patient),
                     ),
                   );
                 },
