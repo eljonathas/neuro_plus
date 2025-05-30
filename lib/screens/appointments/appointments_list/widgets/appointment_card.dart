@@ -100,7 +100,7 @@ class AppointmentCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
-                          appointment.protocolName!,
+                          appointment.protocolNames?.join(', ') ?? '',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.gray[600],

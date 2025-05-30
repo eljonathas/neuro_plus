@@ -1,30 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
-import 'package:neuro_plus/common/widgets/custom_button.dart';
-import 'package:neuro_plus/common/widgets/custom_card.dart';
+import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
+import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/protocol_card.dart';
 
-class ProtocolTab extends StatelessWidget {
+class ProtocolTab extends StatefulWidget {
   final Appointment appointment;
-  final Protocol? protocol;
   final bool isLoading;
+  final VoidCallback? onProtocolUpdated;
 
   const ProtocolTab({
     super.key,
     required this.appointment,
-    this.protocol,
     this.isLoading = false,
+    this.onProtocolUpdated,
   });
 
   @override
+  State<ProtocolTab> createState() => _ProtocolTabState();
+}
+
+class _ProtocolTabState extends State<ProtocolTab> {
+  List<Protocol> _protocols = [];
+  bool _isLoadingProtocols = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProtocols();
+  }
+
+  Future<void> _loadProtocols() async {
+    if (widget.appointment.protocolIds == null || widget.appointment.protocolIds!.isEmpty) {
+      return;
+    }
+
+    setState(() => _isLoadingProtocols = true);
+
+    try {
+      await ProtocolsService.init();
+      final protocols = <Protocol>[];
+      
+      for (final protocolId in widget.appointment.protocolIds!) {
+        final protocol = ProtocolsService.getProtocolById(protocolId);
+        if (protocol != null) {
+          protocols.add(protocol);
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _protocols = protocols;
+          _isLoadingProtocols = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingProtocols = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao carregar protocolos: $e')),
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    if (isLoading) {
+    if (widget.isLoading || _isLoadingProtocols) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (protocol == null) {
-      return _buildProtocolNotFound();
+    if (!widget.appointment.hasProtocol) {
+      return _buildNoProtocolsState();
+    }
+
+    if (_protocols.isEmpty) {
+      return _buildProtocolsNotFound();
     }
 
     return SingleChildScrollView(
@@ -32,18 +84,49 @@ class ProtocolTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildProtocolInfoCard(context),
-          
-          if (appointment.protocolResponses != null) ...[
-            const SizedBox(height: 16),
-            _buildProtocolResponsesCard(),
-          ],
+          ..._protocols.map((protocol) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: ProtocolCard(
+              appointment: widget.appointment,
+              protocol: protocol,
+              onProtocolUpdated: widget.onProtocolUpdated,
+            ),
+          )),
         ],
       ),
     );
   }
 
-  Widget _buildProtocolNotFound() {
+
+  Widget _buildNoProtocolsState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.assignment_outlined, size: 64, color: AppColors.gray[400]),
+          const SizedBox(height: 16),
+          Text(
+            'Nenhum protocolo associado',
+            style: TextStyle(
+              fontSize: 18,
+              color: AppColors.gray[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Esta consulta não possui protocolos para preenchimento.',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.gray[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProtocolsNotFound() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -51,139 +134,22 @@ class ProtocolTab extends StatelessWidget {
           Icon(Icons.error_outline, size: 64, color: AppColors.gray[400]),
           const SizedBox(height: 16),
           Text(
-            'Protocolo não encontrado',
+            'Protocolos não encontrados',
             style: TextStyle(
               fontSize: 18,
               color: AppColors.gray[600],
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Os protocolos associados a esta consulta não foram encontrados.',
+            style: TextStyle(
+              fontSize: 14,
+              color: AppColors.gray[500],
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildProtocolInfoCard(BuildContext context) {
-    return CustomCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    protocol!.name,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                ),
-                if (appointment.status == AppointmentStatus.inProgress &&
-                    appointment.protocolResponses == null)
-                  CustomButton(
-                    text: 'Preencher',
-                    onPressed: () {
-                      // TODO: Navegar para tela de preenchimento do protocolo
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Funcionalidade em desenvolvimento')),
-                      );
-                    },
-                    fontSize: 14,
-                    padding: const EdgeInsets.all(8),
-                  ),
-              ],
-            ),
-            if (protocol!.description != null) ...[
-              const SizedBox(height: 8),
-              Text(
-                protocol!.description!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.gray[600],
-                ),
-              ),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Icon(Icons.assignment, size: 16, color: AppColors.gray[500]),
-                const SizedBox(width: 8),
-                Text(
-                  'Itens do protocolo: ${protocol!.items.length}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.gray[500],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProtocolResponsesCard() {
-    return CustomCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.check_circle, size: 20, color: Colors.green),
-                const SizedBox(width: 8),
-                Text(
-                  'Respostas do protocolo',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.gray[800],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline, size: 16, color: Colors.green[700]),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Protocolo preenchido com ${appointment.protocolResponses!.length} respostas',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.green[700],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-            // TODO: Exibir as respostas do protocolo de forma organizada
-            Text(
-              'Visualização detalhada das respostas será implementada em breve.',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.gray[500],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

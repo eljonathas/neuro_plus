@@ -66,7 +66,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             .where((appointment) => 
                 appointment.patientName.toLowerCase().contains(query.toLowerCase()) ||
                 appointment.typeText.toLowerCase().contains(query.toLowerCase()) ||
-                (appointment.protocolName?.toLowerCase().contains(query.toLowerCase()) ?? false))
+                (appointment.protocolNames?.any((name) => name.toLowerCase().contains(query.toLowerCase())) ?? false))
             .toList();
       } else {
         _filteredAppointments = AppointmentsService.searchAppointments(query);

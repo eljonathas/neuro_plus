@@ -22,12 +22,13 @@ class AppointmentAdapter extends TypeAdapter<Appointment> {
       patientName: fields[2] as String,
       date: fields[3] as DateTime,
       time: fields[4] as String,
-      protocolId: fields[5] as String?,
-      protocolName: fields[6] as String?,
+      protocolIds: (fields[5] as List?)?.cast<String>(),
+      protocolNames: (fields[6] as List?)?.cast<String>(),
       status: fields[7] as AppointmentStatus,
       type: fields[8] as AppointmentType,
       notes: fields[9] as String?,
-      protocolResponses: (fields[10] as Map?)?.cast<String, dynamic>(),
+      protocolResponses: (fields[10] as Map?)?.map((dynamic k, dynamic v) =>
+          MapEntry(k as String, (v as Map).cast<String, dynamic>())),
       createdAt: fields[11] as DateTime?,
       updatedAt: fields[12] as DateTime?,
       duration: fields[13] as int,
@@ -50,9 +51,9 @@ class AppointmentAdapter extends TypeAdapter<Appointment> {
       ..writeByte(4)
       ..write(obj.time)
       ..writeByte(5)
-      ..write(obj.protocolId)
+      ..write(obj.protocolIds)
       ..writeByte(6)
-      ..write(obj.protocolName)
+      ..write(obj.protocolNames)
       ..writeByte(7)
       ..write(obj.status)
       ..writeByte(8)

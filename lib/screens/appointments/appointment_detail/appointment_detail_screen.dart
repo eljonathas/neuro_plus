@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
-import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/models/protocol.dart';
 import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_header.dart';
 import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_tabs.dart';
 import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_details_tab.dart';
@@ -24,43 +22,17 @@ class AppointmentDetailScreen extends StatefulWidget {
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   int _currentTabIndex = 0;
-  Protocol? _protocol;
-  bool _isLoading = false;
+  late Appointment _currentAppointment;
 
   @override
   void initState() {
     super.initState();
-    _loadProtocol();
-  }
-
-  Future<void> _loadProtocol() async {
-    if (widget.appointment.protocolId != null) {
-      setState(() => _isLoading = true);
-      
-      try {
-        await ProtocolsService.init();
-        final protocol = ProtocolsService.getProtocolById(widget.appointment.protocolId!);
-        
-        if (mounted) {
-          setState(() {
-            _protocol = protocol;
-            _isLoading = false;
-          });
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erro ao carregar protocolo: $e')),
-          );
-        }
-      }
-    }
+    _currentAppointment = widget.appointment;
   }
 
   Future<void> _updateAppointmentStatus(AppointmentStatus newStatus) async {
     try {
-      await AppointmentsService.updateAppointmentStatus(widget.appointment.id, newStatus);
+      await AppointmentsService.updateAppointmentStatus(_currentAppointment.id, newStatus);
       
       if (mounted) {
         Navigator.pop(context, true);
@@ -98,17 +70,30 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
     });
   }
 
+  Future<void> _reloadAppointment() async {
+    try {
+      await AppointmentsService.init();
+      final updatedAppointment = AppointmentsService.getAppointment(_currentAppointment.id);
+      
+      if (updatedAppointment != null && mounted) {
+        setState(() {
+          _currentAppointment = updatedAppointment;
+        });
+      }
+    } catch (e) {
+      // Erro ao recarregar consulta - falha silenciosa
+    }
+  }
+
   Widget _buildActiveTabContent() {
     if (_currentTabIndex == 0) {
       return AppointmentDetailsTab(
-        appointment: widget.appointment,
-        protocol: _protocol,
+        appointment: _currentAppointment,
       );
-    } else if (_currentTabIndex == 1 && widget.appointment.hasProtocol) {
+    } else if (_currentTabIndex == 1 && _currentAppointment.hasProtocol) {
       return ProtocolTab(
-        appointment: widget.appointment,
-        protocol: _protocol,
-        isLoading: _isLoading,
+        appointment: _currentAppointment,
+        onProtocolUpdated: _reloadAppointment,
       );
     }
     return Container();
@@ -117,23 +102,23 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: '${widget.appointment.formattedDate} (${widget.appointment.time})',
+      title: '${_currentAppointment.formattedDate} (${_currentAppointment.time})',
       navIndex: 1,
       isBackButtonVisible: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppointmentHeader(appointment: widget.appointment),
+          AppointmentHeader(appointment: _currentAppointment),
           const SizedBox(height: 24),
           AppointmentTabs(
             currentTabIndex: _currentTabIndex,
-            hasProtocol: widget.appointment.hasProtocol,
+            hasProtocol: _currentAppointment.hasProtocol,
             onTabChanged: _onTabChanged,
           ),
           const SizedBox(height: 24),
           Expanded(child: _buildActiveTabContent()),
           AppointmentActionButtons(
-            appointment: widget.appointment,
+            appointment: _currentAppointment,
             onStatusUpdate: _updateAppointmentStatus,
           ),
         ],

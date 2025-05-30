@@ -118,7 +118,7 @@ class AppointmentsService {
             appointment.patientName.toLowerCase().contains(lowerQuery) ||
             appointment.typeText.toLowerCase().contains(lowerQuery) ||
             appointment.statusText.toLowerCase().contains(lowerQuery) ||
-            (appointment.protocolName?.toLowerCase().contains(lowerQuery) ?? false) ||
+            (appointment.protocolNames?.any((name) => name.toLowerCase().contains(lowerQuery)) ?? false) ||
             (appointment.notes?.toLowerCase().contains(lowerQuery) ?? false))
         .toList()
       ..sort((a, b) {
@@ -138,12 +138,17 @@ class AppointmentsService {
   }
 
   static Future<void> updateAppointmentProtocolResponses(
-      String id, Map<String, dynamic> responses) async {
+      String appointmentId, String protocolId, Map<String, dynamic> responses) async {
     await init();
-    final appointment = _box!.get(id);
+    final appointment = _box!.get(appointmentId);
     if (appointment != null) {
-      final updatedAppointment = appointment.copyWith(protocolResponses: responses);
-      await _box!.put(id, updatedAppointment);
+      final currentResponses = Map<String, Map<String, dynamic>>.from(
+        appointment.protocolResponses ?? {}
+      );
+      currentResponses[protocolId] = responses;
+      
+      final updatedAppointment = appointment.copyWith(protocolResponses: currentResponses);
+      await _box!.put(appointmentId, updatedAppointment);
     }
   }
 

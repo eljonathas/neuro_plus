@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
@@ -27,6 +28,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Neuro+',
       theme: generateTheme(context),
+      locale: const Locale('pt', 'BR'),
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'),
+      ],
       home: const HomeScreen(),
       routes: AppRoutes.generateRoutes(),
     );

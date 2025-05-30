@@ -75,14 +75,14 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     super.dispose();
   }
 
-  // Otimizado: callback único para categorias
   void _onCategoriesChanged(List<String> categories) {
     _categories = categories;
   }
 
-  // Otimizado: callback único para template
   void _onTemplateChanged(String template) {
-    _selectedTemplate = template;
+    setState(() {
+      _selectedTemplate = template;
+    });
   }
 
   void _addNewItem() {
@@ -124,7 +124,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     final index = _items.indexWhere((i) => i.id == item.id);
     if (index != -1) {
       _items[index] = item.copyWith(options: options);
-      // Não precisa de setState aqui - apenas atualiza dados
     }
   }
 
@@ -143,7 +142,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
   Future<void> _saveProtocol() async {
     if (!_formKey.currentState!.validate()) return;
 
-    // Validação específica para checklist sem opções
     final updatedItems = _buildUpdatedItems();
     for (final item in updatedItems) {
       if (item.responseType == ResponseType.checklist && item.options.isEmpty) {

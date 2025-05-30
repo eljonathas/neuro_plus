@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/models/protocol.dart';
 
 class AppointmentDetailsTab extends StatelessWidget {
   final Appointment appointment;
-  final Protocol? protocol;
 
   const AppointmentDetailsTab({
     super.key,
     required this.appointment,
-    this.protocol,
   });
 
   @override
@@ -68,6 +65,10 @@ class AppointmentDetailsTab extends StatelessWidget {
   }
 
   Widget _buildProtocolInfoCard() {
+    final protocolCount = appointment.protocolIds?.length ?? 0;
+    final protocolNames = appointment.protocolNames ?? [];
+    final filledCount = appointment.protocolResponses?.length ?? 0;
+    
     return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -75,7 +76,7 @@ class AppointmentDetailsTab extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Protocolo',
+              'Protocolos',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -83,21 +84,21 @@ class AppointmentDetailsTab extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            _buildDetailRow('Nome', appointment.protocolName!),
-            if (protocol != null && protocol!.description != null)
-              _buildDetailRow('Descrição', protocol!.description!),
+            _buildDetailRow('Quantidade', '$protocolCount protocolo${protocolCount != 1 ? 's' : ''}'),
+            if (protocolNames.isNotEmpty)
+              _buildDetailRow('Nomes', protocolNames.join(', ')),
             const SizedBox(height: 12),
             Row(
               children: [
                 Icon(Icons.assignment, size: 16, color: AppColors.gray[500]),
                 const SizedBox(width: 8),
                 Text(
-                  appointment.protocolResponses != null
-                      ? 'Protocolo preenchido'
-                      : 'Protocolo não preenchido',
+                  filledCount > 0
+                      ? '$filledCount de $protocolCount preenchido${filledCount != 1 ? 's' : ''}'
+                      : 'Nenhum protocolo preenchido',
                   style: TextStyle(
                     fontSize: 14,
-                    color: appointment.protocolResponses != null
+                    color: filledCount > 0
                         ? Colors.green
                         : AppColors.gray[600],
                     fontWeight: FontWeight.w500,

@@ -35,14 +35,163 @@ class AppColors {
 }
 
 ThemeData generateTheme(BuildContext context) {
+  final ColorScheme colorScheme = ColorScheme.fromSeed(
+    seedColor: AppColors.blueRibbon[500]!,
+    brightness: Brightness.light,
+    primary: AppColors.blueRibbon[500]!,
+    onPrimary: Colors.white,
+    primaryContainer: AppColors.blueRibbon[100]!,
+    onPrimaryContainer: AppColors.blueRibbon[900]!,
+    secondary: AppColors.blueRibbon[300]!,
+    onSecondary: Colors.white,
+    secondaryContainer: AppColors.blueRibbon[50]!,
+    onSecondaryContainer: AppColors.blueRibbon[800]!,
+    surface: Colors.white,
+    onSurface: AppColors.gray[900]!,
+    surfaceContainerHighest: AppColors.gray[100]!,
+    outline: AppColors.gray[300]!,
+    outlineVariant: AppColors.gray[200]!,
+  );
+
   final ThemeData appTheme = ThemeData(
-    primarySwatch: AppColors.primarySwatch,
+    colorScheme: colorScheme,
+    useMaterial3: true,
     scaffoldBackgroundColor: AppColors.gray[50],
     textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
-    appBarTheme: const AppBarTheme(
+    appBarTheme: AppBarTheme(
       backgroundColor: Colors.white,
       elevation: 0,
-      iconTheme: IconThemeData(color: Color(0xFF3D3D3D)),
+      iconTheme: IconThemeData(color: AppColors.gray[900]),
+      titleTextStyle: GoogleFonts.poppins(
+        color: AppColors.gray[900],
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.blueRibbon[500],
+        foregroundColor: Colors.white,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
+    checkboxTheme: CheckboxThemeData(
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[500];
+        }
+        return Colors.transparent;
+      }),
+      checkColor: WidgetStateProperty.all(Colors.white),
+    ),
+    radioTheme: RadioThemeData(
+      fillColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[500];
+        }
+        return AppColors.gray[400];
+      }),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[500];
+        }
+        return AppColors.gray[400];
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[200];
+        }
+        return AppColors.gray[200];
+      }),
+    ),
+    sliderTheme: SliderThemeData(
+      activeTrackColor: AppColors.blueRibbon[500],
+      inactiveTrackColor: AppColors.gray[300],
+      thumbColor: AppColors.blueRibbon[500],
+      overlayColor: AppColors.blueRibbon[100],
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      color: AppColors.blueRibbon[500],
+    ),
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: AppColors.blueRibbon[500],
+      foregroundColor: Colors.white,
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: Colors.white,
+      headerBackgroundColor: AppColors.blueRibbon[500],
+      headerForegroundColor: Colors.white,
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return AppColors.gray[400]?.withAlpha(60);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return Colors.white;
+        }
+        return AppColors.gray[900];
+      }),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return Colors.transparent;
+        }
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[500];
+        }
+        return Colors.transparent;
+      }),
+      todayForegroundColor: WidgetStateProperty.all(AppColors.blueRibbon[500]),
+      todayBackgroundColor: WidgetStateProperty.all(Colors.transparent),
+      yearForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return AppColors.gray[400]?.withAlpha(60);
+        }
+        if (states.contains(WidgetState.selected)) {
+          return Colors.white;
+        }
+        return AppColors.gray[900];
+      }),
+      yearBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) {
+          return Colors.transparent;
+        }
+        if (states.contains(WidgetState.selected)) {
+          return AppColors.blueRibbon[500];
+        }
+        return Colors.transparent;
+      }),
+    ),
+    timePickerTheme: TimePickerThemeData(
+      backgroundColor: Colors.white,
+      hourMinuteTextColor: Colors.white,
+      hourMinuteColor: AppColors.blueRibbon[500],
+      dayPeriodTextColor: Colors.white,
+      dayPeriodColor: AppColors.blueRibbon[500],
+      dialHandColor: AppColors.blueRibbon[500],
+      dialBackgroundColor: AppColors.gray[100],
+      dialTextColor: AppColors.gray[900],
+      entryModeIconColor: AppColors.blueRibbon[500],
+    ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+      textStyle: GoogleFonts.poppins(),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.gray[300]!),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.gray[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: AppColors.blueRibbon[500]!),
+        ),
+      ),
     ),
   );
 

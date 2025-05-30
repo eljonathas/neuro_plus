@@ -33,7 +33,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedTime;
   AppointmentType _selectedType = AppointmentType.evaluation;
-  Protocol? _selectedProtocol;
+  List<Protocol> _selectedProtocols = [];
   int _duration = 60;
   String? _location;
   String? _notes;
@@ -80,23 +80,21 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         setState(() {
           _patients = patients;
           _protocols = protocols;
+          _isLoading = false;
           
-          // Se editando, encontrar o paciente e protocolo
+          // Se editando, encontrar o paciente e protocolos
           if (widget.appointment != null) {
             _selectedPatient = patients.firstWhere(
               (p) => p.id == widget.appointment!.patientId,
               orElse: () => patients.first,
             );
             
-            if (widget.appointment!.protocolId != null) {
-              _selectedProtocol = protocols.firstWhere(
-                (p) => p.id == widget.appointment!.protocolId,
-                orElse: () => protocols.first,
-              );
+            if (widget.appointment!.protocolIds != null) {
+              _selectedProtocols = protocols.where(
+                (p) => widget.appointment!.protocolIds!.contains(p.id)
+              ).toList();
             }
           }
-          
-          _isLoading = false;
         });
       }
     } catch (e) {
@@ -188,8 +186,8 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         date: _selectedDate!,
         time: timeString,
         type: _selectedType,
-        protocolId: _selectedProtocol?.id,
-        protocolName: _selectedProtocol?.name,
+        protocolIds: _selectedProtocols.isNotEmpty ? _selectedProtocols.map((p) => p.id).toList() : null,
+        protocolNames: _selectedProtocols.isNotEmpty ? _selectedProtocols.map((p) => p.name).toList() : null,
         duration: _duration,
         location: _location,
         notes: _notes,
@@ -613,7 +611,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Protocolo (opcional)',
+                    'Protocolos (opcional)',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -621,29 +619,66 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  DropdownButtonFormField<Protocol>(
-                    value: _selectedProtocol,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Selecionar protocolo',
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.gray[300]!),
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                    items: [
-                      const DropdownMenuItem<Protocol>(
-                        value: null,
-                        child: Text('Nenhum protocolo'),
-                      ),
-                      ..._protocols.map((protocol) {
-                        return DropdownMenuItem(
-                          value: protocol,
-                          child: Text(protocol.name),
-                        );
-                      }),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedProtocol = value;
-                      });
-                    },
+                    child: Column(
+                      children: [
+                        if (_selectedProtocols.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Text(
+                              'Nenhum protocolo selecionado',
+                              style: TextStyle(
+                                color: AppColors.gray[500],
+                                fontSize: 14,
+                              ),
+                            ),
+                          )
+                        else
+                          ..._selectedProtocols.map((protocol) => ListTile(
+                            title: Text(protocol.name),
+                            subtitle: protocol.description != null 
+                                ? Text(protocol.description!) 
+                                : null,
+                            trailing: IconButton(
+                              icon: const Icon(Icons.remove_circle_outline),
+                              onPressed: () {
+                                setState(() {
+                                  _selectedProtocols.remove(protocol);
+                                });
+                              },
+                            ),
+                          )),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: DropdownButtonFormField<Protocol>(
+                            value: null,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Adicionar protocolo',
+                            ),
+                            items: _protocols.isEmpty ? [] : [
+                              ..._protocols.where((p) => !_selectedProtocols.contains(p)).map((protocol) {
+                                return DropdownMenuItem(
+                                  value: protocol,
+                                  child: Text(protocol.name),
+                                );
+                              }),
+                            ],
+                            onChanged: _protocols.isEmpty ? null : (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedProtocols.add(value);
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

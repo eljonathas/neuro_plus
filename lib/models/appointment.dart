@@ -21,10 +21,10 @@ class Appointment extends HiveObject {
   final String time;
 
   @HiveField(5)
-  final String? protocolId;
+  final List<String>? protocolIds;
 
   @HiveField(6)
-  final String? protocolName;
+  final List<String>? protocolNames;
 
   @HiveField(7)
   final AppointmentStatus status;
@@ -36,7 +36,7 @@ class Appointment extends HiveObject {
   final String? notes;
 
   @HiveField(10)
-  final Map<String, dynamic>? protocolResponses;
+  final Map<String, Map<String, dynamic>>? protocolResponses;
 
   @HiveField(11)
   final DateTime createdAt;
@@ -56,8 +56,8 @@ class Appointment extends HiveObject {
     required this.patientName,
     required this.date,
     required this.time,
-    this.protocolId,
-    this.protocolName,
+    this.protocolIds,
+    this.protocolNames,
     this.status = AppointmentStatus.scheduled,
     this.type = AppointmentType.evaluation,
     this.notes,
@@ -76,12 +76,12 @@ class Appointment extends HiveObject {
     String? patientName,
     DateTime? date,
     String? time,
-    String? protocolId,
-    String? protocolName,
+    List<String>? protocolIds,
+    List<String>? protocolNames,
     AppointmentStatus? status,
     AppointmentType? type,
     String? notes,
-    Map<String, dynamic>? protocolResponses,
+    Map<String, Map<String, dynamic>>? protocolResponses,
     int? duration,
     String? location,
   }) {
@@ -91,8 +91,8 @@ class Appointment extends HiveObject {
       patientName: patientName ?? this.patientName,
       date: date ?? this.date,
       time: time ?? this.time,
-      protocolId: protocolId ?? this.protocolId,
-      protocolName: protocolName ?? this.protocolName,
+      protocolIds: protocolIds ?? this.protocolIds,
+      protocolNames: protocolNames ?? this.protocolNames,
       status: status ?? this.status,
       type: type ?? this.type,
       notes: notes ?? this.notes,
@@ -139,7 +139,7 @@ class Appointment extends HiveObject {
 
   bool get isCompleted => status == AppointmentStatus.completed;
   bool get canEdit => status == AppointmentStatus.scheduled;
-  bool get hasProtocol => protocolId != null && protocolId!.isNotEmpty;
+  bool get hasProtocol => protocolIds != null && protocolIds!.isNotEmpty;
 }
 
 @HiveType(typeId: 5)
