@@ -17,9 +17,10 @@ class AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isToday = appointment.date.day == DateTime.now().day &&
-                   appointment.date.month == DateTime.now().month &&
-                   appointment.date.year == DateTime.now().year;
+    final isToday =
+        appointment.date.day == DateTime.now().day &&
+        appointment.date.month == DateTime.now().month &&
+        appointment.date.year == DateTime.now().year;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -40,19 +41,28 @@ class AppointmentCard extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
-                                appointment.patientName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
+                              Expanded(
+                                child: Text(
+                                  appointment.patientName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               if (isToday) ...[
                                 const SizedBox(width: 8),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppColors.primarySwatch.withValues(alpha: 0.1),
+                                    color: AppColors.primarySwatch.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -85,7 +95,11 @@ class AppointmentCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(Icons.medical_services, size: 16, color: AppColors.gray[500]),
+                    Icon(
+                      Icons.medical_services,
+                      size: 16,
+                      color: AppColors.gray[500],
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       appointment.typeText,
@@ -96,7 +110,11 @@ class AppointmentCard extends StatelessWidget {
                     ),
                     if (appointment.hasProtocol) ...[
                       const SizedBox(width: 16),
-                      Icon(Icons.assignment, size: 16, color: AppColors.gray[500]),
+                      Icon(
+                        Icons.assignment,
+                        size: 16,
+                        color: AppColors.gray[500],
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
                         child: Text(
@@ -111,7 +129,8 @@ class AppointmentCard extends StatelessWidget {
                     ],
                   ],
                 ),
-                if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
+                if (appointment.notes != null &&
+                    appointment.notes!.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Text(
                     appointment.notes!,
@@ -135,7 +154,7 @@ class AppointmentCard extends StatelessWidget {
   Widget _buildStatusChip(AppointmentStatus status) {
     Color color;
     IconData icon;
-    
+
     switch (status) {
       case AppointmentStatus.scheduled:
         color = Colors.blue;
@@ -186,62 +205,63 @@ class AppointmentCard extends StatelessWidget {
   Widget _buildPopupMenu() {
     return PopupMenuButton<String>(
       onSelected: onMenuAction,
-      itemBuilder: (context) => [
-        if (appointment.canEdit)
-          const PopupMenuItem(
-            value: 'edit',
-            child: Row(
-              children: [
-                Icon(Icons.edit, size: 18),
-                SizedBox(width: 8),
-                Text('Editar'),
-              ],
+      itemBuilder:
+          (context) => [
+            if (appointment.canEdit)
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 18),
+                    SizedBox(width: 8),
+                    Text('Editar'),
+                  ],
+                ),
+              ),
+            if (appointment.status == AppointmentStatus.scheduled)
+              const PopupMenuItem(
+                value: 'start',
+                child: Row(
+                  children: [
+                    Icon(Icons.play_arrow, size: 18),
+                    SizedBox(width: 8),
+                    Text('Iniciar'),
+                  ],
+                ),
+              ),
+            if (appointment.status == AppointmentStatus.inProgress)
+              const PopupMenuItem(
+                value: 'complete',
+                child: Row(
+                  children: [
+                    Icon(Icons.check, size: 18),
+                    SizedBox(width: 8),
+                    Text('Concluir'),
+                  ],
+                ),
+              ),
+            if (appointment.status == AppointmentStatus.scheduled)
+              const PopupMenuItem(
+                value: 'cancel',
+                child: Row(
+                  children: [
+                    Icon(Icons.cancel, size: 18),
+                    SizedBox(width: 8),
+                    Text('Cancelar'),
+                  ],
+                ),
+              ),
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete, size: 18, color: Colors.red),
+                  SizedBox(width: 8),
+                  Text('Excluir', style: TextStyle(color: Colors.red)),
+                ],
+              ),
             ),
-          ),
-        if (appointment.status == AppointmentStatus.scheduled)
-          const PopupMenuItem(
-            value: 'start',
-            child: Row(
-              children: [
-                Icon(Icons.play_arrow, size: 18),
-                SizedBox(width: 8),
-                Text('Iniciar'),
-              ],
-            ),
-          ),
-        if (appointment.status == AppointmentStatus.inProgress)
-          const PopupMenuItem(
-            value: 'complete',
-            child: Row(
-              children: [
-                Icon(Icons.check, size: 18),
-                SizedBox(width: 8),
-                Text('Concluir'),
-              ],
-            ),
-          ),
-        if (appointment.status == AppointmentStatus.scheduled)
-          const PopupMenuItem(
-            value: 'cancel',
-            child: Row(
-              children: [
-                Icon(Icons.cancel, size: 18),
-                SizedBox(width: 8),
-                Text('Cancelar'),
-              ],
-            ),
-          ),
-        const PopupMenuItem(
-          value: 'delete',
-          child: Row(
-            children: [
-              Icon(Icons.delete, size: 18, color: Colors.red),
-              SizedBox(width: 8),
-              Text('Excluir', style: TextStyle(color: Colors.red)),
-            ],
-          ),
-        ),
-      ],
+          ],
     );
   }
-} 
+}

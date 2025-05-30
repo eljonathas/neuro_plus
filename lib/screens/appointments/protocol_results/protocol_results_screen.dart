@@ -132,7 +132,7 @@ class ProtocolResultsScreen extends StatelessWidget {
                       ],
                     );
                   }
-                  
+
                   return IntrinsicHeight(
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -240,11 +240,14 @@ class ProtocolResultsScreen extends StatelessWidget {
     return Container(
       width: isFullWidth ? double.infinity : null,
       padding: isFullWidth ? const EdgeInsets.all(12) : null,
-      decoration: isFullWidth ? BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.gray[200]!),
-      ) : null,
+      decoration:
+          isFullWidth
+              ? BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.gray[200]!),
+              )
+              : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -252,11 +255,7 @@ class ProtocolResultsScreen extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                icon,
-                size: 16,
-                color: AppColors.gray[500],
-              ),
+              Icon(icon, size: 16, color: AppColors.gray[500]),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -290,11 +289,7 @@ class ProtocolResultsScreen extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.analytics,
-              color: AppColors.primarySwatch,
-              size: 24,
-            ),
+            Icon(Icons.analytics, color: AppColors.primarySwatch, size: 24),
             const SizedBox(width: 12),
             Text(
               'Resultados da Avaliação',
@@ -309,10 +304,7 @@ class ProtocolResultsScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Respostas coletadas durante a aplicação do protocolo',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.gray[600],
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
         ),
         const SizedBox(height: 24),
         _buildResultsList(),
@@ -322,17 +314,18 @@ class ProtocolResultsScreen extends StatelessWidget {
 
   Widget _buildResultsList() {
     return Column(
-      children: protocol.items.asMap().entries.map((entry) {
-        final index = entry.key;
-        final item = entry.value;
-        final response = responses[item.id];
-        if (response == null) return const SizedBox.shrink();
-        
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: _buildResultItem(item, response, index + 1),
-        );
-      }).toList(),
+      children:
+          protocol.items.asMap().entries.map((entry) {
+            final index = entry.key;
+            final item = entry.value;
+            final response = responses[item.id];
+            if (response == null) return const SizedBox.shrink();
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: _buildResultItem(item, response, index + 1),
+            );
+          }).toList(),
     );
   }
 
@@ -398,7 +391,7 @@ class ProtocolResultsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 20),
-            Container(
+            SizedBox(
               width: double.infinity,
               child: _buildResponseDisplay(item, response),
             ),
@@ -469,7 +462,7 @@ class ProtocolResultsScreen extends StatelessWidget {
 
   Widget _buildTextResponse(dynamic response) {
     final hasResponse = response.toString().isNotEmpty;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -489,7 +482,8 @@ class ProtocolResultsScreen extends StatelessWidget {
               Icon(
                 hasResponse ? Icons.chat_bubble : Icons.chat_bubble_outline,
                 size: 16,
-                color: hasResponse ? AppColors.primarySwatch : AppColors.gray[400],
+                color:
+                    hasResponse ? AppColors.primarySwatch : AppColors.gray[400],
               ),
               const SizedBox(width: 8),
               Text(
@@ -497,7 +491,8 @@ class ProtocolResultsScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: hasResponse ? AppColors.gray[700] : AppColors.gray[400],
+                  color:
+                      hasResponse ? AppColors.gray[700] : AppColors.gray[400],
                 ),
               ),
             ],
@@ -520,7 +515,7 @@ class ProtocolResultsScreen extends StatelessWidget {
   Widget _buildScaleResponse(dynamic response) {
     final value = response is int ? response : 1;
     final percentage = (value / 5) * 100;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -534,11 +529,7 @@ class ProtocolResultsScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.analytics,
-                size: 16,
-                color: AppColors.primarySwatch,
-              ),
+              Icon(Icons.analytics, size: 16, color: AppColors.primarySwatch),
               const SizedBox(width: 8),
               Text(
                 'Pontuação',
@@ -608,8 +599,9 @@ class ProtocolResultsScreen extends StatelessWidget {
   }
 
   Widget _buildChecklistResponse(dynamic response) {
-    final selectedOptions = response is List ? List<String>.from(response) : <String>[];
-    
+    final selectedOptions =
+        response is List ? List<String>.from(response) : <String>[];
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -623,11 +615,7 @@ class ProtocolResultsScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.checklist,
-                size: 16,
-                color: AppColors.primarySwatch,
-              ),
+              Icon(Icons.checklist, size: 16, color: AppColors.primarySwatch),
               const SizedBox(width: 8),
               Text(
                 'Opções Selecionadas',
@@ -641,9 +629,10 @@ class ProtocolResultsScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: selectedOptions.isEmpty 
-                    ? AppColors.gray[100] 
-                    : Colors.green.withValues(alpha: 0.1),
+                  color:
+                      selectedOptions.isEmpty
+                          ? AppColors.gray[100]
+                          : Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -651,9 +640,10 @@ class ProtocolResultsScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: selectedOptions.isEmpty 
-                      ? AppColors.gray[500] 
-                      : Colors.green[700],
+                    color:
+                        selectedOptions.isEmpty
+                            ? AppColors.gray[500]
+                            : Colors.green[700],
                   ),
                 ),
               ),
@@ -680,41 +670,44 @@ class ProtocolResultsScreen extends StatelessWidget {
             )
           else
             Column(
-              children: selectedOptions.map((option) {
-                return Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.green.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.green.withValues(alpha: 0.2)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        size: 18,
-                        color: Colors.green[600],
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.gray[800],
-                            height: 1.3,
-                          ),
+              children:
+                  selectedOptions.map((option) {
+                    return Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.green.withValues(alpha: 0.2),
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }).toList(),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            size: 18,
+                            color: Colors.green[600],
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.gray[800],
+                                height: 1.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
             ),
         ],
       ),
     );
   }
-} 
+}

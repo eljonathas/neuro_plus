@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Sempre que for criar um widget, evite métodos build extensos. Extraia partes da interface em widgets menores e reutilizáveis. Organize cada conjunto de widgets em uma pasta específica conforme a funcionalidade. Use uma estrutura modular baseada em features. Aplique boas práticas como separação de responsabilidades, componentização, uso de widgets constantes, injeção de dependência com Provider, e padrões como MVVM ou Bloc. O método build deve conter apenas a estrutura visual. Toda lógica deve estar em arquivos separados.

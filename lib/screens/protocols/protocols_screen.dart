@@ -50,21 +50,24 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
   Future<void> _deleteProtocol(Protocol protocol) async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Excluir protocolo'),
-        content: Text('Deseja realmente excluir o protocolo "${protocol.name}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Excluir protocolo'),
+            content: Text(
+              'Deseja realmente excluir o protocolo "${protocol.name}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Excluir'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
     );
 
     if (confirm == true) {
@@ -92,7 +95,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
       AppRoutes.protocolsCreate,
       arguments: protocol,
     );
-    
+
     if (result == true) {
       _loadProtocols();
     }
@@ -103,7 +106,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
       context,
       AppRoutes.protocolsCreate,
     );
-    
+
     if (result == true) {
       _loadProtocols();
     }
@@ -149,11 +152,16 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.add, color: AppColors.primarySwatch),
+                      icon: const Icon(
+                        Icons.add,
+                        color: AppColors.primarySwatch,
+                      ),
                       onPressed: _navigateToCreateProtocol,
                       tooltip: 'Novo protocolo',
                       style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primarySwatch.withValues(alpha: 0.1),
+                        backgroundColor: AppColors.primarySwatch.withValues(
+                          alpha: 0.1,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -167,7 +175,8 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               sliver: SliverList.separated(
                 itemCount: protocols.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 12),
+                separatorBuilder:
+                    (context, index) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final protocol = protocols[index];
                   return ProtocolCard(
@@ -179,9 +188,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
                 },
               ),
             ),
-            const SliverToBoxAdapter(
-              child: SizedBox(height: 16),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
           ],
         ),
       ),

@@ -5,10 +5,7 @@ import 'package:neuro_plus/models/appointment.dart';
 class AppointmentHeader extends StatelessWidget {
   final Appointment appointment;
 
-  const AppointmentHeader({
-    super.key,
-    required this.appointment,
-  });
+  const AppointmentHeader({super.key, required this.appointment});
 
   @override
   Widget build(BuildContext context) {
@@ -32,20 +29,18 @@ class AppointmentHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          Text(
-            '${appointment.formattedDate} às ${appointment.time}',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.gray[600],
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '${appointment.typeText} • ${appointment.duration} minutos',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.gray[500],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '${appointment.formattedDate} às ${appointment.time}',
+                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
+              ),
+              Text(
+                '${appointment.typeText} • ${appointment.duration} minutos',
+                style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
+              ),
+            ],
           ),
         ],
       ),
@@ -55,7 +50,7 @@ class AppointmentHeader extends StatelessWidget {
   Widget _buildStatusChip(AppointmentStatus status) {
     Color color;
     IconData icon;
-    
+
     switch (status) {
       case AppointmentStatus.scheduled:
         color = Colors.blue;
@@ -102,4 +97,4 @@ class AppointmentHeader extends StatelessWidget {
       ),
     );
   }
-} 
+}

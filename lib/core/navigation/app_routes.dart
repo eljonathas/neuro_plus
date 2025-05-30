@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/screens/home/home_page.dart';
 import 'package:neuro_plus/screens/appointments/appointments_list/appointments_list_screen.dart';
 import 'package:neuro_plus/screens/protocols/protocols_screen.dart';
 import 'package:neuro_plus/screens/protocols_create/protocols_create_screen.dart';
-import 'package:neuro_plus/screens/patients/patients_screen.dart';
+import 'package:neuro_plus/screens/patients/patients_list/patients_screen.dart';
 import 'package:neuro_plus/screens/patients/patients_create_screen.dart';
+import 'package:neuro_plus/screens/patients/patients_detail/patient_detail_screen.dart';
 import 'package:neuro_plus/screens/appointments/appointments_create/appointments_create_screen.dart';
 import 'package:neuro_plus/screens/appointments/appointment_detail/appointment_detail_screen.dart';
 import 'package:neuro_plus/models/appointment.dart';
@@ -17,13 +19,14 @@ class AppRoutes {
   static const String schedule = '/schedule';
   static const String protocols = '/protocols';
   static const String patients = '/patients';
-  
+
   // Rotas de pacientes
   static const String patientsCreate = '/patients/create';
-  
+  static const String patientsDetail = '/patients/detail';
+
   // Rotas de protocolos
   static const String protocolsCreate = '/protocols/create';
-  
+
   // Rotas de consultas
   static const String appointmentsCreate = '/appointments/create';
   static const String appointmentsList = '/appointments/list';
@@ -35,7 +38,14 @@ class AppRoutes {
     schedule: (context, args) => const AppointmentsScreen(),
     protocols: (context, args) => const ProtocolsScreen(),
     patients: (context, args) => const PatientsScreen(),
-    patientsCreate: (context, args) => const PatientsCreateScreen(),
+    patientsCreate: (context, args) {
+      final patient = args as Patient?;
+      return PatientsCreateScreen(patient: patient);
+    },
+    patientsDetail: (context, args) {
+      final patient = args as Patient;
+      return PatientDetailScreen(patient: patient);
+    },
     protocolsCreate: (context, args) {
       final protocol = args as Protocol?;
       return ProtocolsCreateScreen(protocol: protocol);
@@ -53,13 +63,12 @@ class AppRoutes {
 
   /// Gera o mapa de rotas para o MaterialApp
   static Map<String, WidgetBuilder> generateRoutes() {
-    return routes.map((route, builder) => MapEntry(
-      route,
-      (context) {
+    return routes.map(
+      (route, builder) => MapEntry(route, (context) {
         final args = ModalRoute.of(context)?.settings.arguments;
         return builder(context, args);
-      },
-    ));
+      }),
+    );
   }
 
   /// Navega para uma rota específica
@@ -109,4 +118,4 @@ class AppRoutes {
   static bool canGoBack(BuildContext context) {
     return Navigator.canPop(context);
   }
-} 
+}

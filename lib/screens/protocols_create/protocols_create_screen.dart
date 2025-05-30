@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 import 'package:neuro_plus/models/protocol.dart';
 import 'package:neuro_plus/screens/protocols_create/widgets/protocol_basic_fields.dart';
 import 'package:neuro_plus/screens/protocols_create/widgets/protocol_template_selector.dart';
@@ -41,27 +42,35 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
   }
 
   void _initializeValidators() {
-    _requiredValidator = (String? value) => 
-      (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
-    _categoriesValidator = (List<String>? categories) => 
-      (categories?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
+    _requiredValidator =
+        (String? value) =>
+            (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
+    _categoriesValidator =
+        (List<String>? categories) =>
+            (categories?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
   }
 
   void _initializeData() {
     final protocol = widget.protocol;
     _nameController = TextEditingController(text: protocol?.name ?? '');
-    _descriptionController = TextEditingController(text: protocol?.description ?? '');
+    _descriptionController = TextEditingController(
+      text: protocol?.description ?? '',
+    );
     _categories = List.from(protocol?.categories ?? []);
     _selectedTemplate = protocol?.template ?? 'NOVO';
     _items = List.from(protocol?.items ?? []);
-    
+
     _initializeItemControllers();
   }
 
   void _initializeItemControllers() {
     for (final item in _items) {
-      _itemControllers['${item.id}_title'] = TextEditingController(text: item.title);
-      _itemControllers['${item.id}_instruction'] = TextEditingController(text: item.instruction ?? '');
+      _itemControllers['${item.id}_title'] = TextEditingController(
+        text: item.title,
+      );
+      _itemControllers['${item.id}_instruction'] = TextEditingController(
+        text: item.instruction ?? '',
+      );
     }
   }
 
@@ -93,7 +102,7 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
       responseType: ResponseType.checklist,
       options: const [],
     );
-    
+
     setState(() {
       _items.add(newItem);
       _itemControllers['${newItem.id}_title'] = TextEditingController();
@@ -131,10 +140,13 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     return _items.map((item) {
       final titleController = _itemControllers['${item.id}_title'];
       final instructionController = _itemControllers['${item.id}_instruction'];
-      
+
       return item.copyWith(
         title: titleController?.text ?? item.title,
-        instruction: instructionController?.text.isEmpty == true ? null : instructionController?.text,
+        instruction:
+            instructionController?.text.isEmpty == true
+                ? null
+                : instructionController?.text,
       );
     }).toList();
   }
@@ -147,7 +159,9 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
       if (item.responseType == ResponseType.checklist && item.options.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('O item "${item.title.isEmpty ? 'sem título' : item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.'),
+            content: Text(
+              'O item "${item.title.isEmpty ? 'sem título' : item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -158,35 +172,50 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      final protocol = _isEditing 
-        ? widget.protocol!.copyWith(
-            name: _nameController.text,
-            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
-            categories: _categories,
-            items: updatedItems,
-          )
-        : Protocol(
-            name: _nameController.text,
-            description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
-            categories: _categories,
-            items: updatedItems,
-            template: _selectedTemplate,
-          );
+      final protocol =
+          _isEditing
+              ? widget.protocol!.copyWith(
+                name: _nameController.text,
+                description:
+                    _descriptionController.text.isEmpty
+                        ? null
+                        : _descriptionController.text,
+                categories: _categories,
+                items: updatedItems,
+              )
+              : Protocol(
+                name: _nameController.text,
+                description:
+                    _descriptionController.text.isEmpty
+                        ? null
+                        : _descriptionController.text,
+                categories: _categories,
+                items: updatedItems,
+                template: _selectedTemplate,
+              );
 
-      await (_isEditing 
-        ? ProtocolsService.updateProtocol(protocol)
-        : ProtocolsService.addProtocol(protocol));
+      await (_isEditing
+          ? ProtocolsService.updateProtocol(protocol)
+          : ProtocolsService.addProtocol(protocol));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Protocolo ${_isEditing ? 'atualizado' : 'criado'} com sucesso!')),
+          SnackBar(
+            content: Text(
+              'Protocolo ${_isEditing ? 'atualizado' : 'criado'} com sucesso!',
+            ),
+          ),
         );
-        Navigator.pop(context, true);
+        AppRoutes.navigateTo(context, AppRoutes.protocols);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao ${_isEditing ? 'atualizar' : 'criar'} protocolo: $e')),
+          SnackBar(
+            content: Text(
+              'Erro ao ${_isEditing ? 'atualizar' : 'criar'} protocolo: $e',
+            ),
+          ),
         );
       }
     } finally {

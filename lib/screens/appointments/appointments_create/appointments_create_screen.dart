@@ -17,7 +17,8 @@ class AppointmentsCreateScreen extends StatefulWidget {
   const AppointmentsCreateScreen({super.key, this.appointment});
 
   @override
-  State<AppointmentsCreateScreen> createState() => _AppointmentsCreateScreenState();
+  State<AppointmentsCreateScreen> createState() =>
+      _AppointmentsCreateScreenState();
 }
 
 class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
@@ -27,7 +28,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
 
   // Controladores dos formulários
   final _formKey = GlobalKey<FormState>();
-  
+
   // Dados da consulta
   Patient? _selectedPatient;
   DateTime? _selectedDate;
@@ -68,31 +69,31 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
 
   Future<void> _loadData() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      await PatientsService.init();
-      await ProtocolsService.init();
-      
       final patients = PatientsService.getAllPatients();
       final protocols = ProtocolsService.getAllProtocols();
-      
+
       if (mounted) {
         setState(() {
           _patients = patients;
           _protocols = protocols;
           _isLoading = false;
-          
+
           // Se editando, encontrar o paciente e protocolos
           if (widget.appointment != null) {
             _selectedPatient = patients.firstWhere(
               (p) => p.id == widget.appointment!.patientId,
               orElse: () => patients.first,
             );
-            
+
             if (widget.appointment!.protocolIds != null) {
-              _selectedProtocols = protocols.where(
-                (p) => widget.appointment!.protocolIds!.contains(p.id)
-              ).toList();
+              _selectedProtocols =
+                  protocols
+                      .where(
+                        (p) => widget.appointment!.protocolIds!.contains(p.id),
+                      )
+                      .toList();
             }
           }
         });
@@ -100,9 +101,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao carregar dados: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao carregar dados: $e')));
       }
     }
   }
@@ -141,23 +142,31 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         return true;
       case 1:
         if (_selectedDate == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecione uma data')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Selecione uma data')));
           return false;
         }
         if (_selectedTime == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecione um horário')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Selecione um horário')));
           return false;
         }
-        
+
         // Verificar conflitos de horário
-        final timeString = '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
-        if (AppointmentsService.hasTimeConflict(_selectedDate!, timeString, _duration, excludeId: widget.appointment?.id)) {
+        final timeString =
+            '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
+        if (AppointmentsService.hasTimeConflict(
+          _selectedDate!,
+          timeString,
+          _duration,
+          excludeId: widget.appointment?.id,
+        )) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Já existe uma consulta agendada neste horário')),
+            const SnackBar(
+              content: Text('Já existe uma consulta agendada neste horário'),
+            ),
           );
           return false;
         }
@@ -177,8 +186,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final timeString = '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
-      
+      final timeString =
+          '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
+
       final appointment = Appointment(
         id: widget.appointment?.id,
         patientId: _selectedPatient!.id,
@@ -186,8 +196,14 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         date: _selectedDate!,
         time: timeString,
         type: _selectedType,
-        protocolIds: _selectedProtocols.isNotEmpty ? _selectedProtocols.map((p) => p.id).toList() : null,
-        protocolNames: _selectedProtocols.isNotEmpty ? _selectedProtocols.map((p) => p.name).toList() : null,
+        protocolIds:
+            _selectedProtocols.isNotEmpty
+                ? _selectedProtocols.map((p) => p.id).toList()
+                : null,
+        protocolNames:
+            _selectedProtocols.isNotEmpty
+                ? _selectedProtocols.map((p) => p.name).toList()
+                : null,
         duration: _duration,
         location: _location,
         notes: _notes,
@@ -206,18 +222,20 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.appointment != null 
-                ? 'Consulta atualizada com sucesso!' 
-                : 'Consulta agendada com sucesso!'),
+            content: Text(
+              widget.appointment != null
+                  ? 'Consulta atualizada com sucesso!'
+                  : 'Consulta agendada com sucesso!',
+            ),
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar consulta: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao salvar consulta: $e')));
       }
     }
   }
@@ -228,28 +246,29 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
       title: widget.appointment != null ? 'Editar consulta' : 'Nova consulta',
       navIndex: 1,
       isBackButtonVisible: true,
-      child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                _buildStepIndicator(),
-                Expanded(
-                  child: Form(
-                    key: _formKey,
-                    child: PageView(
-                      controller: _pageController,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        _buildPatientSelectionStep(),
-                        _buildDateTimeStep(),
-                        _buildDetailsStep(),
-                      ],
+      child:
+          _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                children: [
+                  _buildStepIndicator(),
+                  Expanded(
+                    child: Form(
+                      key: _formKey,
+                      child: PageView(
+                        controller: _pageController,
+                        physics: const NeverScrollableScrollPhysics(),
+                        children: [
+                          _buildPatientSelectionStep(),
+                          _buildDateTimeStep(),
+                          _buildDetailsStep(),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                _buildNavigationButtons(),
-              ],
-            ),
+                  _buildNavigationButtons(),
+                ],
+              ),
     );
   }
 
@@ -272,50 +291,51 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
   Widget _buildStepCircle(int index) {
     final isActive = index == _currentStep;
     final isCompleted = index < _currentStep;
-    
+
     return Container(
       width: 32,
       height: 32,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: isCompleted
-            ? AppColors.primarySwatch
-            : isActive
+        color:
+            isCompleted
+                ? AppColors.primarySwatch
+                : isActive
                 ? AppColors.primarySwatch
                 : AppColors.gray[300],
         border: Border.all(
-          color: isActive || isCompleted 
-              ? AppColors.primarySwatch 
-              : AppColors.gray[300]!,
+          color:
+              isActive || isCompleted
+                  ? AppColors.primarySwatch
+                  : AppColors.gray[300]!,
           width: 2,
         ),
       ),
       child: Center(
-        child: isCompleted
-            ? const Icon(Icons.check, color: Colors.white, size: 20)
-            : Text(
-                '${index + 1}',
-                style: TextStyle(
-                  color: isActive ? Colors.white : AppColors.gray[600],
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+        child:
+            isCompleted
+                ? const Icon(Icons.check, color: Colors.white, size: 20)
+                : Text(
+                  '${index + 1}',
+                  style: TextStyle(
+                    color: isActive ? Colors.white : AppColors.gray[600],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
       ),
     );
   }
 
   Widget _buildStepConnector(int index) {
     final isCompleted = index < _currentStep;
-    
+
     return Expanded(
       child: Container(
         height: 3,
         margin: const EdgeInsets.symmetric(horizontal: 12),
         decoration: BoxDecoration(
-          color: isCompleted
-              ? AppColors.primarySwatch
-              : AppColors.gray[300],
+          color: isCompleted ? AppColors.primarySwatch : AppColors.gray[300],
           borderRadius: BorderRadius.circular(1.5),
         ),
       ),
@@ -339,10 +359,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 8),
           Text(
             'Escolha o paciente para esta consulta',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.gray[600],
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
           if (_patients.isEmpty)
@@ -351,7 +368,11 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.person_off, size: 64, color: AppColors.gray[400]),
+                    Icon(
+                      Icons.person_off,
+                      size: 64,
+                      color: AppColors.gray[400],
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Nenhum paciente cadastrado',
@@ -371,8 +392,13 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                     const SizedBox(height: 24),
                     CustomButton(
                       text: 'Cadastrar paciente',
-                      onPressed: () => Navigator.pushNamed(context, '/patients/create'),
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      onPressed:
+                          () =>
+                              Navigator.pushNamed(context, '/patients/create'),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
                     ),
                   ],
                 ),
@@ -385,30 +411,41 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                 itemBuilder: (context, index) {
                   final patient = _patients[index];
                   final isSelected = _selectedPatient?.id == patient.id;
-                  
+
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: CustomCard(
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: isSelected 
-                              ? AppColors.primarySwatch 
-                              : AppColors.gray[300],
+                          backgroundColor:
+                              isSelected
+                                  ? AppColors.primarySwatch
+                                  : AppColors.gray[300],
                           child: Icon(
                             Icons.person,
-                            color: isSelected ? Colors.white : AppColors.gray[600],
+                            color:
+                                isSelected ? Colors.white : AppColors.gray[600],
                           ),
                         ),
                         title: Text(
                           patient.fullName,
                           style: TextStyle(
-                            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                            fontWeight:
+                                isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
                           ),
                         ),
-                        subtitle: Text('${patient.age} anos • ${patient.guardians}'),
-                        trailing: isSelected
-                            ? Icon(Icons.check_circle, color: AppColors.primarySwatch)
-                            : null,
+                        subtitle: Text(
+                          '${patient.age} anos • ${patient.guardians}',
+                        ),
+                        trailing:
+                            isSelected
+                                ? Icon(
+                                  Icons.check_circle,
+                                  color: AppColors.primarySwatch,
+                                )
+                                : null,
                         onTap: () {
                           setState(() {
                             _selectedPatient = patient;
@@ -442,21 +479,23 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 8),
           Text(
             'Defina quando será a consulta',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.gray[600],
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
-          
+
           // Seleção de data
           CustomCard(
             child: ListTile(
-              leading: Icon(Icons.calendar_today, color: AppColors.primarySwatch),
+              leading: Icon(
+                Icons.calendar_today,
+                color: AppColors.primarySwatch,
+              ),
               title: const Text('Data da consulta'),
-              subtitle: Text(_selectedDate != null 
-                  ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                  : 'Selecionar data'),
+              subtitle: Text(
+                _selectedDate != null
+                    ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
+                    : 'Selecionar data',
+              ),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () async {
                 final date = await showDatePicker(
@@ -473,22 +512,25 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               },
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Seleção de horário
           CustomCard(
             child: ListTile(
               leading: Icon(Icons.access_time, color: AppColors.primarySwatch),
               title: const Text('Horário da consulta'),
-              subtitle: Text(_selectedTime != null 
-                  ? _selectedTime!.format(context)
-                  : 'Selecionar horário'),
+              subtitle: Text(
+                _selectedTime != null
+                    ? _selectedTime!.format(context)
+                    : 'Selecionar horário',
+              ),
               trailing: const Icon(Icons.arrow_forward_ios),
               onTap: () async {
                 final time = await showTimePicker(
                   context: context,
-                  initialTime: _selectedTime ?? const TimeOfDay(hour: 9, minute: 0),
+                  initialTime:
+                      _selectedTime ?? const TimeOfDay(hour: 9, minute: 0),
                 );
                 if (time != null) {
                   setState(() {
@@ -498,9 +540,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               },
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Tipo de consulta
           CustomCard(
             child: Padding(
@@ -534,9 +576,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Duração
           CustomCard(
             child: Padding(
@@ -558,12 +600,13 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                     ),
-                    items: [30, 45, 60, 90, 120].map((duration) {
-                      return DropdownMenuItem(
-                        value: duration,
-                        child: Text('$duration minutos'),
-                      );
-                    }).toList(),
+                    items:
+                        [30, 45, 60, 90, 120].map((duration) {
+                          return DropdownMenuItem(
+                            value: duration,
+                            child: Text('$duration minutos'),
+                          );
+                        }).toList(),
                     onChanged: (value) {
                       setState(() {
                         _duration = value!;
@@ -596,13 +639,10 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 8),
           Text(
             'Informações adicionais e protocolo',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.gray[600],
-            ),
+            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
-          
+
           // Seleção de protocolo
           CustomCard(
             child: Padding(
@@ -638,20 +678,23 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                             ),
                           )
                         else
-                          ..._selectedProtocols.map((protocol) => ListTile(
-                            title: Text(protocol.name),
-                            subtitle: protocol.description != null 
-                                ? Text(protocol.description!) 
-                                : null,
-                            trailing: IconButton(
-                              icon: const Icon(Icons.remove_circle_outline),
-                              onPressed: () {
-                                setState(() {
-                                  _selectedProtocols.remove(protocol);
-                                });
-                              },
+                          ..._selectedProtocols.map(
+                            (protocol) => ListTile(
+                              title: Text(protocol.name),
+                              subtitle:
+                                  protocol.description != null
+                                      ? Text(protocol.description!)
+                                      : null,
+                              trailing: IconButton(
+                                icon: const Icon(Icons.remove_circle_outline),
+                                onPressed: () {
+                                  setState(() {
+                                    _selectedProtocols.remove(protocol);
+                                  });
+                                },
+                              ),
                             ),
-                          )),
+                          ),
                         Padding(
                           padding: const EdgeInsets.all(8),
                           child: DropdownButtonFormField<Protocol>(
@@ -660,21 +703,32 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                               border: OutlineInputBorder(),
                               hintText: 'Adicionar protocolo',
                             ),
-                            items: _protocols.isEmpty ? [] : [
-                              ..._protocols.where((p) => !_selectedProtocols.contains(p)).map((protocol) {
-                                return DropdownMenuItem(
-                                  value: protocol,
-                                  child: Text(protocol.name),
-                                );
-                              }),
-                            ],
-                            onChanged: _protocols.isEmpty ? null : (value) {
-                              if (value != null) {
-                                setState(() {
-                                  _selectedProtocols.add(value);
-                                });
-                              }
-                            },
+                            items:
+                                _protocols.isEmpty
+                                    ? []
+                                    : [
+                                      ..._protocols
+                                          .where(
+                                            (p) =>
+                                                !_selectedProtocols.contains(p),
+                                          )
+                                          .map((protocol) {
+                                            return DropdownMenuItem(
+                                              value: protocol,
+                                              child: Text(protocol.name),
+                                            );
+                                          }),
+                                    ],
+                            onChanged:
+                                _protocols.isEmpty
+                                    ? null
+                                    : (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _selectedProtocols.add(value);
+                                        });
+                                      }
+                                    },
                           ),
                         ),
                       ],
@@ -684,9 +738,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Local
           CustomCard(
             child: Padding(
@@ -717,9 +771,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Observações
           CustomCard(
             child: Padding(
@@ -772,17 +826,19 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
             ),
           if (_currentStep > 0) const SizedBox(width: 16),
           if (_patients.isNotEmpty)
-          Expanded(
-            child: CustomButton(
-              text: _currentStep == _totalSteps - 1 
-                  ? (widget.appointment != null ? 'Atualizar' : 'Agendar')
-                  : 'Próximo',
-              onPressed: _currentStep == _totalSteps - 1 
-                  ? _saveAppointment 
-                  : _nextStep,
-              isLoading: _isLoading,
+            Expanded(
+              child: CustomButton(
+                text:
+                    _currentStep == _totalSteps - 1
+                        ? (widget.appointment != null ? 'Atualizar' : 'Agendar')
+                        : 'Próximo',
+                onPressed:
+                    _currentStep == _totalSteps - 1
+                        ? _saveAppointment
+                        : _nextStep,
+                isLoading: _isLoading,
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -800,4 +856,4 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
         return 'Consulta';
     }
   }
-} 
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:neuro_plus/common/services/patients/patients_service.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
@@ -13,6 +14,7 @@ void main() async {
   // Inicializar os serviços
   await ProtocolsService.init();
   await AppointmentsService.init();
+  await PatientsService.init();
 
   // Inicializar formatação de data
   await initializeDateFormatting('pt_BR', null);
@@ -34,9 +36,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('pt', 'BR'),
-      ],
+      supportedLocales: const [Locale('pt', 'BR')],
       home: const HomeScreen(),
       routes: AppRoutes.generateRoutes(),
     );

@@ -31,7 +31,8 @@ class PatientsService {
 
   static List<Patient> getAllPatients() {
     final box = Hive.box<Patient>(_boxName);
-    return box.values.toList()..sort((a, b) => a.fullName.compareTo(b.fullName));
+    return box.values.toList()
+      ..sort((a, b) => a.fullName.compareTo(b.fullName));
   }
 
   static Patient? getPatientById(String id) {
@@ -56,14 +57,14 @@ class PatientsService {
 
   static List<Patient> searchPatients(String query) {
     if (query.isEmpty) return getAllPatients();
-    
+
     final patients = getAllPatients();
     final lowerQuery = query.toLowerCase();
-    
+
     return patients.where((patient) {
       return patient.fullName.toLowerCase().contains(lowerQuery) ||
-             patient.guardians.toLowerCase().contains(lowerQuery) ||
-             patient.contactPhone.contains(query);
+          patient.guardians.toLowerCase().contains(lowerQuery) ||
+          patient.contactPhone.contains(query);
     }).toList();
   }
 
@@ -79,4 +80,4 @@ class PatientsService {
     final patients = getAllPatients();
     return patients.where((patient) => patient.gender == gender).toList();
   }
-} 
+}

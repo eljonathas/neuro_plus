@@ -76,15 +76,16 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
   }
 
   void _initializeValidators() {
-    _requiredValidator = (String? value) => 
-      (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
-    
+    _requiredValidator =
+        (String? value) =>
+            (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
+
     _emailValidator = (String? value) {
       if (value?.isEmpty ?? true) return null;
       final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       return emailRegex.hasMatch(value!) ? null : 'E-mail inválido';
     };
-    
+
     _phoneValidator = (String? value) {
       if (value?.isEmpty ?? true) return 'Este campo é obrigatório';
       final phoneRegex = RegExp(r'^\+?[0-9\s\-()]{8,20}$');
@@ -94,24 +95,44 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
 
   void _initializeData() {
     final patient = widget.patient;
-    
+
     // Controllers básicos
     _fullNameController = TextEditingController(text: patient?.fullName ?? '');
-    _guardiansController = TextEditingController(text: patient?.guardians ?? '');
-    _contactPhoneController = TextEditingController(text: patient?.contactPhone ?? '');
-    _contactEmailController = TextEditingController(text: patient?.contactEmail ?? '');
+    _guardiansController = TextEditingController(
+      text: patient?.guardians ?? '',
+    );
+    _contactPhoneController = TextEditingController(
+      text: patient?.contactPhone ?? '',
+    );
+    _contactEmailController = TextEditingController(
+      text: patient?.contactEmail ?? '',
+    );
     _addressController = TextEditingController(text: patient?.address ?? '');
-    
+
     // Controllers clínicos
-    _referralReasonController = TextEditingController(text: patient?.referralReason ?? '');
-    _referredByController = TextEditingController(text: patient?.referredBy ?? '');
-    _previousDiagnosisController = TextEditingController(text: patient?.previousDiagnosis ?? '');
-    _repetitiveBehaviorsDescriptionController = TextEditingController(text: patient?.repetitiveBehaviorsDescription ?? '');
-    _schoolObservationsController = TextEditingController(text: patient?.schoolObservations ?? '');
-    _guardiansObservationsController = TextEditingController(text: patient?.guardiansObservations ?? '');
-    
+    _referralReasonController = TextEditingController(
+      text: patient?.referralReason ?? '',
+    );
+    _referredByController = TextEditingController(
+      text: patient?.referredBy ?? '',
+    );
+    _previousDiagnosisController = TextEditingController(
+      text: patient?.previousDiagnosis ?? '',
+    );
+    _repetitiveBehaviorsDescriptionController = TextEditingController(
+      text: patient?.repetitiveBehaviorsDescription ?? '',
+    );
+    _schoolObservationsController = TextEditingController(
+      text: patient?.schoolObservations ?? '',
+    );
+    _guardiansObservationsController = TextEditingController(
+      text: patient?.guardiansObservations ?? '',
+    );
+
     // Dados do formulário
-    _birthDate = patient?.birthDate ?? DateTime.now().subtract(const Duration(days: 365 * 3));
+    _birthDate =
+        patient?.birthDate ??
+        DateTime.now().subtract(const Duration(days: 365 * 3));
     _gender = patient?.gender ?? PatientEnums.genderOptions.first;
     _comorbidities = List.from(patient?.comorbidities ?? []);
     _previouslyEvaluated = patient?.previouslyEvaluated;
@@ -160,80 +181,131 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
     setState(() => _isProcessing = true);
 
     try {
-      final patient = _isEditing 
-        ? widget.patient!.copyWith(
-            fullName: _fullNameController.text,
-            birthDate: _birthDate,
-            gender: _gender,
-            guardians: _guardiansController.text,
-            contactPhone: _contactPhoneController.text,
-            address: _addressController.text,
-            contactEmail: _contactEmailController.text.isEmpty ? null : _contactEmailController.text,
-            referralReason: _referralReasonController.text.isEmpty ? null : _referralReasonController.text,
-            referredBy: _referredByController.text.isEmpty ? null : _referredByController.text,
-            previouslyEvaluated: _previouslyEvaluated,
-            previousDiagnosis: _previousDiagnosisController.text.isEmpty ? null : _previousDiagnosisController.text,
-            comorbidities: _comorbidities,
-            developmentalDelay: _developmentalDelay,
-            firstWordAge: _firstWordAge,
-            eyeContact: _eyeContact,
-            repetitiveBehaviors: _repetitiveBehaviors,
-            repetitiveBehaviorsDescription: _repetitiveBehaviorsDescriptionController.text.isEmpty ? null : _repetitiveBehaviorsDescriptionController.text,
-            routineResistance: _routineResistance,
-            socialInteractionWithChildren: _socialInteractionWithChildren,
-            sensoryHypersensitivity: _sensoryHypersensitivity,
-            attendsSchool: _attendsSchool,
-            schoolType: _schoolType,
-            schoolShift: _schoolShift,
-            hasMediator: _hasMediator,
-            schoolObservations: _schoolObservationsController.text.isEmpty ? null : _schoolObservationsController.text,
-            guardiansObservations: _guardiansObservationsController.text.isEmpty ? null : _guardiansObservationsController.text,
-            screeningsPerformed: _screeningsPerformed,
-          )
-        : Patient(
-            fullName: _fullNameController.text,
-            birthDate: _birthDate,
-            gender: _gender,
-            guardians: _guardiansController.text,
-            contactPhone: _contactPhoneController.text,
-            address: _addressController.text,
-            contactEmail: _contactEmailController.text.isEmpty ? null : _contactEmailController.text,
-            referralReason: _referralReasonController.text.isEmpty ? null : _referralReasonController.text,
-            referredBy: _referredByController.text.isEmpty ? null : _referredByController.text,
-            previouslyEvaluated: _previouslyEvaluated,
-            previousDiagnosis: _previousDiagnosisController.text.isEmpty ? null : _previousDiagnosisController.text,
-            comorbidities: _comorbidities,
-            developmentalDelay: _developmentalDelay,
-            firstWordAge: _firstWordAge,
-            eyeContact: _eyeContact,
-            repetitiveBehaviors: _repetitiveBehaviors,
-            repetitiveBehaviorsDescription: _repetitiveBehaviorsDescriptionController.text.isEmpty ? null : _repetitiveBehaviorsDescriptionController.text,
-            routineResistance: _routineResistance,
-            socialInteractionWithChildren: _socialInteractionWithChildren,
-            sensoryHypersensitivity: _sensoryHypersensitivity,
-            attendsSchool: _attendsSchool,
-            schoolType: _schoolType,
-            schoolShift: _schoolShift,
-            hasMediator: _hasMediator,
-            schoolObservations: _schoolObservationsController.text.isEmpty ? null : _schoolObservationsController.text,
-            guardiansObservations: _guardiansObservationsController.text.isEmpty ? null : _guardiansObservationsController.text,
-            screeningsPerformed: _screeningsPerformed,
-          );
+      final patient =
+          _isEditing
+              ? widget.patient!.copyWith(
+                fullName: _fullNameController.text,
+                birthDate: _birthDate,
+                gender: _gender,
+                guardians: _guardiansController.text,
+                contactPhone: _contactPhoneController.text,
+                address: _addressController.text,
+                contactEmail:
+                    _contactEmailController.text.isEmpty
+                        ? null
+                        : _contactEmailController.text,
+                referralReason:
+                    _referralReasonController.text.isEmpty
+                        ? null
+                        : _referralReasonController.text,
+                referredBy:
+                    _referredByController.text.isEmpty
+                        ? null
+                        : _referredByController.text,
+                previouslyEvaluated: _previouslyEvaluated,
+                previousDiagnosis:
+                    _previousDiagnosisController.text.isEmpty
+                        ? null
+                        : _previousDiagnosisController.text,
+                comorbidities: _comorbidities,
+                developmentalDelay: _developmentalDelay,
+                firstWordAge: _firstWordAge,
+                eyeContact: _eyeContact,
+                repetitiveBehaviors: _repetitiveBehaviors,
+                repetitiveBehaviorsDescription:
+                    _repetitiveBehaviorsDescriptionController.text.isEmpty
+                        ? null
+                        : _repetitiveBehaviorsDescriptionController.text,
+                routineResistance: _routineResistance,
+                socialInteractionWithChildren: _socialInteractionWithChildren,
+                sensoryHypersensitivity: _sensoryHypersensitivity,
+                attendsSchool: _attendsSchool,
+                schoolType: _schoolType,
+                schoolShift: _schoolShift,
+                hasMediator: _hasMediator,
+                schoolObservations:
+                    _schoolObservationsController.text.isEmpty
+                        ? null
+                        : _schoolObservationsController.text,
+                guardiansObservations:
+                    _guardiansObservationsController.text.isEmpty
+                        ? null
+                        : _guardiansObservationsController.text,
+                screeningsPerformed: _screeningsPerformed,
+              )
+              : Patient(
+                fullName: _fullNameController.text,
+                birthDate: _birthDate,
+                gender: _gender,
+                guardians: _guardiansController.text,
+                contactPhone: _contactPhoneController.text,
+                address: _addressController.text,
+                contactEmail:
+                    _contactEmailController.text.isEmpty
+                        ? null
+                        : _contactEmailController.text,
+                referralReason:
+                    _referralReasonController.text.isEmpty
+                        ? null
+                        : _referralReasonController.text,
+                referredBy:
+                    _referredByController.text.isEmpty
+                        ? null
+                        : _referredByController.text,
+                previouslyEvaluated: _previouslyEvaluated,
+                previousDiagnosis:
+                    _previousDiagnosisController.text.isEmpty
+                        ? null
+                        : _previousDiagnosisController.text,
+                comorbidities: _comorbidities,
+                developmentalDelay: _developmentalDelay,
+                firstWordAge: _firstWordAge,
+                eyeContact: _eyeContact,
+                repetitiveBehaviors: _repetitiveBehaviors,
+                repetitiveBehaviorsDescription:
+                    _repetitiveBehaviorsDescriptionController.text.isEmpty
+                        ? null
+                        : _repetitiveBehaviorsDescriptionController.text,
+                routineResistance: _routineResistance,
+                socialInteractionWithChildren: _socialInteractionWithChildren,
+                sensoryHypersensitivity: _sensoryHypersensitivity,
+                attendsSchool: _attendsSchool,
+                schoolType: _schoolType,
+                schoolShift: _schoolShift,
+                hasMediator: _hasMediator,
+                schoolObservations:
+                    _schoolObservationsController.text.isEmpty
+                        ? null
+                        : _schoolObservationsController.text,
+                guardiansObservations:
+                    _guardiansObservationsController.text.isEmpty
+                        ? null
+                        : _guardiansObservationsController.text,
+                screeningsPerformed: _screeningsPerformed,
+              );
 
-      await (_isEditing 
-        ? PatientsService.updatePatient(patient)
-        : PatientsService.addPatient(patient));
+      await (_isEditing
+          ? PatientsService.updatePatient(patient)
+          : PatientsService.addPatient(patient));
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Paciente ${_isEditing ? 'atualizado' : 'cadastrado'} com sucesso!')),
+          SnackBar(
+            content: Text(
+              'Paciente ${_isEditing ? 'atualizado' : 'cadastrado'} com sucesso!',
+            ),
+          ),
         );
         Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao ${_isEditing ? 'atualizar' : 'cadastrar'} paciente: $e')),
+          SnackBar(
+            content: Text(
+              'Erro ao ${_isEditing ? 'atualizar' : 'cadastrar'} paciente: $e',
+            ),
+          ),
         );
       }
     } finally {
@@ -357,16 +429,19 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       previouslyEvaluated: _previouslyEvaluated,
       comorbidities: _comorbidities,
       screeningsPerformed: _screeningsPerformed,
-      onPreviouslyEvaluatedChanged: (value) => setState(() => _previouslyEvaluated = value),
+      onPreviouslyEvaluatedChanged:
+          (value) => setState(() => _previouslyEvaluated = value),
       onComorbiditiesChanged: (value) => setState(() => _comorbidities = value),
-      onScreeningsChanged: (value) => setState(() => _screeningsPerformed = value),
+      onScreeningsChanged:
+          (value) => setState(() => _screeningsPerformed = value),
     );
   }
 
   Widget _buildDevelopmentInfoPage() {
     return PatientDevelopmentInfo(
       formKey: _developmentInfoFormKey,
-      repetitiveBehaviorsDescriptionController: _repetitiveBehaviorsDescriptionController,
+      repetitiveBehaviorsDescriptionController:
+          _repetitiveBehaviorsDescriptionController,
       developmentalDelay: _developmentalDelay,
       firstWordAge: _firstWordAge,
       eyeContact: _eyeContact,
@@ -374,13 +449,18 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       routineResistance: _routineResistance,
       socialInteractionWithChildren: _socialInteractionWithChildren,
       sensoryHypersensitivity: _sensoryHypersensitivity,
-      onDevelopmentalDelayChanged: (value) => setState(() => _developmentalDelay = value),
+      onDevelopmentalDelayChanged:
+          (value) => setState(() => _developmentalDelay = value),
       onFirstWordAgeChanged: (value) => setState(() => _firstWordAge = value),
       onEyeContactChanged: (value) => setState(() => _eyeContact = value),
-      onRepetitiveBehaviorsChanged: (value) => setState(() => _repetitiveBehaviors = value),
-      onRoutineResistanceChanged: (value) => setState(() => _routineResistance = value),
-      onSocialInteractionChanged: (value) => setState(() => _socialInteractionWithChildren = value),
-      onSensoryHypersensitivityChanged: (value) => setState(() => _sensoryHypersensitivity = value),
+      onRepetitiveBehaviorsChanged:
+          (value) => setState(() => _repetitiveBehaviors = value),
+      onRoutineResistanceChanged:
+          (value) => setState(() => _routineResistance = value),
+      onSocialInteractionChanged:
+          (value) => setState(() => _socialInteractionWithChildren = value),
+      onSensoryHypersensitivityChanged:
+          (value) => setState(() => _sensoryHypersensitivity = value),
     );
   }
 
@@ -417,9 +497,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
           if (_currentPage > 0) const SizedBox(width: 16),
           Expanded(
             child: CustomButton(
-              text: _currentPage == 3 
-                ? (_isEditing ? 'Salvar' : 'Cadastrar')
-                : 'Próximo',
+              text:
+                  _currentPage == 3
+                      ? (_isEditing ? 'Salvar' : 'Cadastrar')
+                      : 'Próximo',
               onPressed: _currentPage == 3 ? _savePatient : _nextPage,
               isLoading: _isProcessing,
             ),
@@ -428,4 +509,4 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       ),
     );
   }
-} 
+}

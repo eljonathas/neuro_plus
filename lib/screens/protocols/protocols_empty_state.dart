@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
+import 'package:neuro_plus/common/widgets/icon_card.dart';
 import 'package:neuro_plus/screens/protocols_create/protocols_create_screen.dart';
 
 class ProtocolsEmptyState extends StatelessWidget {
@@ -26,26 +27,11 @@ class ProtocolsEmptyState extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 40),
-              Container(
-                width: 72,
-                height: 72,
-                decoration: BoxDecoration(
-                  color: AppColors.primarySwatch.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.assignment_outlined,
-                    size: 36,
-                    color: AppColors.primarySwatch,
-                  ),
-                ),
-              ),
+              const IconCard(icon: Icons.assignment_outlined),
               const SizedBox(height: 24),
               const Text(
                 'Crie seu primeiro protocolo',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 16),
               Padding(

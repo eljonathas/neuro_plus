@@ -37,11 +37,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
   Future<void> _loadAppointments() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      await AppointmentsService.init();
       final appointments = AppointmentsService.getAllAppointments();
-      
+
       if (mounted) {
         setState(() {
           _filteredAppointments = appointments;
@@ -62,12 +61,24 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     final query = _searchController.text;
     setState(() {
       if (_selectedStatus != null) {
-        _filteredAppointments = AppointmentsService.getAppointmentsByStatus(_selectedStatus!)
-            .where((appointment) => 
-                appointment.patientName.toLowerCase().contains(query.toLowerCase()) ||
-                appointment.typeText.toLowerCase().contains(query.toLowerCase()) ||
-                (appointment.protocolNames?.any((name) => name.toLowerCase().contains(query.toLowerCase())) ?? false))
-            .toList();
+        _filteredAppointments =
+            AppointmentsService.getAppointmentsByStatus(_selectedStatus!)
+                .where(
+                  (appointment) =>
+                      appointment.patientName.toLowerCase().contains(
+                        query.toLowerCase(),
+                      ) ||
+                      appointment.typeText.toLowerCase().contains(
+                        query.toLowerCase(),
+                      ) ||
+                      (appointment.protocolNames?.any(
+                            (name) => name.toLowerCase().contains(
+                              query.toLowerCase(),
+                            ),
+                          ) ??
+                          false),
+                )
+                .toList();
       } else {
         _filteredAppointments = AppointmentsService.searchAppointments(query);
       }
@@ -78,7 +89,9 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     setState(() {
       _selectedStatus = status;
       if (status != null) {
-        _filteredAppointments = AppointmentsService.getAppointmentsByStatus(status);
+        _filteredAppointments = AppointmentsService.getAppointmentsByStatus(
+          status,
+        );
       } else {
         _filteredAppointments = AppointmentsService.getAllAppointments();
       }
@@ -91,7 +104,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       context,
       AppRoutes.appointmentsCreate,
     );
-    
+
     if (result == true) {
       _loadAppointments();
     }
@@ -103,10 +116,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       AppRoutes.appointmentsCreate,
       arguments: appointment,
     );
-    
+
     if (result == true) {
       _loadAppointments();
-    } 
+    }
   }
 
   Future<void> _navigateToAppointmentDetail(Appointment appointment) async {
@@ -120,22 +133,31 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     }
   }
 
-
-  Future<void> _updateAppointmentStatus(Appointment appointment, AppointmentStatus newStatus) async {
+  Future<void> _updateAppointmentStatus(
+    Appointment appointment,
+    AppointmentStatus newStatus,
+  ) async {
     try {
-      await AppointmentsService.updateAppointmentStatus(appointment.id, newStatus);
+      await AppointmentsService.updateAppointmentStatus(
+        appointment.id,
+        newStatus,
+      );
       _loadAppointments();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Status da consulta atualizado para "${_getStatusText(newStatus)}"')),
+          SnackBar(
+            content: Text(
+              'Status da consulta atualizado para "${_getStatusText(newStatus)}"',
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao atualizar status: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao atualizar status: $e')));
       }
     }
   }
@@ -158,28 +180,31 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   Future<void> _deleteAppointment(Appointment appointment) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: Text('Tem certeza que deseja excluir a consulta com "${appointment.patientName}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => AppRoutes.goBack(context, false),
-            child: const Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirmar exclusão'),
+            content: Text(
+              'Tem certeza que deseja excluir a consulta com "${appointment.patientName}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => AppRoutes.goBack(context, false),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => AppRoutes.goBack(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Excluir'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => AppRoutes.goBack(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
       try {
         await AppointmentsService.deleteAppointment(appointment.id);
         _loadAppointments();
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Consulta excluída com sucesso!')),
@@ -232,9 +257,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             selectedStatus: _selectedStatus,
             onStatusChanged: _filterByStatus,
           ),
-          AppointmentsSearchBar(
-            controller: _searchController,
-          ),
+          AppointmentsSearchBar(controller: _searchController),
           Expanded(child: _buildAppointmentsList()),
         ],
       ),
@@ -266,4 +289,4 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       },
     );
   }
-} 
+}

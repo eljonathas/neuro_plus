@@ -4,6 +4,7 @@ import 'package:neuro_plus/common/services/patients/patients_service.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:intl/intl.dart';
 
@@ -34,11 +35,10 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
   Future<void> _loadPatients() async {
     setState(() => _isLoading = true);
-    
+
     try {
-      await PatientsService.init();
       final patients = PatientsService.getAllPatients();
-      
+
       if (mounted) {
         setState(() {
           _filteredPatients = patients;
@@ -63,23 +63,32 @@ class _PatientsScreenState extends State<PatientsScreen> {
   }
 
   Future<void> _navigateToCreatePatient() async {
-    final result = await Navigator.pushNamed(
-      context,
-      '/patients/create',
-    );
-    
+    final result = await AppRoutes.navigateTo(context, '/patients/create');
+
     if (result == true) {
       _loadPatients();
     }
   }
 
   Future<void> _navigateToEditPatient(Patient patient) async {
-    final result = await Navigator.pushNamed(
+    final result = await AppRoutes.navigateTo(
       context,
       '/patients/create',
       arguments: patient,
     );
-    
+
+    if (result == true) {
+      _loadPatients();
+    }
+  }
+
+  Future<void> _navigateToPatientDetail(Patient patient) async {
+    final result = await AppRoutes.navigateTo(
+      context,
+      '/patients/detail',
+      arguments: patient,
+    );
+
     if (result == true) {
       _loadPatients();
     }
@@ -88,28 +97,31 @@ class _PatientsScreenState extends State<PatientsScreen> {
   Future<void> _deletePatient(Patient patient) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmar exclusão'),
-        content: Text('Tem certeza que deseja excluir o paciente "${patient.fullName}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirmar exclusão'),
+            content: Text(
+              'Tem certeza que deseja excluir o paciente "${patient.fullName}"?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Excluir'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Excluir'),
-          ),
-        ],
-      ),
     );
 
     if (confirmed == true) {
       try {
         await PatientsService.deletePatient(patient.id);
         _loadPatients();
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Paciente excluído com sucesso!')),
@@ -160,10 +172,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   '${_filteredPatients.length} paciente${_filteredPatients.length != 1 ? 's' : ''} cadastrado${_filteredPatients.length != 1 ? 's' : ''}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.gray[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
                 ),
               ],
             ),
@@ -233,7 +242,7 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
   Widget _buildEmptyState() {
     final hasSearch = _searchController.text.isNotEmpty;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,7 +254,9 @@ class _PatientsScreenState extends State<PatientsScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            hasSearch ? 'Nenhum paciente encontrado' : 'Nenhum paciente cadastrado',
+            hasSearch
+                ? 'Nenhum paciente encontrado'
+                : 'Nenhum paciente cadastrado',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -254,13 +265,10 @@ class _PatientsScreenState extends State<PatientsScreen> {
           ),
           const SizedBox(height: 8),
           Text(
-            hasSearch 
-              ? 'Tente buscar com outros termos'
-              : 'Comece cadastrando seu primeiro paciente',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.gray[500],
-            ),
+            hasSearch
+                ? 'Tente buscar com outros termos'
+                : 'Comece cadastrando seu primeiro paciente',
+            style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
           ),
           if (!hasSearch) ...[
             const SizedBox(height: 24),
@@ -276,82 +284,98 @@ class _PatientsScreenState extends State<PatientsScreen> {
 
   Widget _buildPatientCard(Patient patient) {
     final dateFormat = DateFormat('dd/MM/yyyy');
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: CustomCard(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          patient.fullName,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+        child: InkWell(
+          onTap: () => _navigateToPatientDetail(patient),
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            patient.fullName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '${patient.age} anos • ${patient.gender}',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.gray[600],
+                          const SizedBox(height: 4),
+                          Text(
+                            '${patient.age} anos • ${patient.gender}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.gray[600],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  PopupMenuButton<String>(
-                    onSelected: (value) {
-                      switch (value) {
-                        case 'edit':
-                          _navigateToEditPatient(patient);
-                          break;
-                        case 'delete':
-                          _deletePatient(patient);
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        value: 'edit',
-                        child: Row(
-                          children: [
-                            Icon(Icons.edit, size: 20),
-                            SizedBox(width: 8),
-                            Text('Editar'),
+                    PopupMenuButton<String>(
+                      color: Colors.white,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 'edit':
+                            _navigateToEditPatient(patient);
+                            break;
+                          case 'delete':
+                            _deletePatient(patient);
+                            break;
+                        }
+                      },
+                      itemBuilder:
+                          (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Row(
+                                children: [
+                                  Icon(Icons.edit, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Editar'),
+                                ],
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.delete,
+                                    size: 20,
+                                    color: Colors.red,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Excluir',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 'delete',
-                        child: Row(
-                          children: [
-                            Icon(Icons.delete, size: 20, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text('Excluir', style: TextStyle(color: Colors.red)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              _buildPatientInfo('Responsável', patient.guardians),
-              _buildPatientInfo('Telefone', patient.contactPhone),
-              _buildPatientInfo('Data de nascimento', dateFormat.format(patient.birthDate)),
-              if (patient.contactEmail?.isNotEmpty == true)
-                _buildPatientInfo('E-mail', patient.contactEmail!),
-            ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildPatientInfo('Responsável', patient.guardians),
+                _buildPatientInfo('Telefone', patient.contactPhone),
+                _buildPatientInfo(
+                  'Data de nascimento',
+                  dateFormat.format(patient.birthDate),
+                ),
+                if (patient.contactEmail?.isNotEmpty == true)
+                  _buildPatientInfo('E-mail', patient.contactEmail!),
+              ],
+            ),
           ),
         ),
       ),
@@ -378,14 +402,11 @@ class _PatientsScreenState extends State<PatientsScreen> {
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black87,
-              ),
+              style: const TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ),
         ],
       ),
     );
   }
-} 
+}

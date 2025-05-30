@@ -11,13 +11,11 @@ import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appoi
 class AppointmentDetailScreen extends StatefulWidget {
   final Appointment appointment;
 
-  const AppointmentDetailScreen({
-    super.key,
-    required this.appointment,
-  });
+  const AppointmentDetailScreen({super.key, required this.appointment});
 
   @override
-  State<AppointmentDetailScreen> createState() => _AppointmentDetailScreenState();
+  State<AppointmentDetailScreen> createState() =>
+      _AppointmentDetailScreenState();
 }
 
 class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
@@ -32,19 +30,26 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
   Future<void> _updateAppointmentStatus(AppointmentStatus newStatus) async {
     try {
-      await AppointmentsService.updateAppointmentStatus(_currentAppointment.id, newStatus);
-      
+      await AppointmentsService.updateAppointmentStatus(
+        _currentAppointment.id,
+        newStatus,
+      );
+
       if (mounted) {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Status atualizado para "${_getStatusText(newStatus)}"')),
+          SnackBar(
+            content: Text(
+              'Status atualizado para "${_getStatusText(newStatus)}"',
+            ),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao atualizar status: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao atualizar status: $e')));
       }
     }
   }
@@ -73,8 +78,10 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   Future<void> _reloadAppointment() async {
     try {
       await AppointmentsService.init();
-      final updatedAppointment = AppointmentsService.getAppointment(_currentAppointment.id);
-      
+      final updatedAppointment = AppointmentsService.getAppointment(
+        _currentAppointment.id,
+      );
+
       if (updatedAppointment != null && mounted) {
         setState(() {
           _currentAppointment = updatedAppointment;
@@ -87,9 +94,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
 
   Widget _buildActiveTabContent() {
     if (_currentTabIndex == 0) {
-      return AppointmentDetailsTab(
-        appointment: _currentAppointment,
-      );
+      return AppointmentDetailsTab(appointment: _currentAppointment);
     } else if (_currentTabIndex == 1 && _currentAppointment.hasProtocol) {
       return ProtocolTab(
         appointment: _currentAppointment,
@@ -102,14 +107,14 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: '${_currentAppointment.formattedDate} (${_currentAppointment.time})',
+      title:
+          '${_currentAppointment.formattedDate} (${_currentAppointment.time})',
       navIndex: 1,
       isBackButtonVisible: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppointmentHeader(appointment: _currentAppointment),
-          const SizedBox(height: 24),
           AppointmentTabs(
             currentTabIndex: _currentTabIndex,
             hasProtocol: _currentAppointment.hasProtocol,
@@ -125,4 +130,4 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       ),
     );
   }
-} 
+}

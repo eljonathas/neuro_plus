@@ -25,8 +25,7 @@ class AppointmentTabs extends StatelessWidget {
       child: Row(
         children: [
           _buildTabItem('Detalhes', 0),
-          if (hasProtocol)
-            _buildTabItem('Protocolos', 1),
+          if (hasProtocol) _buildTabItem('Protocolos', 1),
         ],
       ),
     );
@@ -56,4 +55,4 @@ class AppointmentTabs extends StatelessWidget {
       ),
     );
   }
-} 
+}
