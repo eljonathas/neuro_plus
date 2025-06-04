@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
+import 'package:neuro_plus/common/widgets/export_menu_widget.dart';
+import 'package:neuro_plus/common/widgets/qr_scanner_widget.dart';
+import 'package:neuro_plus/common/services/export_service.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
 import 'package:neuro_plus/models/protocol.dart';
 import 'package:neuro_plus/screens/protocols/protocols_empty_state.dart';
@@ -112,6 +115,56 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
     }
   }
 
+  void _showExportMenu() {
+    if (protocols.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nenhum protocolo disponível para exportar'),
+        ),
+      );
+      return;
+    }
+
+    ExportMenuWidget.show(
+      context,
+      title: 'Exportar protocolos',
+      options: [
+        ExportOptions.csvExport(
+          title: 'Exportar Lista (CSV)',
+          data: protocols,
+          exportFunction: ExportService.exportProtocolsToCsv,
+          onSuccess: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Lista de protocolos exportada com sucesso!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+          },
+        ),
+        ExportOptions.scanQrCode(
+          title: 'Importar Protocolo',
+          description: 'Escanear QR Code para importar protocolo',
+          onTap: _navigateToScanner,
+        ),
+      ],
+    );
+  }
+
+  void _navigateToScanner() {
+    Navigator.of(context).pop(); // Fecha o menu
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder:
+            (context) => QrScannerWidget(
+              onProtocolImported: (protocol) {
+                _loadProtocols(); // Recarrega a lista após importação
+              },
+            ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
@@ -151,21 +204,43 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
                         ),
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.add,
-                        color: AppColors.primarySwatch,
-                      ),
-                      onPressed: _navigateToCreateProtocol,
-                      tooltip: 'Novo protocolo',
-                      style: IconButton.styleFrom(
-                        backgroundColor: AppColors.primarySwatch.withValues(
-                          alpha: 0.1,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.file_download,
+                            color: AppColors.primarySwatch,
+                          ),
+                          onPressed: _showExportMenu,
+                          tooltip: 'Exportar/Importar',
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primarySwatch.withValues(
+                              alpha: 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.add,
+                            color: AppColors.primarySwatch,
+                          ),
+                          onPressed: _navigateToCreateProtocol,
+                          tooltip: 'Novo protocolo',
+                          style: IconButton.styleFrom(
+                            backgroundColor: AppColors.primarySwatch.withValues(
+                              alpha: 0.1,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
                   ],
                 ),

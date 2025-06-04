@@ -4,15 +4,12 @@ import 'package:neuro_plus/common/config/theme.dart';
 class AppointmentsSearchBar extends StatelessWidget {
   final TextEditingController controller;
 
-  const AppointmentsSearchBar({
-    super.key,
-    required this.controller,
-  });
+  const AppointmentsSearchBar({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
         controller: controller,
         decoration: InputDecoration(
@@ -36,4 +33,4 @@ class AppointmentsSearchBar extends StatelessWidget {
       ),
     );
   }
-} 
+}

@@ -14,12 +14,13 @@ class AppointmentsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 4,
               children: [
                 Text(
                   'Gerenciar consultas',
@@ -29,13 +30,9 @@ class AppointmentsHeader extends StatelessWidget {
                     color: AppColors.gray[800],
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   '${stats['total'] ?? 0} consulta${(stats['total'] ?? 0) != 1 ? 's' : ''} • ${stats['today'] ?? 0} hoje',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.gray[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
                 ),
               ],
             ),
@@ -56,4 +53,4 @@ class AppointmentsHeader extends StatelessWidget {
       ),
     );
   }
-} 
+}

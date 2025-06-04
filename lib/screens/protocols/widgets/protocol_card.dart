@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
+import 'package:neuro_plus/common/widgets/protocol_qr_widget.dart';
 import 'package:neuro_plus/models/protocol.dart';
 
 class ProtocolCard extends StatelessWidget {
@@ -43,6 +44,13 @@ class ProtocolCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
+                        icon: const Icon(Icons.qr_code, color: Colors.purple),
+                        onPressed: () => _showQrCode(context),
+                        tooltip: 'Compartilhar via QR Code',
+                        constraints: const BoxConstraints(),
+                        padding: const EdgeInsets.all(8),
+                      ),
+                      IconButton(
                         icon: const Icon(
                           Icons.edit_outlined,
                           color: AppColors.primarySwatch,
@@ -66,7 +74,8 @@ class ProtocolCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (protocol.description != null && protocol.description!.isNotEmpty) ...[
+              if (protocol.description != null &&
+                  protocol.description!.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Text(
                   protocol.description!,
@@ -104,23 +113,28 @@ class ProtocolCard extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 4,
-      children: categories.take(3).map((category) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.primarySwatch.withAlpha(25),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            category,
-            style: const TextStyle(
-              fontSize: 12,
-              color: AppColors.primarySwatch,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        );
-      }).toList(),
+      children:
+          categories.take(3).map((category) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primarySwatch.withAlpha(25),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                category,
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: AppColors.primarySwatch,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            );
+          }).toList(),
     );
+  }
+
+  void _showQrCode(BuildContext context) {
+    ProtocolQrDialog.show(context, protocol);
   }
 }

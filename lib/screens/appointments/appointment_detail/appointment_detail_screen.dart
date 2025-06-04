@@ -36,14 +36,9 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       );
 
       if (mounted) {
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Status atualizado para "${_getStatusText(newStatus)}"',
-            ),
-          ),
-        );
+        setState(() {
+          _currentAppointment = _currentAppointment.copyWith(status: newStatus);
+        });
       }
     } catch (e) {
       if (mounted) {
@@ -51,21 +46,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           context,
         ).showSnackBar(SnackBar(content: Text('Erro ao atualizar status: $e')));
       }
-    }
-  }
-
-  String _getStatusText(AppointmentStatus status) {
-    switch (status) {
-      case AppointmentStatus.scheduled:
-        return 'Agendada';
-      case AppointmentStatus.inProgress:
-        return 'Em andamento';
-      case AppointmentStatus.completed:
-        return 'Concluída';
-      case AppointmentStatus.cancelled:
-        return 'Cancelada';
-      case AppointmentStatus.noShow:
-        return 'Faltou';
     }
   }
 

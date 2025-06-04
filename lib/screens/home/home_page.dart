@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_calendar.dart';
@@ -7,7 +8,6 @@ import 'package:neuro_plus/models/appointment.dart';
 
 import 'package:neuro_plus/screens/home/widgets/appointment_card.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,11 +29,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadAppointments() async {
     setState(() => _isLoading = true);
-    
+
     try {
       await AppointmentsService.init();
-      final appointments = AppointmentsService.getAppointmentsByDate(selectedDate);
-      
+      final appointments = AppointmentsService.getAppointmentsByDate(
+        selectedDate,
+      );
+
       if (mounted) {
         setState(() {
           filteredAppointments = appointments;
@@ -55,10 +57,10 @@ class _HomeScreenState extends State<HomeScreen> {
       selectedDate = date;
       _isLoading = true;
     });
-    
+
     try {
       final appointments = AppointmentsService.getAppointmentsByDate(date);
-      
+
       if (mounted) {
         setState(() {
           filteredAppointments = appointments;
@@ -85,27 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Calendário',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
-                TextButton(
-                  onPressed: () {
-                    AppRoutes.navigateTo(
-                      context,
-                      AppRoutes.appointmentsList,
-                    );
-                  },
-                  child: const Text(
-                    'Ver todas',
-                    style: TextStyle(color: AppColors.primarySwatch),
-                  ),
-                ),
-              ],
+            const Text(
+              'Calendário',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
+            const SizedBox(height: 8),
             CustomCalendar(
               selectedDate: selectedDate,
               onDateSelected: _onDateSelected,
@@ -115,15 +101,17 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Consultas para ${_formatDate(selectedDate)}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  'Agendamentos',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  '${filteredAppointments.length} encontrada${filteredAppointments.length != 1 ? 's' : ''}',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                TextButton(
+                  onPressed: () {
+                    AppRoutes.navigateTo(context, AppRoutes.appointmentsList);
+                  },
+                  child: const Text(
+                    'Ver todas',
+                    style: TextStyle(color: AppColors.primarySwatch),
+                  ),
                 ),
               ],
             ),
@@ -167,25 +155,22 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Text(
               'Não há consultas para ${_formatDate(selectedDate)}',
-              style: TextStyle(
-                fontSize: 14,
-                color: AppColors.gray[500],
-              ),
+              style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
-                AppRoutes.navigateTo(
-                  context,
-                  AppRoutes.appointmentsCreate,
-                );
+                AppRoutes.navigateTo(context, AppRoutes.appointmentsCreate);
               },
               icon: const Icon(Icons.add),
               label: const Text('Agendar consulta'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primarySwatch,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -198,9 +183,10 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Column(
-      children: filteredAppointments
-          .map((appointment) => _buildAppointmentCard(appointment))
-          .toList(),
+      children:
+          filteredAppointments
+              .map((appointment) => _buildAppointmentCard(appointment))
+              .toList(),
     );
   }
 
@@ -218,21 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _formatDate(DateTime date) {
-    const months = [
-      'Janeiro',
-      'Fevereiro',
-      'Março',
-      'Abril',
-      'Maio',
-      'Junho',
-      'Julho',
-      'Agosto',
-      'Setembro',
-      'Outubro',
-      'Novembro',
-      'Dezembro',
-    ];
-    return '${date.day} de ${months[date.month - 1]}';
+    return DateFormat('dd/MM').format(date);
   }
 
   void _navigateToDetail(Appointment appointment) {

@@ -3,129 +3,153 @@ import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
 import 'package:neuro_plus/models/patient.dart';
 
-class PatientDevelopmentInfo extends StatelessWidget {
+class PatientDevelopmentInfo extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController repetitiveBehaviorsDescriptionController;
-  final bool? developmentalDelay;
-  final int? firstWordAge;
-  final String? eyeContact;
-  final bool? repetitiveBehaviors;
-  final bool? routineResistance;
-  final String? socialInteractionWithChildren;
-  final String? sensoryHypersensitivity;
-  final ValueChanged<bool?> onDevelopmentalDelayChanged;
-  final ValueChanged<int?> onFirstWordAgeChanged;
-  final ValueChanged<String?> onEyeContactChanged;
-  final ValueChanged<bool?> onRepetitiveBehaviorsChanged;
-  final ValueChanged<bool?> onRoutineResistanceChanged;
-  final ValueChanged<String?> onSocialInteractionChanged;
-  final ValueChanged<String?> onSensoryHypersensitivityChanged;
+  final TextEditingController developmentalDelayController;
+  final TextEditingController firstWordAgeController;
+  final TextEditingController eyeContactController;
+  final TextEditingController repetitiveBehaviorsController;
+  final TextEditingController routineResistanceController;
+  final TextEditingController socialInteractionController;
+  final TextEditingController sensoryHypersensitivityController;
 
   const PatientDevelopmentInfo({
     super.key,
     required this.formKey,
     required this.repetitiveBehaviorsDescriptionController,
-    required this.developmentalDelay,
-    required this.firstWordAge,
-    required this.eyeContact,
-    required this.repetitiveBehaviors,
-    required this.routineResistance,
-    required this.socialInteractionWithChildren,
-    required this.sensoryHypersensitivity,
-    required this.onDevelopmentalDelayChanged,
-    required this.onFirstWordAgeChanged,
-    required this.onEyeContactChanged,
-    required this.onRepetitiveBehaviorsChanged,
-    required this.onRoutineResistanceChanged,
-    required this.onSocialInteractionChanged,
-    required this.onSensoryHypersensitivityChanged,
+    required this.developmentalDelayController,
+    required this.firstWordAgeController,
+    required this.eyeContactController,
+    required this.repetitiveBehaviorsController,
+    required this.routineResistanceController,
+    required this.socialInteractionController,
+    required this.sensoryHypersensitivityController,
   });
+
+  @override
+  State<PatientDevelopmentInfo> createState() => _PatientDevelopmentInfoState();
+}
+
+class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
+  @override
+  void initState() {
+    super.initState();
+    // Adiciona listeners para rebuilds automáticos
+    widget.developmentalDelayController.addListener(_onControllerChanged);
+    widget.eyeContactController.addListener(_onControllerChanged);
+    widget.repetitiveBehaviorsController.addListener(_onControllerChanged);
+    widget.routineResistanceController.addListener(_onControllerChanged);
+    widget.socialInteractionController.addListener(_onControllerChanged);
+    widget.sensoryHypersensitivityController.addListener(_onControllerChanged);
+  }
+
+  @override
+  void dispose() {
+    // Remove os listeners
+    widget.developmentalDelayController.removeListener(_onControllerChanged);
+    widget.eyeContactController.removeListener(_onControllerChanged);
+    widget.repetitiveBehaviorsController.removeListener(_onControllerChanged);
+    widget.routineResistanceController.removeListener(_onControllerChanged);
+    widget.socialInteractionController.removeListener(_onControllerChanged);
+    widget.sensoryHypersensitivityController.removeListener(
+      _onControllerChanged,
+    );
+    super.dispose();
+  }
+
+  void _onControllerChanged() {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          _buildSectionTitle('Desenvolvimento'),
-          const SizedBox(height: 16),
-          
-          _buildField(
-            label: 'Apresentou atraso motor ou de fala?',
-            child: _buildBooleanSelector(
-              value: developmentalDelay,
-              onChanged: onDevelopmentalDelayChanged,
-            ),
-          ),
-          
-          _buildField(
-            label: 'Idade da primeira palavra (meses)',
-            child: _buildNumberField(
-              value: firstWordAge,
-              onChanged: onFirstWordAgeChanged,
-              hintText: 'Ex: 18',
-            ),
-          ),
-          
-          _buildField(
-            label: 'Contato visual presente?',
-            child: _buildSingleChoiceSelector(
-              options: PatientEnums.eyeContactOptions,
-              selectedValue: eyeContact,
-              onChanged: onEyeContactChanged,
-            ),
-          ),
-          
-          _buildField(
-            label: 'Comportamentos repetitivos observados?',
-            child: _buildBooleanSelector(
-              value: repetitiveBehaviors,
-              onChanged: onRepetitiveBehaviorsChanged,
-            ),
-          ),
-          
-          if (repetitiveBehaviors == true)
+            _buildSectionTitle('Desenvolvimento'),
+            const SizedBox(height: 16),
+
             _buildField(
-              label: 'Descrição dos comportamentos repetitivos',
-              child: CustomFormField(
-                variant: InputVariant.outlined,
-                controller: repetitiveBehaviorsDescriptionController,
-                hintText: 'Descreva os comportamentos observados',
-                minLines: 2,
-                maxLines: 4,
+              label: 'Apresentou atraso motor ou de fala?',
+              child: _buildBooleanSelector(
+                controller: widget.developmentalDelayController,
               ),
             ),
-          
-          _buildField(
-            label: 'Apresenta resistência à mudança/rotinas?',
-            child: _buildBooleanSelector(
-              value: routineResistance,
-              onChanged: onRoutineResistanceChanged,
+
+            _buildField(
+              label: 'Idade da primeira palavra (meses)',
+              child: CustomFormField(
+                variant: InputVariant.outlined,
+                controller: widget.firstWordAgeController,
+                hintText: 'Ex: 18',
+                inputType: TextInputType.number,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return null;
+                  final number = int.tryParse(value!);
+                  if (number == null) return 'Digite um número válido';
+                  if (number < 0 || number > 120)
+                    return 'Digite um valor entre 0 e 120 meses';
+                  return null;
+                },
+              ),
             ),
-          ),
-          
-          _buildField(
-            label: 'Brinca com outras crianças?',
-            child: _buildSingleChoiceSelector(
-              options: PatientEnums.socialInteractionOptions,
-              selectedValue: socialInteractionWithChildren,
-              onChanged: onSocialInteractionChanged,
+
+            _buildField(
+              label: 'Contato visual presente?',
+              child: _buildSingleChoiceSelector(
+                options: PatientEnums.eyeContactOptions,
+                controller: widget.eyeContactController,
+              ),
             ),
-          ),
-          
-          _buildField(
-            label: 'Sensory hypersensitivity present?',
-            child: _buildSingleChoiceSelector(
-              options: PatientEnums.sensoryHypersensitivityOptions,
-              selectedValue: sensoryHypersensitivity,
-              onChanged: onSensoryHypersensitivityChanged,
+
+            _buildField(
+              label: 'Comportamentos repetitivos observados?',
+              child: _buildBooleanSelector(
+                controller: widget.repetitiveBehaviorsController,
+              ),
             ),
-          ),
-          
-          const SizedBox(height: 32),
+
+            if (widget.repetitiveBehaviorsController.text == 'true')
+              _buildField(
+                label: 'Descrição dos comportamentos repetitivos',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.repetitiveBehaviorsDescriptionController,
+                  hintText: 'Descreva os comportamentos observados',
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+              ),
+
+            _buildField(
+              label: 'Apresenta resistência à mudança/rotinas?',
+              child: _buildBooleanSelector(
+                controller: widget.routineResistanceController,
+              ),
+            ),
+
+            _buildField(
+              label: 'Brinca com outras crianças?',
+              child: _buildSingleChoiceSelector(
+                options: PatientEnums.socialInteractionOptions,
+                controller: widget.socialInteractionController,
+              ),
+            ),
+
+            _buildField(
+              label: 'Sensory hypersensitivity present?',
+              child: _buildSingleChoiceSelector(
+                options: PatientEnums.sensoryHypersensitivityOptions,
+                controller: widget.sensoryHypersensitivityController,
+              ),
+            ),
+
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -164,24 +188,26 @@ class PatientDevelopmentInfo extends StatelessWidget {
     );
   }
 
-  Widget _buildBooleanSelector({
-    required bool? value,
-    required ValueChanged<bool?> onChanged,
-  }) {
+  Widget _buildBooleanSelector({required TextEditingController controller}) {
+    final value =
+        controller.text == 'true'
+            ? true
+            : (controller.text == 'false' ? false : null);
+
     return Row(
       children: [
         _buildRadioOption(
           label: 'Sim',
           value: true,
           groupValue: value,
-          onChanged: onChanged,
+          onChanged: (val) => controller.text = val.toString(),
         ),
         const SizedBox(width: 24),
         _buildRadioOption(
           label: 'Não',
           value: false,
           groupValue: value,
-          onChanged: onChanged,
+          onChanged: (val) => controller.text = val.toString(),
         ),
       ],
     );
@@ -189,20 +215,22 @@ class PatientDevelopmentInfo extends StatelessWidget {
 
   Widget _buildSingleChoiceSelector({
     required List<String> options,
-    required String? selectedValue,
-    required ValueChanged<String?> onChanged,
+    required TextEditingController controller,
   }) {
+    final selectedValue = controller.text.isEmpty ? null : controller.text;
+
     return Wrap(
       spacing: 16,
       runSpacing: 8,
-      children: options.map((option) {
-        return _buildRadioOption(
-          label: option,
-          value: option,
-          groupValue: selectedValue,
-          onChanged: onChanged,
-        );
-      }).toList(),
+      children:
+          options.map((option) {
+            return _buildRadioOption(
+              label: option,
+              value: option,
+              groupValue: selectedValue,
+              onChanged: (val) => controller.text = val ?? '',
+            );
+          }).toList(),
     );
   }
 
@@ -238,28 +266,4 @@ class PatientDevelopmentInfo extends StatelessWidget {
       ),
     );
   }
-
-  Widget _buildNumberField({
-    required int? value,
-    required ValueChanged<int?> onChanged,
-    required String hintText,
-  }) {
-    final controller = TextEditingController(
-      text: value?.toString() ?? '',
-    );
-
-    return CustomFormField(
-      variant: InputVariant.outlined,
-      controller: controller,
-      hintText: hintText,
-      inputType: TextInputType.number,
-      validator: (value) {
-        if (value?.isEmpty ?? true) return null;
-        final number = int.tryParse(value!);
-        if (number == null) return 'Digite um número válido';
-        if (number < 0 || number > 120) return 'Digite um valor entre 0 e 120 meses';
-        return null;
-      },
-    );
-  }
-} 
+}

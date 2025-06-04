@@ -43,18 +43,20 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
   late final TextEditingController _schoolObservationsController;
   late final TextEditingController _guardiansObservationsController;
 
+  // Controllers para informações de desenvolvimento
+  late final TextEditingController _developmentalDelayController;
+  late final TextEditingController _firstWordAgeController;
+  late final TextEditingController _eyeContactController;
+  late final TextEditingController _repetitiveBehaviorsController;
+  late final TextEditingController _routineResistanceController;
+  late final TextEditingController _socialInteractionController;
+  late final TextEditingController _sensoryHypersensitivityController;
+
   // Dados do formulário
   late DateTime _birthDate;
   late String _gender;
   late List<String> _comorbidities;
   late bool? _previouslyEvaluated;
-  late bool? _developmentalDelay;
-  late int? _firstWordAge;
-  late String? _eyeContact;
-  late bool? _repetitiveBehaviors;
-  late bool? _routineResistance;
-  late String? _socialInteractionWithChildren;
-  late String? _sensoryHypersensitivity;
   late bool? _attendsSchool;
   late String? _schoolType;
   late String? _schoolShift;
@@ -129,6 +131,29 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       text: patient?.guardiansObservations ?? '',
     );
 
+    // Controllers de desenvolvimento
+    _developmentalDelayController = TextEditingController(
+      text: patient?.developmentalDelay?.toString() ?? '',
+    );
+    _firstWordAgeController = TextEditingController(
+      text: patient?.firstWordAge?.toString() ?? '',
+    );
+    _eyeContactController = TextEditingController(
+      text: patient?.eyeContact ?? '',
+    );
+    _repetitiveBehaviorsController = TextEditingController(
+      text: patient?.repetitiveBehaviors?.toString() ?? '',
+    );
+    _routineResistanceController = TextEditingController(
+      text: patient?.routineResistance?.toString() ?? '',
+    );
+    _socialInteractionController = TextEditingController(
+      text: patient?.socialInteractionWithChildren ?? '',
+    );
+    _sensoryHypersensitivityController = TextEditingController(
+      text: patient?.sensoryHypersensitivity ?? '',
+    );
+
     // Dados do formulário
     _birthDate =
         patient?.birthDate ??
@@ -136,13 +161,6 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
     _gender = patient?.gender ?? PatientEnums.genderOptions.first;
     _comorbidities = List.from(patient?.comorbidities ?? []);
     _previouslyEvaluated = patient?.previouslyEvaluated;
-    _developmentalDelay = patient?.developmentalDelay;
-    _firstWordAge = patient?.firstWordAge;
-    _eyeContact = patient?.eyeContact;
-    _repetitiveBehaviors = patient?.repetitiveBehaviors;
-    _routineResistance = patient?.routineResistance;
-    _socialInteractionWithChildren = patient?.socialInteractionWithChildren;
-    _sensoryHypersensitivity = patient?.sensoryHypersensitivity;
     _attendsSchool = patient?.attendsSchool;
     _schoolType = patient?.schoolType;
     _schoolShift = patient?.schoolShift;
@@ -163,6 +181,13 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
     _repetitiveBehaviorsDescriptionController.dispose();
     _schoolObservationsController.dispose();
     _guardiansObservationsController.dispose();
+    _developmentalDelayController.dispose();
+    _firstWordAgeController.dispose();
+    _eyeContactController.dispose();
+    _repetitiveBehaviorsController.dispose();
+    _routineResistanceController.dispose();
+    _socialInteractionController.dispose();
+    _sensoryHypersensitivityController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -208,17 +233,38 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
                         ? null
                         : _previousDiagnosisController.text,
                 comorbidities: _comorbidities,
-                developmentalDelay: _developmentalDelay,
-                firstWordAge: _firstWordAge,
-                eyeContact: _eyeContact,
-                repetitiveBehaviors: _repetitiveBehaviors,
+                developmentalDelay:
+                    _developmentalDelayController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_developmentalDelayController.text),
+                firstWordAge:
+                    _firstWordAgeController.text.isEmpty
+                        ? null
+                        : int.tryParse(_firstWordAgeController.text),
+                eyeContact:
+                    _eyeContactController.text.isEmpty
+                        ? null
+                        : _eyeContactController.text,
+                repetitiveBehaviors:
+                    _repetitiveBehaviorsController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_repetitiveBehaviorsController.text),
                 repetitiveBehaviorsDescription:
                     _repetitiveBehaviorsDescriptionController.text.isEmpty
                         ? null
                         : _repetitiveBehaviorsDescriptionController.text,
-                routineResistance: _routineResistance,
-                socialInteractionWithChildren: _socialInteractionWithChildren,
-                sensoryHypersensitivity: _sensoryHypersensitivity,
+                routineResistance:
+                    _routineResistanceController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_routineResistanceController.text),
+                socialInteractionWithChildren:
+                    _socialInteractionController.text.isEmpty
+                        ? null
+                        : _socialInteractionController.text,
+                sensoryHypersensitivity:
+                    _sensoryHypersensitivityController.text.isEmpty
+                        ? null
+                        : _sensoryHypersensitivityController.text,
                 attendsSchool: _attendsSchool,
                 schoolType: _schoolType,
                 schoolShift: _schoolShift,
@@ -258,17 +304,38 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
                         ? null
                         : _previousDiagnosisController.text,
                 comorbidities: _comorbidities,
-                developmentalDelay: _developmentalDelay,
-                firstWordAge: _firstWordAge,
-                eyeContact: _eyeContact,
-                repetitiveBehaviors: _repetitiveBehaviors,
+                developmentalDelay:
+                    _developmentalDelayController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_developmentalDelayController.text),
+                firstWordAge:
+                    _firstWordAgeController.text.isEmpty
+                        ? null
+                        : int.tryParse(_firstWordAgeController.text),
+                eyeContact:
+                    _eyeContactController.text.isEmpty
+                        ? null
+                        : _eyeContactController.text,
+                repetitiveBehaviors:
+                    _repetitiveBehaviorsController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_repetitiveBehaviorsController.text),
                 repetitiveBehaviorsDescription:
                     _repetitiveBehaviorsDescriptionController.text.isEmpty
                         ? null
                         : _repetitiveBehaviorsDescriptionController.text,
-                routineResistance: _routineResistance,
-                socialInteractionWithChildren: _socialInteractionWithChildren,
-                sensoryHypersensitivity: _sensoryHypersensitivity,
+                routineResistance:
+                    _routineResistanceController.text.isEmpty
+                        ? null
+                        : bool.tryParse(_routineResistanceController.text),
+                socialInteractionWithChildren:
+                    _socialInteractionController.text.isEmpty
+                        ? null
+                        : _socialInteractionController.text,
+                sensoryHypersensitivity:
+                    _sensoryHypersensitivityController.text.isEmpty
+                        ? null
+                        : _sensoryHypersensitivityController.text,
                 attendsSchool: _attendsSchool,
                 schoolType: _schoolType,
                 schoolShift: _schoolShift,
@@ -442,25 +509,13 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       formKey: _developmentInfoFormKey,
       repetitiveBehaviorsDescriptionController:
           _repetitiveBehaviorsDescriptionController,
-      developmentalDelay: _developmentalDelay,
-      firstWordAge: _firstWordAge,
-      eyeContact: _eyeContact,
-      repetitiveBehaviors: _repetitiveBehaviors,
-      routineResistance: _routineResistance,
-      socialInteractionWithChildren: _socialInteractionWithChildren,
-      sensoryHypersensitivity: _sensoryHypersensitivity,
-      onDevelopmentalDelayChanged:
-          (value) => setState(() => _developmentalDelay = value),
-      onFirstWordAgeChanged: (value) => setState(() => _firstWordAge = value),
-      onEyeContactChanged: (value) => setState(() => _eyeContact = value),
-      onRepetitiveBehaviorsChanged:
-          (value) => setState(() => _repetitiveBehaviors = value),
-      onRoutineResistanceChanged:
-          (value) => setState(() => _routineResistance = value),
-      onSocialInteractionChanged:
-          (value) => setState(() => _socialInteractionWithChildren = value),
-      onSensoryHypersensitivityChanged:
-          (value) => setState(() => _sensoryHypersensitivity = value),
+      developmentalDelayController: _developmentalDelayController,
+      firstWordAgeController: _firstWordAgeController,
+      eyeContactController: _eyeContactController,
+      repetitiveBehaviorsController: _repetitiveBehaviorsController,
+      routineResistanceController: _routineResistanceController,
+      socialInteractionController: _socialInteractionController,
+      sensoryHypersensitivityController: _sensoryHypersensitivityController,
     );
   }
 

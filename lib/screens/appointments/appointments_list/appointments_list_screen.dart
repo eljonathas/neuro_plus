@@ -248,6 +248,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       title: 'Consultas',
       navIndex: 1,
       child: Column(
+        spacing: 8,
         children: [
           AppointmentsHeader(
             stats: AppointmentsService.getAppointmentStats(),
