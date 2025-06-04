@@ -4,7 +4,6 @@ import 'package:neuro_plus/common/services/appointments/appointments_service.dar
 import 'package:neuro_plus/common/widgets/export_menu_widget.dart';
 import 'package:neuro_plus/common/services/export_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/core/navigation/app_routes.dart';
 
 /// Exemplo de como integrar funcionalidades de exportação na tela de consultas
 /// Este arquivo demonstra como adicionar botões de exportação e menu de opções
