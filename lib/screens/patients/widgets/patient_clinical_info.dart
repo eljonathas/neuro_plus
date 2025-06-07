@@ -8,6 +8,8 @@ class PatientClinicalInfo extends StatelessWidget {
   final TextEditingController referralReasonController;
   final TextEditingController referredByController;
   final TextEditingController previousDiagnosisController;
+  final TextEditingController otherComorbiditiesController;
+  final TextEditingController otherScreeningsController;
   final bool? previouslyEvaluated;
   final List<String> comorbidities;
   final List<String> screeningsPerformed;
@@ -21,6 +23,8 @@ class PatientClinicalInfo extends StatelessWidget {
     required this.referralReasonController,
     required this.referredByController,
     required this.previousDiagnosisController,
+    required this.otherComorbiditiesController,
+    required this.otherScreeningsController,
     required this.previouslyEvaluated,
     required this.comorbidities,
     required this.screeningsPerformed,
@@ -38,68 +42,102 @@ class PatientClinicalInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          _buildSectionTitle('Informações Clínicas'),
-          const SizedBox(height: 16),
-          
-          _buildField(
-            label: 'Motivo do encaminhamento',
-            child: CustomFormField(
-              variant: InputVariant.outlined,
-              controller: referralReasonController,
-              hintText: 'Descreva o motivo do encaminhamento',
-              minLines: 2,
-              maxLines: 4,
-            ),
-          ),
-          
-          _buildField(
-            label: 'Profissional ou entidade que encaminhou',
-            child: CustomFormField(
-              variant: InputVariant.outlined,
-              controller: referredByController,
-              hintText: 'Ex: Dr. João Silva - Pediatra',
-            ),
-          ),
-          
-          _buildField(
-            label: 'Já foi avaliado por outro profissional?',
-            child: _buildBooleanSelector(
-              value: previouslyEvaluated,
-              onChanged: onPreviouslyEvaluatedChanged,
-            ),
-          ),
-          
-          if (previouslyEvaluated == true)
+            _buildSectionTitle('Informações Clínicas'),
+            const SizedBox(height: 16),
+
             _buildField(
-              label: 'Diagnóstico anterior (se houver)',
+              label: 'Motivo do encaminhamento',
               child: CustomFormField(
                 variant: InputVariant.outlined,
-                controller: previousDiagnosisController,
-                hintText: 'Descreva o diagnóstico anterior',
+                controller: referralReasonController,
+                hintText: 'Descreva o motivo do encaminhamento',
                 minLines: 2,
-                maxLines: 3,
+                maxLines: 4,
               ),
             ),
-          
-          _buildField(
-            label: 'Comorbidades conhecidas',
-            child: _buildMultipleChoiceSelector(
-              options: PatientEnums.comorbiditiesOptions,
-              selectedValues: comorbidities,
-              onChanged: onComorbiditiesChanged,
+
+            _buildField(
+              label: 'Profissional ou entidade que encaminhou',
+              child: CustomFormField(
+                variant: InputVariant.outlined,
+                controller: referredByController,
+                hintText: 'Ex: Dr. João Silva - Pediatra',
+              ),
             ),
-          ),
-          
-          _buildField(
-            label: 'Triagens já aplicadas',
-            child: _buildMultipleChoiceSelector(
-              options: PatientEnums.screeningsOptions,
-              selectedValues: screeningsPerformed,
-              onChanged: onScreeningsChanged,
+
+            _buildField(
+              label: 'Já foi avaliado por outro profissional?',
+              child: _buildBooleanSelector(
+                value: previouslyEvaluated,
+                onChanged: onPreviouslyEvaluatedChanged,
+              ),
             ),
-          ),
-          
-          const SizedBox(height: 32),
+
+            if (previouslyEvaluated == true)
+              _buildField(
+                label: 'Diagnóstico anterior (se houver)',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: previousDiagnosisController,
+                  hintText: 'Descreva o diagnóstico anterior',
+                  minLines: 2,
+                  maxLines: 3,
+                ),
+              ),
+
+            _buildField(
+              label: 'Comorbidades conhecidas',
+              child: _buildMultipleChoiceSelector(
+                options: PatientEnums.comorbiditiesOptions,
+                selectedValues: comorbidities,
+                onChanged: onComorbiditiesChanged,
+              ),
+            ),
+
+            if (comorbidities.contains('Outros'))
+              _buildField(
+                label: 'Especifique outras comorbidades',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: otherComorbiditiesController,
+                  hintText: 'Descreva outras comorbidades',
+                  validator: (value) {
+                    if (comorbidities.contains('Outros') &&
+                        (value?.trim().isEmpty ?? true)) {
+                      return 'Este campo é obrigatório quando "Outros" é selecionado';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+            _buildField(
+              label: 'Triagens já aplicadas',
+              child: _buildMultipleChoiceSelector(
+                options: PatientEnums.screeningsOptions,
+                selectedValues: screeningsPerformed,
+                onChanged: onScreeningsChanged,
+              ),
+            ),
+
+            if (screeningsPerformed.contains('Outros'))
+              _buildField(
+                label: 'Especifique outras triagens',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: otherScreeningsController,
+                  hintText: 'Descreva outras triagens aplicadas',
+                  validator: (value) {
+                    if (screeningsPerformed.contains('Outros') &&
+                        (value?.trim().isEmpty ?? true)) {
+                      return 'Este campo é obrigatório quando "Outros" é selecionado';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -200,31 +238,29 @@ class PatientClinicalInfo extends StatelessWidget {
     required ValueChanged<List<String>> onChanged,
   }) {
     return Column(
-      children: options.map((option) {
-        final isSelected = selectedValues.contains(option);
-        return CheckboxListTile(
-          title: Text(
-            option,
-            style: const TextStyle(fontSize: 14),
-          ),
-          value: isSelected,
-          activeColor: AppColors.primarySwatch,
-          controlAffinity: ListTileControlAffinity.leading,
-          contentPadding: EdgeInsets.zero,
-          visualDensity: VisualDensity.compact,
-          onChanged: (bool? value) {
-            final newSelection = List<String>.from(selectedValues);
-            if (value == true) {
-              if (!newSelection.contains(option)) {
-                newSelection.add(option);
-              }
-            } else {
-              newSelection.remove(option);
-            }
-            onChanged(newSelection);
-          },
-        );
-      }).toList(),
+      children:
+          options.map((option) {
+            final isSelected = selectedValues.contains(option);
+            return CheckboxListTile(
+              title: Text(option, style: const TextStyle(fontSize: 14)),
+              value: isSelected,
+              activeColor: AppColors.primarySwatch,
+              controlAffinity: ListTileControlAffinity.leading,
+              contentPadding: EdgeInsets.zero,
+              visualDensity: VisualDensity.compact,
+              onChanged: (bool? value) {
+                final newSelection = List<String>.from(selectedValues);
+                if (value == true) {
+                  if (!newSelection.contains(option)) {
+                    newSelection.add(option);
+                  }
+                } else {
+                  newSelection.remove(option);
+                }
+                onChanged(newSelection);
+              },
+            );
+          }).toList(),
     );
   }
-} 
+}

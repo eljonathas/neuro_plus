@@ -209,11 +209,11 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
                       children: [
                         IconButton(
                           icon: const Icon(
-                            Icons.file_download,
+                            Icons.import_export,
                             color: AppColors.primarySwatch,
                           ),
                           onPressed: _showExportMenu,
-                          tooltip: 'Exportar/Importar',
+                          tooltip: 'Importar e Exportar Protocolos',
                           style: IconButton.styleFrom(
                             backgroundColor: AppColors.primarySwatch.withValues(
                               alpha: 0.1,

@@ -26,20 +26,9 @@ class ProtocolItemsSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Itens do questionário',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            TextButton.icon(
-              onPressed: onAddItem,
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Adicionar item'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.primarySwatch),
-            ),
-          ],
+        const Text(
+          'Itens do questionário',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         if (items.isEmpty) _buildEmptyState(),
@@ -52,10 +41,27 @@ class ProtocolItemsSection extends StatelessWidget {
             titleController: itemControllers['${item.id}_title']!,
             instructionController: itemControllers['${item.id}_instruction']!,
             onRemove: () => onRemoveItem(item.id),
-            onResponseTypeChanged: (responseType) => onUpdateItemResponseType(item, responseType),
+            onResponseTypeChanged:
+                (responseType) => onUpdateItemResponseType(item, responseType),
             onOptionsChanged: (options) => onUpdateItemOptions(item, options),
           );
         }),
+        SizedBox(
+          width: double.infinity,
+          child: TextButton.icon(
+            onPressed: onAddItem,
+            icon: const Icon(Icons.add, size: 18),
+            label: const Text('Adicionar item'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.primarySwatch.shade700,
+              backgroundColor: AppColors.primarySwatch.shade100,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -75,7 +81,11 @@ class ProtocolItemsSection extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Nenhum item adicionado',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: AppColors.gray[600]),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: AppColors.gray[600],
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -86,4 +96,4 @@ class ProtocolItemsSection extends StatelessWidget {
       ),
     );
   }
-} 
+}

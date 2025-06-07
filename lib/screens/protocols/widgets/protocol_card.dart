@@ -87,14 +87,27 @@ class ProtocolCard extends StatelessWidget {
               ],
               Row(
                 children: [
-                  Text(
-                    '${protocol.items.length} ${protocol.items.length == 1 ? 'item' : 'itens'}',
-                    style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
+                  Flexible(
+                    child: Text(
+                      '${protocol.items.length} ${protocol.items.length == 1 ? 'item' : 'itens'}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.gray[600],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  const Spacer(),
-                  Text(
-                    'Template: ${protocol.template}',
-                    style: TextStyle(fontSize: 12, color: AppColors.gray[500]),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      'Template: ${protocol.template}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppColors.gray[500],
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.end,
+                    ),
                   ),
                 ],
               ),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/main_layout.dart';
-import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
-import 'package:neuro_plus/common/services/patients/patients_service.dart';
-import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:intl/intl.dart';
+import 'package:neuro_plus/screens/appointments/appointments_create/controllers/appointment_form_controller.dart';
+import 'package:neuro_plus/screens/appointments/appointments_create/utils/appointment_type_helper.dart';
+import 'package:neuro_plus/screens/appointments/appointments_create/widgets/appointment_navigation_buttons.dart';
+import 'package:neuro_plus/screens/appointments/appointments_create/widgets/appointment_step_indicator.dart';
 
 class AppointmentsCreateScreen extends StatefulWidget {
   final Appointment? appointment;
@@ -22,322 +22,122 @@ class AppointmentsCreateScreen extends StatefulWidget {
 }
 
 class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
+  static const int _totalSteps = 3;
+
   final PageController _pageController = PageController();
-  int _currentStep = 0;
-  final int _totalSteps = 3;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late final AppointmentFormController _controller;
 
-  // Controladores dos formulários
-  final _formKey = GlobalKey<FormState>();
-
-  // Dados da consulta
-  Patient? _selectedPatient;
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  AppointmentType _selectedType = AppointmentType.evaluation;
-  List<Protocol> _selectedProtocols = [];
-  int _duration = 60;
-  String? _location;
-  String? _notes;
-
-  // Listas
-  List<Patient> _patients = [];
-  List<Protocol> _protocols = [];
-
-  bool _isLoading = false;
+  bool get _isEditing => widget.appointment != null;
 
   @override
   void initState() {
     super.initState();
-    _loadData();
-    _initializeFromAppointment();
+    _controller = AppointmentFormController();
+    _controller.initialize(widget.appointment);
+    _controller.addListener(_onControllerChanged);
   }
 
-  void _initializeFromAppointment() {
-    if (widget.appointment != null) {
-      final appointment = widget.appointment!;
-      _selectedDate = appointment.date;
-      _selectedTime = TimeOfDay(
-        hour: int.parse(appointment.time.split(':')[0]),
-        minute: int.parse(appointment.time.split(':')[1]),
-      );
-      _selectedType = appointment.type;
-      _duration = appointment.duration;
-      _location = appointment.location;
-      _notes = appointment.notes;
+  void _onControllerChanged() {
+    if (_controller.errorMessage != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_controller.errorMessage!)));
     }
   }
 
-  Future<void> _loadData() async {
-    setState(() => _isLoading = true);
-
-    try {
-      final patients = PatientsService.getAllPatients();
-      final protocols = ProtocolsService.getAllProtocols();
-
-      if (mounted) {
-        setState(() {
-          _patients = patients;
-          _protocols = protocols;
-          _isLoading = false;
-
-          // Se editando, encontrar o paciente e protocolos
-          if (widget.appointment != null) {
-            _selectedPatient = patients.firstWhere(
-              (p) => p.id == widget.appointment!.patientId,
-              orElse: () => patients.first,
-            );
-
-            if (widget.appointment!.protocolIds != null) {
-              _selectedProtocols =
-                  protocols
-                      .where(
-                        (p) => widget.appointment!.protocolIds!.contains(p.id),
-                      )
-                      .toList();
-            }
-          }
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erro ao carregar dados: $e')));
-      }
-    }
+  @override
+  void dispose() {
+    _controller.removeListener(_onControllerChanged);
+    _controller.dispose();
+    _pageController.dispose();
+    super.dispose();
   }
 
-  void _nextStep() {
-    if (_currentStep < _totalSteps - 1) {
-      if (_validateCurrentStep()) {
-        setState(() => _currentStep++);
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-      }
-    }
-  }
-
-  void _previousStep() {
-    if (_currentStep > 0) {
-      setState(() => _currentStep--);
-      _pageController.previousPage(
+  void _handleNext() {
+    _controller.nextStep();
+    if (_controller.formData.currentStep > 0) {
+      _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
     }
   }
 
-  bool _validateCurrentStep() {
-    switch (_currentStep) {
-      case 0:
-        if (_selectedPatient == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Selecione um paciente')),
-          );
-          return false;
-        }
-        return true;
-      case 1:
-        if (_selectedDate == null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Selecione uma data')));
-          return false;
-        }
-        if (_selectedTime == null) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Selecione um horário')));
-          return false;
-        }
-
-        // Verificar conflitos de horário
-        final timeString =
-            '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
-        if (AppointmentsService.hasTimeConflict(
-          _selectedDate!,
-          timeString,
-          _duration,
-          excludeId: widget.appointment?.id,
-        )) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Já existe uma consulta agendada neste horário'),
-            ),
-          );
-          return false;
-        }
-        return true;
-      case 2:
-        return true;
-      default:
-        return true;
-    }
+  void _handlePrevious() {
+    _controller.previousStep();
+    _pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
   }
 
-  Future<void> _saveAppointment() async {
-    if (!_formKey.currentState!.validate() || !_validateCurrentStep()) {
-      return;
-    }
+  Future<void> _handleSave() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _isLoading = true);
-
-    try {
-      final timeString =
-          '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}';
-
-      final appointment = Appointment(
-        id: widget.appointment?.id,
-        patientId: _selectedPatient!.id,
-        patientName: _selectedPatient!.fullName,
-        date: _selectedDate!,
-        time: timeString,
-        type: _selectedType,
-        protocolIds:
-            _selectedProtocols.isNotEmpty
-                ? _selectedProtocols.map((p) => p.id).toList()
-                : null,
-        protocolNames:
-            _selectedProtocols.isNotEmpty
-                ? _selectedProtocols.map((p) => p.name).toList()
-                : null,
-        duration: _duration,
-        location: _location,
-        notes: _notes,
-        status: widget.appointment?.status ?? AppointmentStatus.scheduled,
-        protocolResponses: widget.appointment?.protocolResponses,
-        createdAt: widget.appointment?.createdAt,
-      );
-
-      if (widget.appointment != null) {
-        await AppointmentsService.updateAppointment(appointment);
-      } else {
-        await AppointmentsService.createAppointment(appointment);
-      }
-
-      if (mounted) {
-        Navigator.pop(context, true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.appointment != null
-                  ? 'Consulta atualizada com sucesso!'
-                  : 'Consulta agendada com sucesso!',
-            ),
+    final success = await _controller.saveAppointment(widget.appointment);
+    if (success && mounted) {
+      Navigator.pop(context, true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Consulta atualizada com sucesso!'
+                : 'Consulta agendada com sucesso!',
           ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Erro ao salvar consulta: $e')));
-      }
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: widget.appointment != null ? 'Editar consulta' : 'Nova consulta',
+      title: _isEditing ? 'Editar consulta' : 'Nova consulta',
       navIndex: 1,
       isBackButtonVisible: true,
-      child:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                children: [
-                  _buildStepIndicator(),
-                  Expanded(
-                    child: Form(
-                      key: _formKey,
-                      child: PageView(
-                        controller: _pageController,
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: [
-                          _buildPatientSelectionStep(),
-                          _buildDateTimeStep(),
-                          _buildDetailsStep(),
-                        ],
-                      ),
-                    ),
-                  ),
-                  _buildNavigationButtons(),
-                ],
+      child: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, _) {
+          if (_controller.formData.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return Column(
+            children: [
+              AppointmentStepIndicator(
+                currentStep: _controller.formData.currentStep,
+                totalSteps: _totalSteps,
               ),
-    );
-  }
-
-  Widget _buildStepIndicator() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          for (int index = 0; index < _totalSteps; index++) ...[
-            _buildStepCircle(index),
-            if (index < _totalSteps - 1) _buildStepConnector(index),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStepCircle(int index) {
-    final isActive = index == _currentStep;
-    final isCompleted = index < _currentStep;
-
-    return Container(
-      width: 32,
-      height: 32,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color:
-            isCompleted
-                ? AppColors.primarySwatch
-                : isActive
-                ? AppColors.primarySwatch
-                : AppColors.gray[300],
-        border: Border.all(
-          color:
-              isActive || isCompleted
-                  ? AppColors.primarySwatch
-                  : AppColors.gray[300]!,
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child:
-            isCompleted
-                ? const Icon(Icons.check, color: Colors.white, size: 20)
-                : Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    color: isActive ? Colors.white : AppColors.gray[600],
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+              Expanded(
+                child: Form(
+                  key: _formKey,
+                  child: PageView(
+                    controller: _pageController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      _buildPatientSelectionStep(),
+                      _buildDateTimeStep(),
+                      _buildDetailsStep(),
+                    ],
                   ),
                 ),
-      ),
-    );
-  }
-
-  Widget _buildStepConnector(int index) {
-    final isCompleted = index < _currentStep;
-
-    return Expanded(
-      child: Container(
-        height: 3,
-        margin: const EdgeInsets.symmetric(horizontal: 12),
-        decoration: BoxDecoration(
-          color: isCompleted ? AppColors.primarySwatch : AppColors.gray[300],
-          borderRadius: BorderRadius.circular(1.5),
-        ),
+              ),
+              AppointmentNavigationButtons(
+                currentStep: _controller.formData.currentStep,
+                canGoBack: _controller.formData.canGoBack,
+                canGoNext: _controller.formData.canGoNext,
+                isLastStep: _controller.formData.isLastStep,
+                isLoading: _controller.formData.isLoading,
+                hasPatients: _controller.formData.hasPatients,
+                isEditing: _isEditing,
+                onPrevious: _handlePrevious,
+                onNext: _handleNext,
+                onSave: _handleSave,
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -362,102 +162,95 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
             style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
-          if (_patients.isEmpty)
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.person_off,
-                      size: 64,
-                      color: AppColors.gray[400],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Nenhum paciente cadastrado',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: AppColors.gray[600],
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Cadastre um paciente primeiro',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.gray[500],
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    CustomButton(
-                      text: 'Cadastrar paciente',
-                      onPressed:
-                          () =>
-                              Navigator.pushNamed(context, '/patients/create'),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
+          if (!_controller.formData.hasPatients)
+            _buildEmptyPatientsState()
           else
-            Expanded(
-              child: ListView.builder(
-                itemCount: _patients.length,
-                itemBuilder: (context, index) {
-                  final patient = _patients[index];
-                  final isSelected = _selectedPatient?.id == patient.id;
+            _buildPatientsList(),
+        ],
+      ),
+    );
+  }
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: CustomCard(
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor:
-                              isSelected
-                                  ? AppColors.primarySwatch
-                                  : AppColors.gray[300],
-                          child: Icon(
-                            Icons.person,
-                            color:
-                                isSelected ? Colors.white : AppColors.gray[600],
-                          ),
-                        ),
-                        title: Text(
-                          patient.fullName,
-                          style: TextStyle(
-                            fontWeight:
-                                isSelected
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${patient.age} anos • ${patient.guardians}',
-                        ),
-                        trailing:
-                            isSelected
-                                ? Icon(
-                                  Icons.check_circle,
-                                  color: AppColors.primarySwatch,
-                                )
-                                : null,
-                        onTap: () {
-                          setState(() {
-                            _selectedPatient = patient;
-                          });
-                        },
-                      ),
-                    ),
-                  );
-                },
+  Widget _buildEmptyPatientsState() {
+    return Expanded(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.person_off, size: 64, color: AppColors.gray[400]),
+            const SizedBox(height: 16),
+            Text(
+              'Nenhum paciente cadastrado',
+              style: TextStyle(fontSize: 18, color: AppColors.gray[600]),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Cadastre um paciente primeiro',
+              style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
+            ),
+            const SizedBox(height: 24),
+            CustomButton(
+              text: 'Cadastrar paciente',
+              onPressed: () async {
+                final result = await Navigator.pushNamed(
+                  context,
+                  '/patients/create',
+                );
+                if (result == true) {
+                  _controller.initialize(widget.appointment);
+                }
+              },
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPatientsList() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _controller.formData.patients.length,
+        itemBuilder: (context, index) {
+          final patient = _controller.formData.patients[index];
+          final isSelected =
+              _controller.formData.selectedPatient?.id == patient.id;
+
+          return Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: CustomCard(
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundColor:
+                      isSelected
+                          ? AppColors.primarySwatch
+                          : AppColors.gray[300],
+                  child: Icon(
+                    Icons.person,
+                    color: isSelected ? Colors.white : AppColors.gray[600],
+                  ),
+                ),
+                title: Text(
+                  patient.fullName,
+                  style: TextStyle(
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+                subtitle: Text('${patient.age} anos • ${patient.guardians}'),
+                trailing:
+                    isSelected
+                        ? Icon(
+                          Icons.check_circle,
+                          color: AppColors.primarySwatch,
+                        )
+                        : null,
+                onTap: () => _controller.selectPatient(patient),
               ),
             ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -482,142 +275,129 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
             style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
-
-          // Seleção de data
-          CustomCard(
-            child: ListTile(
-              leading: Icon(
-                Icons.calendar_today,
-                color: AppColors.primarySwatch,
-              ),
-              title: const Text('Data da consulta'),
-              subtitle: Text(
-                _selectedDate != null
-                    ? DateFormat('dd/MM/yyyy').format(_selectedDate!)
-                    : 'Selecionar data',
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () async {
-                final date = await showDatePicker(
-                  context: context,
-                  initialDate: _selectedDate ?? DateTime.now(),
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime.now().add(const Duration(days: 365)),
-                );
-                if (date != null) {
-                  setState(() {
-                    _selectedDate = date;
-                  });
-                }
-              },
-            ),
-          ),
-
+          _buildDateSelector(),
           const SizedBox(height: 16),
-
-          // Seleção de horário
-          CustomCard(
-            child: ListTile(
-              leading: Icon(Icons.access_time, color: AppColors.primarySwatch),
-              title: const Text('Horário da consulta'),
-              subtitle: Text(
-                _selectedTime != null
-                    ? _selectedTime!.format(context)
-                    : 'Selecionar horário',
-              ),
-              trailing: const Icon(Icons.arrow_forward_ios),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime:
-                      _selectedTime ?? const TimeOfDay(hour: 9, minute: 0),
-                );
-                if (time != null) {
-                  setState(() {
-                    _selectedTime = time;
-                  });
-                }
-              },
-            ),
-          ),
-
+          _buildTimeSelector(),
           const SizedBox(height: 16),
-
-          // Tipo de consulta
-          CustomCard(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Tipo de consulta',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  ...AppointmentType.values.map((type) {
-                    return RadioListTile<AppointmentType>(
-                      title: Text(_getTypeText(type)),
-                      value: type,
-                      groupValue: _selectedType,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedType = value!;
-                        });
-                      },
-                      contentPadding: EdgeInsets.zero,
-                    );
-                  }),
-                ],
-              ),
-            ),
-          ),
-
+          _buildTypeSelector(),
           const SizedBox(height: 16),
-
-          // Duração
-          CustomCard(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Duração (minutos)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<int>(
-                    value: _duration,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
-                    items:
-                        [30, 45, 60, 90, 120].map((duration) {
-                          return DropdownMenuItem(
-                            value: duration,
-                            child: Text('$duration minutos'),
-                          );
-                        }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _duration = value!;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildDurationSelector(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDateSelector() {
+    return CustomCard(
+      child: ListTile(
+        leading: Icon(Icons.calendar_today, color: AppColors.primarySwatch),
+        title: const Text('Data da consulta'),
+        subtitle: Text(
+          _controller.formData.selectedDate != null
+              ? DateFormat(
+                'dd/MM/yyyy',
+              ).format(_controller.formData.selectedDate!)
+              : 'Selecionar data',
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: () async {
+          final date = await showDatePicker(
+            context: context,
+            initialDate: _controller.formData.selectedDate ?? DateTime.now(),
+            firstDate: DateTime.now(),
+            lastDate: DateTime.now().add(const Duration(days: 365)),
+          );
+          if (date != null) _controller.selectDate(date);
+        },
+      ),
+    );
+  }
+
+  Widget _buildTimeSelector() {
+    return CustomCard(
+      child: ListTile(
+        leading: Icon(Icons.access_time, color: AppColors.primarySwatch),
+        title: const Text('Horário da consulta'),
+        subtitle: Text(
+          _controller.formData.selectedTime != null
+              ? _controller.formData.selectedTime!.format(context)
+              : 'Selecionar horário',
+        ),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: () async {
+          final time = await showTimePicker(
+            context: context,
+            initialTime:
+                _controller.formData.selectedTime ??
+                const TimeOfDay(hour: 9, minute: 0),
+          );
+          if (time != null) _controller.selectTime(time);
+        },
+      ),
+    );
+  }
+
+  Widget _buildTypeSelector() {
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Tipo de consulta',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray[800],
+              ),
+            ),
+            const SizedBox(height: 12),
+            ...AppointmentType.values.map((type) {
+              return RadioListTile<AppointmentType>(
+                title: Text(AppointmentTypeHelper.getTypeText(type)),
+                value: type,
+                groupValue: _controller.formData.selectedType,
+                onChanged: (value) => _controller.selectType(value!),
+                contentPadding: EdgeInsets.zero,
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDurationSelector() {
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Duração (minutos)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray[800],
+              ),
+            ),
+            const SizedBox(height: 12),
+            DropdownButtonFormField<int>(
+              value: _controller.formData.duration,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              items:
+                  [30, 45, 60, 90, 120].map((duration) {
+                    return DropdownMenuItem(
+                      value: duration,
+                      child: Text('$duration minutos'),
+                    );
+                  }).toList(),
+              onChanged: (value) => _controller.updateDuration(value!),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -642,218 +422,165 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
             style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 24),
+          _buildProtocolSelector(),
+          const SizedBox(height: 16),
+          _buildLocationField(),
+          const SizedBox(height: 16),
+          _buildNotesField(),
+        ],
+      ),
+    );
+  }
 
-          // Seleção de protocolo
-          CustomCard(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
+  Widget _buildProtocolSelector() {
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Protocolos (opcional)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray[800],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.gray[300]!),
+                borderRadius: BorderRadius.circular(4),
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Protocolos (opcional)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.gray[300]!),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Column(
-                      children: [
-                        if (_selectedProtocols.isEmpty)
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Text(
-                              'Nenhum protocolo selecionado',
-                              style: TextStyle(
-                                color: AppColors.gray[500],
-                                fontSize: 14,
-                              ),
-                            ),
-                          )
-                        else
-                          ..._selectedProtocols.map(
-                            (protocol) => ListTile(
-                              title: Text(protocol.name),
-                              subtitle:
-                                  protocol.description != null
-                                      ? Text(protocol.description!)
-                                      : null,
-                              trailing: IconButton(
-                                icon: const Icon(Icons.remove_circle_outline),
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedProtocols.remove(protocol);
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: DropdownButtonFormField<Protocol>(
-                            value: null,
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              hintText: 'Adicionar protocolo',
-                            ),
-                            items:
-                                _protocols.isEmpty
-                                    ? []
-                                    : [
-                                      ..._protocols
-                                          .where(
-                                            (p) =>
-                                                !_selectedProtocols.contains(p),
-                                          )
-                                          .map((protocol) {
-                                            return DropdownMenuItem(
-                                              value: protocol,
-                                              child: Text(protocol.name),
-                                            );
-                                          }),
-                                    ],
-                            onChanged:
-                                _protocols.isEmpty
-                                    ? null
-                                    : (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _selectedProtocols.add(value);
-                                        });
-                                      }
-                                    },
-                          ),
+                  if (_controller.formData.selectedProtocols.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        'Nenhum protocolo selecionado',
+                        style: TextStyle(
+                          color: AppColors.gray[500],
+                          fontSize: 14,
                         ),
-                      ],
+                      ),
+                    )
+                  else
+                    ..._controller.formData.selectedProtocols.map(
+                      (protocol) => ListTile(
+                        title: Text(protocol.name),
+                        subtitle:
+                            protocol.description != null
+                                ? Text(protocol.description!)
+                                : null,
+                        trailing: IconButton(
+                          icon: const Icon(Icons.remove_circle_outline),
+                          onPressed: () => _controller.removeProtocol(protocol),
+                        ),
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: DropdownButtonFormField<Protocol>(
+                      value: null,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Adicionar protocolo',
+                      ),
+                      items:
+                          _controller.formData.protocols.isEmpty
+                              ? []
+                              : _controller.formData.protocols
+                                  .where(
+                                    (p) =>
+                                        !_controller.formData.selectedProtocols
+                                            .contains(p),
+                                  )
+                                  .map(
+                                    (protocol) => DropdownMenuItem(
+                                      value: protocol,
+                                      child: Text(protocol.name),
+                                    ),
+                                  )
+                                  .toList(),
+                      onChanged:
+                          _controller.formData.protocols.isEmpty
+                              ? null
+                              : (value) {
+                                if (value != null) {
+                                  _controller.addProtocol(value);
+                                }
+                              },
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Local
-          CustomCard(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Local (opcional)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    initialValue: _location,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Ex: Consultório 1, Sala de terapia...',
-                    ),
-                    onChanged: (value) {
-                      _location = value.isEmpty ? null : value;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Observações
-          CustomCard(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Observações (opcional)',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.gray[800],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    initialValue: _notes,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Observações sobre a consulta...',
-                    ),
-                    maxLines: 3,
-                    onChanged: (value) {
-                      _notes = value.isEmpty ? null : value;
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildNavigationButtons() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          if (_currentStep > 0)
-            Expanded(
-              child: CustomButton(
-                text: 'Voltar',
-                onPressed: _previousStep,
-                backgroundColor: Colors.grey[300],
-                foregroundColor: Colors.black87,
+  Widget _buildLocationField() {
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Local (opcional)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray[800],
               ),
             ),
-          if (_currentStep > 0) const SizedBox(width: 16),
-          if (_patients.isNotEmpty)
-            Expanded(
-              child: CustomButton(
-                text:
-                    _currentStep == _totalSteps - 1
-                        ? (widget.appointment != null ? 'Atualizar' : 'Agendar')
-                        : 'Próximo',
-                onPressed:
-                    _currentStep == _totalSteps - 1
-                        ? _saveAppointment
-                        : _nextStep,
-                isLoading: _isLoading,
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: _controller.formData.location,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Ex: Consultório 1, Sala de terapia...',
               ),
+              onChanged: _controller.updateLocation,
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  String _getTypeText(AppointmentType type) {
-    switch (type) {
-      case AppointmentType.evaluation:
-        return 'Avaliação';
-      case AppointmentType.therapy:
-        return 'Terapia';
-      case AppointmentType.followUp:
-        return 'Acompanhamento';
-      case AppointmentType.consultation:
-        return 'Consulta';
-    }
+  Widget _buildNotesField() {
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Observações (opcional)',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: AppColors.gray[800],
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: _controller.formData.notes,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Observações sobre a consulta...',
+              ),
+              maxLines: 3,
+              onChanged: _controller.updateNotes,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

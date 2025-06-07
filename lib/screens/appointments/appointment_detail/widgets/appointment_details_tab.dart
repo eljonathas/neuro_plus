@@ -144,23 +144,19 @@ class AppointmentDetailsTab extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 4,
         children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.gray[600],
-              ),
+          Text(
+            '$label:',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: AppColors.gray[600],
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(fontSize: 14, color: AppColors.gray[800]),
-            ),
+          Text(
+            value,
+            style: TextStyle(fontSize: 14, color: AppColors.gray[800]),
           ),
         ],
       ),

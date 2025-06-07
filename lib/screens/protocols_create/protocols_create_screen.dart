@@ -155,12 +155,28 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final updatedItems = _buildUpdatedItems();
+
+    // Validar se todos os itens têm título
+    for (int i = 0; i < updatedItems.length; i++) {
+      final item = updatedItems[i];
+      if (item.title.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('O item ${i + 1} precisa ter um título.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
+    // Validar opções de checklist
     for (final item in updatedItems) {
       if (item.responseType == ResponseType.checklist && item.options.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'O item "${item.title.isEmpty ? 'sem título' : item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.',
+              'O item "${item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.',
             ),
             backgroundColor: Colors.red,
           ),
@@ -261,7 +277,7 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
                 onUpdateItemResponseType: _updateItemResponseType,
                 onUpdateItemOptions: _updateItemOptions,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 16),
               CustomButton(
                 text: _isEditing ? 'Salvar alterações' : 'Criar protocolo',
                 onPressed: _saveProtocol,

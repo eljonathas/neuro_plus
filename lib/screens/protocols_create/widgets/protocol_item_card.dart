@@ -57,10 +57,11 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
   }
 
   void _initializeOptionControllers() {
-    _optionControllers = widget.item.options
-        .map((option) => TextEditingController(text: option))
-        .toList();
-    
+    _optionControllers =
+        widget.item.options
+            .map((option) => TextEditingController(text: option))
+            .toList();
+
     // Adiciona listeners com debounce
     for (final controller in _optionControllers) {
       controller.addListener(_onOptionChanged);
@@ -86,9 +87,8 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 300), () {
       if (mounted) {
-        final updatedOptions = _optionControllers
-            .map((controller) => controller.text)
-            .toList();
+        final updatedOptions =
+            _optionControllers.map((controller) => controller.text).toList();
         widget.onOptionsChanged(updatedOptions);
       }
     });
@@ -97,11 +97,11 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
   void _addOption() {
     final newController = TextEditingController();
     newController.addListener(_onOptionChanged);
-    
+
     setState(() {
       _optionControllers.add(newController);
     });
-    
+
     // Atualiza imediatamente para adicionar opção vazia
     _updateOptionsImmediate();
   }
@@ -110,19 +110,18 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
     if (index < _optionControllers.length) {
       _optionControllers[index].removeListener(_onOptionChanged);
       _optionControllers[index].dispose();
-      
+
       setState(() {
         _optionControllers.removeAt(index);
       });
-      
+
       _updateOptionsImmediate();
     }
   }
 
   void _updateOptionsImmediate() {
-    final updatedOptions = _optionControllers
-        .map((controller) => controller.text)
-        .toList();
+    final updatedOptions =
+        _optionControllers.map((controller) => controller.text).toList();
     widget.onOptionsChanged(updatedOptions);
   }
 
@@ -147,7 +146,8 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
               _buildItemField(
                 label: 'Instrução (opcional)',
                 controller: widget.instructionController,
-                hintText: 'Ex: Pergunte aos responsáveis ou incentive a nomeação de objetos.',
+                hintText:
+                    'Ex: Pergunte aos responsáveis ou incentive a nomeação de objetos.',
                 minLines: 2,
                 maxLines: 4,
               ),
@@ -203,6 +203,15 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
           hintText: hintText,
           minLines: minLines,
           maxLines: maxLines,
+          validator:
+              label.contains('Título')
+                  ? (value) {
+                    if (value?.isEmpty ?? true) {
+                      return 'O título é obrigatório';
+                    }
+                    return null;
+                  }
+                  : null,
         ),
       ],
     );
@@ -211,11 +220,16 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
   Widget _buildResponseTypeSelector() {
     return Wrap(
       spacing: 16,
-      children: _responseTypeOptions.map((option) => _ResponseTypeOption(
-        label: option.$1,
-        isSelected: widget.item.responseType == option.$2,
-        onTap: () => widget.onResponseTypeChanged(option.$2),
-      )).toList(),
+      children:
+          _responseTypeOptions
+              .map(
+                (option) => _ResponseTypeOption(
+                  label: option.$1,
+                  isSelected: widget.item.responseType == option.$2,
+                  onTap: () => widget.onResponseTypeChanged(option.$2),
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -343,4 +357,4 @@ class _ResponseTypeOption extends StatelessWidget {
       ),
     );
   }
-} 
+}

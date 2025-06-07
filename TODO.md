@@ -1,0 +1,7 @@
+- [x] Quando a comorbidade conhecida e triagem for "Outros" abir campo de texto para inserir a comorbidade ou triagem
+- [ ] Validar com a Kelly os nomes dos campos de formulário de paciente
+- [ ] Quando o paciente for criado a partir da tela de consultas, temos que exibir ele na lista após o cadastro
+- [x] Ajustar quebra de linha no texto de "Quantidade" em protocolos
+- [x] Melhorar ícone de importação na tela de protocolos, pois não é muito claro que é um botão para importar e exportar protocolos
+- [x] Colocar botão de adicionar item no fim do formulário para melhorar a experiência do usuário
+- [ ] Melhorar a regra do formulário para impedir salvar item sem título

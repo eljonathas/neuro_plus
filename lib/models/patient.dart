@@ -44,6 +44,9 @@ class Patient extends HiveObject {
   @HiveField(12)
   final List<String> comorbidities;
 
+  @HiveField(30)
+  final String? otherComorbidities;
+
   @HiveField(13)
   final bool? developmentalDelay;
 
@@ -89,6 +92,9 @@ class Patient extends HiveObject {
   @HiveField(27)
   final List<String> screeningsPerformed;
 
+  @HiveField(31)
+  final String? otherScreenings;
+
   @HiveField(28)
   final DateTime createdAt;
 
@@ -109,6 +115,7 @@ class Patient extends HiveObject {
     this.previouslyEvaluated,
     this.previousDiagnosis,
     this.comorbidities = const [],
+    this.otherComorbidities,
     this.developmentalDelay,
     this.firstWordAge,
     this.eyeContact,
@@ -124,18 +131,18 @@ class Patient extends HiveObject {
     this.schoolObservations,
     this.guardiansObservations,
     this.screeningsPerformed = const [],
+    this.otherScreenings,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : 
-    id = id ?? const Uuid().v4(),
-    createdAt = createdAt ?? DateTime.now(),
-    updatedAt = updatedAt ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4(),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   // Calcula a idade em anos
   int get age {
     final now = DateTime.now();
     int age = now.year - birthDate.year;
-    if (now.month < birthDate.month || 
+    if (now.month < birthDate.month ||
         (now.month == birthDate.month && now.day < birthDate.day)) {
       age--;
     }
@@ -166,6 +173,7 @@ class Patient extends HiveObject {
     bool? previouslyEvaluated,
     String? previousDiagnosis,
     List<String>? comorbidities,
+    String? otherComorbidities,
     bool? developmentalDelay,
     int? firstWordAge,
     String? eyeContact,
@@ -181,6 +189,7 @@ class Patient extends HiveObject {
     String? schoolObservations,
     String? guardiansObservations,
     List<String>? screeningsPerformed,
+    String? otherScreenings,
   }) {
     return Patient(
       id: id,
@@ -196,21 +205,27 @@ class Patient extends HiveObject {
       previouslyEvaluated: previouslyEvaluated ?? this.previouslyEvaluated,
       previousDiagnosis: previousDiagnosis ?? this.previousDiagnosis,
       comorbidities: comorbidities ?? this.comorbidities,
+      otherComorbidities: otherComorbidities ?? this.otherComorbidities,
       developmentalDelay: developmentalDelay ?? this.developmentalDelay,
       firstWordAge: firstWordAge ?? this.firstWordAge,
       eyeContact: eyeContact ?? this.eyeContact,
       repetitiveBehaviors: repetitiveBehaviors ?? this.repetitiveBehaviors,
-      repetitiveBehaviorsDescription: repetitiveBehaviorsDescription ?? this.repetitiveBehaviorsDescription,
+      repetitiveBehaviorsDescription:
+          repetitiveBehaviorsDescription ?? this.repetitiveBehaviorsDescription,
       routineResistance: routineResistance ?? this.routineResistance,
-      socialInteractionWithChildren: socialInteractionWithChildren ?? this.socialInteractionWithChildren,
-      sensoryHypersensitivity: sensoryHypersensitivity ?? this.sensoryHypersensitivity,
+      socialInteractionWithChildren:
+          socialInteractionWithChildren ?? this.socialInteractionWithChildren,
+      sensoryHypersensitivity:
+          sensoryHypersensitivity ?? this.sensoryHypersensitivity,
       attendsSchool: attendsSchool ?? this.attendsSchool,
       schoolType: schoolType ?? this.schoolType,
       schoolShift: schoolShift ?? this.schoolShift,
       hasMediator: hasMediator ?? this.hasMediator,
       schoolObservations: schoolObservations ?? this.schoolObservations,
-      guardiansObservations: guardiansObservations ?? this.guardiansObservations,
+      guardiansObservations:
+          guardiansObservations ?? this.guardiansObservations,
       screeningsPerformed: screeningsPerformed ?? this.screeningsPerformed,
+      otherScreenings: otherScreenings ?? this.otherScreenings,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );
@@ -231,6 +246,7 @@ class Patient extends HiveObject {
       'previouslyEvaluated': previouslyEvaluated,
       'previousDiagnosis': previousDiagnosis,
       'comorbidities': comorbidities,
+      'otherComorbidities': otherComorbidities,
       'developmentalDelay': developmentalDelay,
       'firstWordAge': firstWordAge,
       'eyeContact': eyeContact,
@@ -246,6 +262,7 @@ class Patient extends HiveObject {
       'schoolObservations': schoolObservations,
       'guardiansObservations': guardiansObservations,
       'screeningsPerformed': screeningsPerformed,
+      'otherScreenings': otherScreenings,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -266,6 +283,7 @@ class Patient extends HiveObject {
       previouslyEvaluated: json['previouslyEvaluated'],
       previousDiagnosis: json['previousDiagnosis'],
       comorbidities: List<String>.from(json['comorbidities'] ?? []),
+      otherComorbidities: json['otherComorbidities'],
       developmentalDelay: json['developmentalDelay'],
       firstWordAge: json['firstWordAge'],
       eyeContact: json['eyeContact'],
@@ -281,6 +299,7 @@ class Patient extends HiveObject {
       schoolObservations: json['schoolObservations'],
       guardiansObservations: json['guardiansObservations'],
       screeningsPerformed: List<String>.from(json['screeningsPerformed'] ?? []),
+      otherScreenings: json['otherScreenings'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
@@ -290,40 +309,44 @@ class Patient extends HiveObject {
 // Enums para as opções do formulário
 class PatientEnums {
   static const List<String> genderOptions = ['Masculino', 'Feminino', 'Outro'];
-  
+
   static const List<String> comorbiditiesOptions = [
-    'TDAH', 
-    'Ansiedade', 
-    'Epilepsia', 
-    'Nenhuma', 
-    'Outros'
+    'TDAH',
+    'Ansiedade',
+    'Epilepsia',
+    'Nenhuma',
+    'Outros',
   ];
-  
+
   static const List<String> eyeContactOptions = ['Sim', 'Não', 'Parcial'];
-  
-  static const List<String> socialInteractionOptions = ['Sim', 'Não', 'Parcial'];
-  
+
+  static const List<String> socialInteractionOptions = [
+    'Sim',
+    'Não',
+    'Parcial',
+  ];
+
   static const List<String> sensoryHypersensitivityOptions = [
-    'Sim', 
-    'Não', 
-    'Não observado'
+    'Sim',
+    'Não',
+    'Não observado',
   ];
-  
-  static const List<String> schoolTypeOptions = ['Regular', 'Especial', 'Outra'];
-  
+
+  static const List<String> schoolTypeOptions = [
+    'Regular',
+    'Especial',
+    'Outra',
+  ];
+
   static const List<String> schoolShiftOptions = ['Manhã', 'Tarde', 'Integral'];
-  
-  static const List<String> mediatorOptions = [
-    'Sim', 
-    'Não', 
-    'Não informado'
-  ];
-  
+
+  static const List<String> mediatorOptions = ['Sim', 'Não', 'Não informado'];
+
   static const List<String> screeningsOptions = [
-    'M-CHAT', 
-    'CARS', 
-    'ADOS', 
-    'Nenhuma', 
-    'Outros'
+    'M-CHAT',
+    'CARS',
+    'ADOS',
+    'Nenhuma',
+    'Outros',
   ];
-} 
+}
