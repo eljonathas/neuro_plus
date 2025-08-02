@@ -6,10 +6,10 @@ import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/controllers/appointment_form_controller.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/utils/appointment_type_helper.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/widgets/appointment_navigation_buttons.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/widgets/appointment_step_indicator.dart';
+import 'package:neuro_plus/screens/appointments_create/controllers/appointment_form_controller.dart';
+import 'package:neuro_plus/screens/appointments_create/utils/appointment_type_helper.dart';
+import 'package:neuro_plus/screens/appointments_create/widgets/appointment_navigation_buttons.dart';
+import 'package:neuro_plus/screens/appointments_create/widgets/appointment_step_indicator.dart';
 
 class AppointmentsCreateScreen extends StatefulWidget {
   final Appointment? appointment;

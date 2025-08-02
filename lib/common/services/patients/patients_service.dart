@@ -13,6 +13,7 @@ class PatientsService {
 
     Hive.init(appDocDir.path);
 
+    Hive.registerAdapter(GuardianAdapter());
     Hive.registerAdapter(PatientAdapter());
 
     if (Hive.isBoxOpen(_boxName)) {
@@ -62,8 +63,12 @@ class PatientsService {
     final lowerQuery = query.toLowerCase();
 
     return patients.where((patient) {
+      final guardiansNames = patient.guardians
+          .map((guardian) => guardian.name.toLowerCase())
+          .join(' ');
+
       return patient.fullName.toLowerCase().contains(lowerQuery) ||
-          patient.guardians.toLowerCase().contains(lowerQuery) ||
+          guardiansNames.contains(lowerQuery) ||
           patient.contactPhone.contains(query);
     }).toList();
   }

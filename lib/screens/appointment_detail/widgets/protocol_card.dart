@@ -4,8 +4,8 @@ import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:neuro_plus/screens/appointments/protocol_execution/protocol_execution_screen.dart';
-import 'package:neuro_plus/screens/appointments/protocol_results/protocol_results_screen.dart';
+import 'package:neuro_plus/screens/protocol_execution/protocol_execution_screen.dart';
+import 'package:neuro_plus/screens/protocol_results/protocol_results_screen.dart';
 
 class ProtocolCard extends StatelessWidget {
   final Appointment appointment;
@@ -20,9 +20,9 @@ class ProtocolCard extends StatelessWidget {
   });
 
   bool get _isProtocolFilled {
-    return appointment.protocolResponses != null && 
-           appointment.protocolResponses!.containsKey(protocol.id) &&
-           appointment.protocolResponses![protocol.id]!.isNotEmpty;
+    return appointment.protocolResponses != null &&
+        appointment.protocolResponses!.containsKey(protocol.id) &&
+        appointment.protocolResponses![protocol.id]!.isNotEmpty;
   }
 
   @override
@@ -71,10 +71,7 @@ class ProtocolCard extends StatelessWidget {
   Widget _buildDescription() {
     return Text(
       protocol.description!,
-      style: TextStyle(
-        fontSize: 14,
-        color: AppColors.gray[600],
-      ),
+      style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
     );
   }
 
@@ -85,10 +82,7 @@ class ProtocolCard extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           'Itens do protocolo: ${protocol.items.length}',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.gray[500],
-          ),
+          style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
         ),
       ],
     );
@@ -149,15 +143,16 @@ class ProtocolCard extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProtocolExecutionScreen(
-          appointment: appointment,
-          protocol: protocol,
-        ),
+        builder:
+            (context) => ProtocolExecutionScreen(
+              appointment: appointment,
+              protocol: protocol,
+            ),
       ),
     ).then((result) {
       if (result == true) {
         onProtocolUpdated?.call();
-        
+
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Protocolo salvo com sucesso!')),
@@ -173,13 +168,14 @@ class ProtocolCard extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProtocolResultsScreen(
-            appointment: appointment,
-            protocol: protocol,
-            responses: responses,
-          ),
+          builder:
+              (context) => ProtocolResultsScreen(
+                appointment: appointment,
+                protocol: protocol,
+                responses: responses,
+              ),
         ),
       );
     }
   }
-} 
+}

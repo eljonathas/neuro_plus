@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/models/appointment.dart';
 
 class AppointmentCard extends StatelessWidget {
   final String date;
@@ -8,9 +9,8 @@ class AppointmentCard extends StatelessWidget {
   final String subtitle;
   final String appointmentId;
   final bool isMultiple;
-  final bool isPaid;
+  final AppointmentStatus? status;
   final VoidCallback onTap;
-  final double? paymentAmount;
 
   const AppointmentCard({
     super.key,
@@ -21,8 +21,7 @@ class AppointmentCard extends StatelessWidget {
     required this.appointmentId,
     required this.onTap,
     this.isMultiple = false,
-    this.isPaid = false,
-    this.paymentAmount,
+    this.status,
   });
 
   @override
@@ -36,7 +35,7 @@ class AppointmentCard extends StatelessWidget {
             width: 45,
             height: 45,
             decoration: BoxDecoration(
-              color: isPaid ? AppColors.gray[100] : AppColors.blueRibbon[100],
+              color: AppColors.blueRibbon[100],
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
@@ -45,7 +44,7 @@ class AppointmentCard extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isPaid ? AppColors.gray[500] : AppColors.blueRibbon[500],
+                color: AppColors.blueRibbon[500],
               ),
             ),
           ),
@@ -74,12 +73,20 @@ class AppointmentCard extends StatelessWidget {
                             color: AppColors.gray[800],
                           ),
                         ),
-                        Text(
-                          appointmentId,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.gray[400],
-                          ),
+                        Row(
+                          children: [
+                            if (status != null) ...[
+                              _buildStatusChip(status!),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              appointmentId,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.gray[400],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -134,69 +141,6 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (paymentAmount != null) ...[
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Total payment',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.gray[400],
-                                ),
-                              ),
-                              Text(
-                                '\$${paymentAmount!.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.blueRibbon[500],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                            child: const Text(
-                              'Pay',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (isPaid)
-                      Container(
-                        margin: const EdgeInsets.only(top: 8),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green[50],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          'PAID',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.green[700],
-                          ),
-                        ),
-                      ),
                   ],
                 ),
               ),
@@ -205,5 +149,71 @@ class AppointmentCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildStatusChip(AppointmentStatus status) {
+    Color color;
+    IconData icon;
+
+    switch (status) {
+      case AppointmentStatus.scheduled:
+        color = Colors.blue;
+        icon = Icons.schedule;
+        break;
+      case AppointmentStatus.inProgress:
+        color = Colors.orange;
+        icon = Icons.play_arrow;
+        break;
+      case AppointmentStatus.completed:
+        color = Colors.green;
+        icon = Icons.check_circle;
+        break;
+      case AppointmentStatus.cancelled:
+        color = Colors.red;
+        icon = Icons.cancel;
+        break;
+      case AppointmentStatus.noShow:
+        color = Colors.grey;
+        icon = Icons.person_off;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 3),
+          Text(
+            _getStatusText(status),
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _getStatusText(AppointmentStatus status) {
+    switch (status) {
+      case AppointmentStatus.scheduled:
+        return 'Agendada';
+      case AppointmentStatus.inProgress:
+        return 'Em andamento';
+      case AppointmentStatus.completed:
+        return 'Concluída';
+      case AppointmentStatus.cancelled:
+        return 'Cancelada';
+      case AppointmentStatus.noShow:
+        return 'Faltou';
+    }
   }
 }

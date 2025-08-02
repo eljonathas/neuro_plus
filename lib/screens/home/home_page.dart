@@ -80,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: "Home",
+      title: "Página Inicial",
       navIndex: 0,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -198,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
       subtitle: appointment.patientName,
       appointmentId: appointment.id.substring(0, 8),
       isMultiple: appointment.type == AppointmentType.therapy,
-      isPaid: appointment.status == AppointmentStatus.completed,
+      status: appointment.status,
       onTap: () => _navigateToDetail(appointment),
     );
   }

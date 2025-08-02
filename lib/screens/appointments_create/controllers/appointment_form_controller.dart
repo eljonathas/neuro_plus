@@ -5,8 +5,8 @@ import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/models/appointment_form_data.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/validators/appointment_form_validators.dart';
+import 'package:neuro_plus/screens/appointments_create/models/appointment_form_data.dart';
+import 'package:neuro_plus/screens/appointments_create/validators/appointment_form_validators.dart';
 
 class AppointmentFormController extends ChangeNotifier {
   AppointmentFormData _formData = AppointmentFormData();

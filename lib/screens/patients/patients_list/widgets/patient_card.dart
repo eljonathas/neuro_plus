@@ -103,7 +103,10 @@ class PatientCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
-                _buildPatientInfo('Responsável', patient.guardians),
+                _buildPatientInfo(
+                  'Responsáveis',
+                  patient.guardians.map((g) => g.name).join(', '),
+                ),
                 _buildPatientInfo('Telefone', patient.contactPhone),
                 _buildPatientInfo(
                   'Data de nascimento',

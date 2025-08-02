@@ -109,7 +109,7 @@ class ProtocolItemAdapter extends TypeAdapter<ProtocolItem> {
 
 class ResponseTypeAdapter extends TypeAdapter<ResponseType> {
   @override
-  final int typeId = 2;
+  final int typeId = 7;
 
   @override
   ResponseType read(BinaryReader reader) {

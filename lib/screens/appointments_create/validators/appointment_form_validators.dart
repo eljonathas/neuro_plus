@@ -1,4 +1,4 @@
-import 'package:neuro_plus/screens/appointments/appointments_create/models/appointment_form_data.dart';
+import 'package:neuro_plus/screens/appointments_create/models/appointment_form_data.dart';
 
 class AppointmentFormValidators {
   static String? validateStep(int step, AppointmentFormData formData) {

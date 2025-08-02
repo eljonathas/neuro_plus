@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/screens/home/home_page.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/appointments_list_screen.dart';
+import 'package:neuro_plus/screens/appointments_list/appointments_list_screen.dart';
 import 'package:neuro_plus/screens/protocols/protocols_screen.dart';
 import 'package:neuro_plus/screens/protocols_create/protocols_create_screen.dart';
 import 'package:neuro_plus/screens/patients/patients_list/patients_screen.dart';
 import 'package:neuro_plus/screens/patients/patients_create_screen.dart';
 import 'package:neuro_plus/screens/patients/patients_detail/patient_detail_screen.dart';
-import 'package:neuro_plus/screens/appointments/appointments_create/appointments_create_screen.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/appointment_detail_screen.dart';
+import 'package:neuro_plus/screens/appointments_create/appointments_create_screen.dart';
+import 'package:neuro_plus/screens/appointment_detail/appointment_detail_screen.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
 

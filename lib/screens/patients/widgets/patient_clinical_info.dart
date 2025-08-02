@@ -43,6 +43,7 @@ class PatientClinicalInfo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle('Informações Clínicas'),
+
             const SizedBox(height: 16),
 
             _buildField(
@@ -112,7 +113,7 @@ class PatientClinicalInfo extends StatelessWidget {
               ),
 
             _buildField(
-              label: 'Triagens já aplicadas',
+              label: 'Avaliações já aplicadas',
               child: _buildMultipleChoiceSelector(
                 options: PatientEnums.screeningsOptions,
                 selectedValues: screeningsPerformed,

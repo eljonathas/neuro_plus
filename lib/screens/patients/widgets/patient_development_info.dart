@@ -92,8 +92,9 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
                   if (value?.isEmpty ?? true) return null;
                   final number = int.tryParse(value!);
                   if (number == null) return 'Digite um número válido';
-                  if (number < 0 || number > 120)
+                  if (number < 0 || number > 120) {
                     return 'Digite um valor entre 0 e 120 meses';
+                  }
                   return null;
                 },
               ),

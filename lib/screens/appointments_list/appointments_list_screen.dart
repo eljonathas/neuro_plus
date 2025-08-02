@@ -3,11 +3,11 @@ import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_header.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_filters.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_search_bar.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointment_card.dart';
-import 'package:neuro_plus/screens/appointments/appointments_list/widgets/appointments_empty_state.dart';
+import 'package:neuro_plus/screens/appointments_list/widgets/appointments_header.dart';
+import 'package:neuro_plus/screens/appointments_list/widgets/appointments_filters.dart';
+import 'package:neuro_plus/screens/appointments_list/widgets/appointments_search_bar.dart';
+import 'package:neuro_plus/screens/appointments_list/widgets/appointment_card.dart';
+import 'package:neuro_plus/screens/appointments_list/widgets/appointments_empty_state.dart';
 
 class AppointmentsScreen extends StatefulWidget {
   const AppointmentsScreen({super.key});

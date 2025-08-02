@@ -3,6 +3,75 @@ import 'package:uuid/uuid.dart';
 
 part 'patient.g.dart';
 
+@HiveType(typeId: 2)
+class Guardian extends HiveObject {
+  @HiveField(0)
+  final String id;
+
+  @HiveField(1)
+  final String name;
+
+  @HiveField(2)
+  final String phone;
+
+  @HiveField(3)
+  final String email;
+
+  @HiveField(4)
+  final String relationship;
+
+  @HiveField(5)
+  final String address;
+
+  Guardian({
+    String? id,
+    required this.name,
+    required this.phone,
+    required this.email,
+    required this.relationship,
+    required this.address,
+  }) : id = id ?? const Uuid().v4();
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'relationship': relationship,
+      'address': address,
+    };
+  }
+
+  factory Guardian.fromJson(Map<String, dynamic> json) {
+    return Guardian(
+      id: json['id'],
+      name: json['name'],
+      phone: json['phone'],
+      email: json['email'],
+      relationship: json['relationship'],
+      address: json['address'],
+    );
+  }
+
+  Guardian copyWith({
+    String? name,
+    String? phone,
+    String? email,
+    String? relationship,
+    String? address,
+  }) {
+    return Guardian(
+      id: id,
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      email: email ?? this.email,
+      relationship: relationship ?? this.relationship,
+      address: address ?? this.address,
+    );
+  }
+}
+
 @HiveType(typeId: 3)
 class Patient extends HiveObject {
   @HiveField(0)
@@ -18,7 +87,7 @@ class Patient extends HiveObject {
   final String gender;
 
   @HiveField(4)
-  final String guardians;
+  final List<Guardian> guardians;
 
   @HiveField(5)
   final String contactPhone;
@@ -164,7 +233,7 @@ class Patient extends HiveObject {
     String? fullName,
     DateTime? birthDate,
     String? gender,
-    String? guardians,
+    List<Guardian>? guardians,
     String? contactPhone,
     String? address,
     String? contactEmail,
@@ -237,7 +306,7 @@ class Patient extends HiveObject {
       'fullName': fullName,
       'birthDate': birthDate.toIso8601String(),
       'gender': gender,
-      'guardians': guardians,
+      'guardians': guardians.map((g) => g.toJson()).toList(),
       'contactPhone': contactPhone,
       'address': address,
       'contactEmail': contactEmail,
@@ -274,7 +343,11 @@ class Patient extends HiveObject {
       fullName: json['fullName'],
       birthDate: DateTime.parse(json['birthDate']),
       gender: json['gender'],
-      guardians: json['guardians'],
+      guardians:
+          (json['guardians'] as List<dynamic>?)
+              ?.map((g) => Guardian.fromJson(g as Map<String, dynamic>))
+              .toList() ??
+          [],
       contactPhone: json['contactPhone'],
       address: json['address'],
       contactEmail: json['contactEmail'],

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_header.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_tabs.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_details_tab.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/protocol_tab.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/appointment_action_buttons.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_header.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_tabs.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_details_tab.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/protocol_tab.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_action_buttons.dart';
 
 class AppointmentDetailScreen extends StatefulWidget {
   final Appointment appointment;

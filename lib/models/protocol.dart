@@ -38,10 +38,9 @@ class Protocol extends HiveObject {
     required this.template,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : 
-    id = id ?? const Uuid().v4(),
-    createdAt = createdAt ?? DateTime.now(),
-    updatedAt = updatedAt ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4(),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   Protocol copyWith({
     String? name,
@@ -81,7 +80,11 @@ class Protocol extends HiveObject {
       name: json['name'],
       description: json['description'],
       categories: List<String>.from(json['categories'] ?? []),
-      items: (json['items'] as List?)?.map((item) => ProtocolItem.fromJson(item)).toList() ?? [],
+      items:
+          (json['items'] as List?)
+              ?.map((item) => ProtocolItem.fromJson(item))
+              .toList() ??
+          [],
       template: json['template'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
@@ -150,14 +153,14 @@ class ProtocolItem {
   }
 }
 
-@HiveType(typeId: 2)
+@HiveType(typeId: 7)
 enum ResponseType {
   @HiveField(0)
   checklist,
-  
+
   @HiveField(1)
   scale,
-  
+
   @HiveField(2)
   text,
-} 
+}

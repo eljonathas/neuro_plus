@@ -3,7 +3,7 @@ import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/services/protocols/protocol_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:neuro_plus/screens/appointments/appointment_detail/widgets/protocol_card.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/protocol_card.dart';
 
 class ProtocolTab extends StatefulWidget {
   final Appointment appointment;
@@ -32,7 +32,8 @@ class _ProtocolTabState extends State<ProtocolTab> {
   }
 
   Future<void> _loadProtocols() async {
-    if (widget.appointment.protocolIds == null || widget.appointment.protocolIds!.isEmpty) {
+    if (widget.appointment.protocolIds == null ||
+        widget.appointment.protocolIds!.isEmpty) {
       return;
     }
 
@@ -41,7 +42,7 @@ class _ProtocolTabState extends State<ProtocolTab> {
     try {
       await ProtocolsService.init();
       final protocols = <Protocol>[];
-      
+
       for (final protocolId in widget.appointment.protocolIds!) {
         final protocol = ProtocolsService.getProtocolById(protocolId);
         if (protocol != null) {
@@ -84,19 +85,20 @@ class _ProtocolTabState extends State<ProtocolTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ..._protocols.map((protocol) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: ProtocolCard(
-              appointment: widget.appointment,
-              protocol: protocol,
-              onProtocolUpdated: widget.onProtocolUpdated,
+          ..._protocols.map(
+            (protocol) => Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: ProtocolCard(
+                appointment: widget.appointment,
+                protocol: protocol,
+                onProtocolUpdated: widget.onProtocolUpdated,
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
   }
-
 
   Widget _buildNoProtocolsState() {
     return Center(
@@ -107,18 +109,12 @@ class _ProtocolTabState extends State<ProtocolTab> {
           const SizedBox(height: 16),
           Text(
             'Nenhum protocolo associado',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.gray[600],
-            ),
+            style: TextStyle(fontSize: 18, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Esta consulta não possui protocolos para preenchimento.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.gray[500],
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -135,22 +131,16 @@ class _ProtocolTabState extends State<ProtocolTab> {
           const SizedBox(height: 16),
           Text(
             'Protocolos não encontrados',
-            style: TextStyle(
-              fontSize: 18,
-              color: AppColors.gray[600],
-            ),
+            style: TextStyle(fontSize: 18, color: AppColors.gray[600]),
           ),
           const SizedBox(height: 8),
           Text(
             'Os protocolos associados a esta consulta não foram encontrados.',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.gray[500],
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.gray[500]),
             textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
-} 
+}

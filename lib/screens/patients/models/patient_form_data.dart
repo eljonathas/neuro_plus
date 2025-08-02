@@ -4,10 +4,12 @@ import 'package:neuro_plus/models/patient.dart';
 class PatientFormData {
   // Controllers para campos básicos
   final TextEditingController fullNameController;
-  final TextEditingController guardiansController;
   final TextEditingController contactPhoneController;
   final TextEditingController contactEmailController;
   final TextEditingController addressController;
+
+  // Lista de responsáveis
+  List<Guardian> guardians;
 
   // Controllers para informações clínicas
   final TextEditingController referralReasonController;
@@ -39,108 +41,126 @@ class PatientFormData {
   String? hasMediator;
   List<String> screeningsPerformed;
 
-  PatientFormData({
-    required this.fullNameController,
-    required this.guardiansController,
-    required this.contactPhoneController,
-    required this.contactEmailController,
-    required this.addressController,
-    required this.referralReasonController,
-    required this.referredByController,
-    required this.previousDiagnosisController,
-    required this.otherComorbiditiesController,
-    required this.otherScreeningsController,
-    required this.repetitiveBehaviorsDescriptionController,
-    required this.schoolObservationsController,
-    required this.guardiansObservationsController,
-    required this.developmentalDelayController,
-    required this.firstWordAgeController,
-    required this.eyeContactController,
-    required this.repetitiveBehaviorsController,
-    required this.routineResistanceController,
-    required this.socialInteractionController,
-    required this.sensoryHypersensitivityController,
-    required this.birthDate,
-    required this.gender,
-    required this.comorbidities,
-    this.previouslyEvaluated,
-    this.attendsSchool,
-    this.schoolType,
-    this.schoolShift,
-    this.hasMediator,
-    required this.screeningsPerformed,
-  });
-
-  factory PatientFormData.fromPatient(Patient? patient) {
-    return PatientFormData(
-      fullNameController: TextEditingController(text: patient?.fullName ?? ''),
-      guardiansController: TextEditingController(
-        text: patient?.guardians ?? '',
+  PatientFormData({Patient? patient})
+    : fullNameController = TextEditingController(text: patient?.fullName),
+      guardians =
+          patient?.guardians.isNotEmpty == true
+              ? List.from(patient!.guardians)
+              : [
+                Guardian(
+                  name: '',
+                  phone: '',
+                  email: '',
+                  relationship: '',
+                  address: '',
+                ),
+              ],
+      contactPhoneController = TextEditingController(
+        text: patient?.contactPhone,
       ),
-      contactPhoneController: TextEditingController(
-        text: patient?.contactPhone ?? '',
+      contactEmailController = TextEditingController(
+        text: patient?.contactEmail,
       ),
-      contactEmailController: TextEditingController(
-        text: patient?.contactEmail ?? '',
-      ),
-      addressController: TextEditingController(text: patient?.address ?? ''),
-      referralReasonController: TextEditingController(
+      addressController = TextEditingController(text: patient?.address),
+      referralReasonController = TextEditingController(
         text: patient?.referralReason ?? '',
       ),
-      referredByController: TextEditingController(
+      referredByController = TextEditingController(
         text: patient?.referredBy ?? '',
       ),
-      previousDiagnosisController: TextEditingController(
+      previousDiagnosisController = TextEditingController(
         text: patient?.previousDiagnosis ?? '',
       ),
-      otherComorbiditiesController: TextEditingController(
+      otherComorbiditiesController = TextEditingController(
         text: patient?.otherComorbidities ?? '',
       ),
-      otherScreeningsController: TextEditingController(
+      otherScreeningsController = TextEditingController(
         text: patient?.otherScreenings ?? '',
       ),
-      repetitiveBehaviorsDescriptionController: TextEditingController(
+      repetitiveBehaviorsDescriptionController = TextEditingController(
         text: patient?.repetitiveBehaviorsDescription ?? '',
       ),
-      schoolObservationsController: TextEditingController(
+      schoolObservationsController = TextEditingController(
         text: patient?.schoolObservations ?? '',
       ),
-      guardiansObservationsController: TextEditingController(
+      guardiansObservationsController = TextEditingController(
         text: patient?.guardiansObservations ?? '',
       ),
-      developmentalDelayController: TextEditingController(
+      developmentalDelayController = TextEditingController(
         text: patient?.developmentalDelay?.toString() ?? '',
       ),
-      firstWordAgeController: TextEditingController(
+      firstWordAgeController = TextEditingController(
         text: patient?.firstWordAge?.toString() ?? '',
       ),
-      eyeContactController: TextEditingController(
+      eyeContactController = TextEditingController(
         text: patient?.eyeContact ?? '',
       ),
-      repetitiveBehaviorsController: TextEditingController(
+      repetitiveBehaviorsController = TextEditingController(
         text: patient?.repetitiveBehaviors?.toString() ?? '',
       ),
-      routineResistanceController: TextEditingController(
+      routineResistanceController = TextEditingController(
         text: patient?.routineResistance?.toString() ?? '',
       ),
-      socialInteractionController: TextEditingController(
+      socialInteractionController = TextEditingController(
         text: patient?.socialInteractionWithChildren ?? '',
       ),
-      sensoryHypersensitivityController: TextEditingController(
+      sensoryHypersensitivityController = TextEditingController(
         text: patient?.sensoryHypersensitivity ?? '',
       ),
-      birthDate:
+      birthDate =
           patient?.birthDate ??
           DateTime.now().subtract(const Duration(days: 365 * 3)),
-      gender: patient?.gender ?? PatientEnums.genderOptions.first,
-      comorbidities: List.from(patient?.comorbidities ?? []),
-      previouslyEvaluated: patient?.previouslyEvaluated,
-      attendsSchool: patient?.attendsSchool,
-      schoolType: patient?.schoolType,
-      schoolShift: patient?.schoolShift,
-      hasMediator: patient?.hasMediator,
-      screeningsPerformed: List.from(patient?.screeningsPerformed ?? []),
+      gender = patient?.gender ?? PatientEnums.genderOptions.first,
+      comorbidities = List.from(patient?.comorbidities ?? []),
+      previouslyEvaluated = patient?.previouslyEvaluated,
+      attendsSchool = patient?.attendsSchool,
+      schoolType = patient?.schoolType,
+      schoolShift = patient?.schoolShift,
+      hasMediator = patient?.hasMediator,
+      screeningsPerformed = List.from(patient?.screeningsPerformed ?? []);
+
+  factory PatientFormData.fromPatient(Patient? patient) {
+    return PatientFormData(patient: patient);
+  }
+
+  void addGuardian() {
+    guardians.add(
+      Guardian(name: '', phone: '', email: '', relationship: '', address: ''),
     );
+  }
+
+  void removeGuardian(int index) {
+    if (guardians.length > 1) {
+      guardians.removeAt(index);
+    }
+  }
+
+  void updateGuardian(int index, Guardian guardian) {
+    if (index < guardians.length) {
+      guardians[index] = guardian;
+    }
+  }
+
+  void dispose() {
+    fullNameController.dispose();
+    contactPhoneController.dispose();
+    contactEmailController.dispose();
+    addressController.dispose();
+    referralReasonController.dispose();
+    referredByController.dispose();
+    previousDiagnosisController.dispose();
+    otherComorbiditiesController.dispose();
+    otherScreeningsController.dispose();
+    repetitiveBehaviorsDescriptionController.dispose();
+    schoolObservationsController.dispose();
+    guardiansObservationsController.dispose();
+    developmentalDelayController.dispose();
+    firstWordAgeController.dispose();
+    eyeContactController.dispose();
+    repetitiveBehaviorsController.dispose();
+    routineResistanceController.dispose();
+    socialInteractionController.dispose();
+    sensoryHypersensitivityController.dispose();
   }
 
   Patient toPatient() {
@@ -148,7 +168,7 @@ class PatientFormData {
       fullName: fullNameController.text,
       birthDate: birthDate,
       gender: gender,
-      guardians: guardiansController.text,
+      guardians: guardians,
       contactPhone: contactPhoneController.text,
       address: addressController.text,
       contactEmail:
@@ -228,7 +248,7 @@ class PatientFormData {
       fullName: fullNameController.text,
       birthDate: birthDate,
       gender: gender,
-      guardians: guardiansController.text,
+      guardians: guardians,
       contactPhone: contactPhoneController.text,
       address: addressController.text,
       contactEmail:
@@ -301,28 +321,5 @@ class PatientFormData {
               ? otherScreeningsController.text.trim()
               : null,
     );
-  }
-
-  void dispose() {
-    fullNameController.dispose();
-    guardiansController.dispose();
-    contactPhoneController.dispose();
-    contactEmailController.dispose();
-    addressController.dispose();
-    referralReasonController.dispose();
-    referredByController.dispose();
-    previousDiagnosisController.dispose();
-    otherComorbiditiesController.dispose();
-    otherScreeningsController.dispose();
-    repetitiveBehaviorsDescriptionController.dispose();
-    schoolObservationsController.dispose();
-    guardiansObservationsController.dispose();
-    developmentalDelayController.dispose();
-    firstWordAgeController.dispose();
-    eyeContactController.dispose();
-    repetitiveBehaviorsController.dispose();
-    routineResistanceController.dispose();
-    socialInteractionController.dispose();
-    sensoryHypersensitivityController.dispose();
   }
 }

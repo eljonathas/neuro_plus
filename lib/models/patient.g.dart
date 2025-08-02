@@ -6,6 +6,55 @@ part of 'patient.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
+class GuardianAdapter extends TypeAdapter<Guardian> {
+  @override
+  final int typeId = 2;
+
+  @override
+  Guardian read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Guardian(
+      id: fields[0] as String?,
+      name: fields[1] as String,
+      phone: fields[2] as String,
+      email: fields[3] as String,
+      relationship: fields[4] as String,
+      address: fields[5] as String,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Guardian obj) {
+    writer
+      ..writeByte(6)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.name)
+      ..writeByte(2)
+      ..write(obj.phone)
+      ..writeByte(3)
+      ..write(obj.email)
+      ..writeByte(4)
+      ..write(obj.relationship)
+      ..writeByte(5)
+      ..write(obj.address);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GuardianAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class PatientAdapter extends TypeAdapter<Patient> {
   @override
   final int typeId = 3;
@@ -21,7 +70,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       fullName: fields[1] as String,
       birthDate: fields[2] as DateTime,
       gender: fields[3] as String,
-      guardians: fields[4] as String,
+      guardians: (fields[4] as List).cast<Guardian>(),
       contactPhone: fields[5] as String,
       address: fields[6] as String,
       contactEmail: fields[7] as String?,
@@ -30,6 +79,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       previouslyEvaluated: fields[10] as bool?,
       previousDiagnosis: fields[11] as String?,
       comorbidities: (fields[12] as List).cast<String>(),
+      otherComorbidities: fields[30] as String?,
       developmentalDelay: fields[13] as bool?,
       firstWordAge: fields[14] as int?,
       eyeContact: fields[15] as String?,
@@ -45,6 +95,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       schoolObservations: fields[25] as String?,
       guardiansObservations: fields[26] as String?,
       screeningsPerformed: (fields[27] as List).cast<String>(),
+      otherScreenings: fields[31] as String?,
       createdAt: fields[28] as DateTime?,
       updatedAt: fields[29] as DateTime?,
     );
@@ -53,7 +104,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
   @override
   void write(BinaryWriter writer, Patient obj) {
     writer
-      ..writeByte(30)
+      ..writeByte(32)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -80,6 +131,8 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..write(obj.previousDiagnosis)
       ..writeByte(12)
       ..write(obj.comorbidities)
+      ..writeByte(30)
+      ..write(obj.otherComorbidities)
       ..writeByte(13)
       ..write(obj.developmentalDelay)
       ..writeByte(14)
@@ -110,6 +163,8 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..write(obj.guardiansObservations)
       ..writeByte(27)
       ..write(obj.screeningsPerformed)
+      ..writeByte(31)
+      ..write(obj.otherScreenings)
       ..writeByte(28)
       ..write(obj.createdAt)
       ..writeByte(29)

@@ -31,6 +31,34 @@ class PatientFormController extends ChangeNotifier {
     }
   }
 
+  void updateGuardians(List<Guardian> guardians) {
+    if (_formData != null) {
+      _formData!.guardians = guardians;
+      notifyListeners();
+    }
+  }
+
+  void addGuardian() {
+    if (_formData != null) {
+      _formData!.addGuardian();
+      notifyListeners();
+    }
+  }
+
+  void removeGuardian(int index) {
+    if (_formData != null) {
+      _formData!.removeGuardian(index);
+      notifyListeners();
+    }
+  }
+
+  void updateGuardian(int index, Guardian guardian) {
+    if (_formData != null) {
+      _formData!.updateGuardian(index, guardian);
+      notifyListeners();
+    }
+  }
+
   void updateComorbidities(List<String> comorbidities) {
     if (_formData != null) {
       _formData!.comorbidities = comorbidities;
