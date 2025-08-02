@@ -187,6 +187,7 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       referredByController: _controller.formData!.referredByController,
       previousDiagnosisController:
           _controller.formData!.previousDiagnosisController,
+      cidCodeController: _controller.formData!.cidCodeController,
       otherComorbiditiesController:
           _controller.formData!.otherComorbiditiesController,
       otherScreeningsController:

@@ -78,6 +78,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       referredBy: fields[9] as String?,
       previouslyEvaluated: fields[10] as bool?,
       previousDiagnosis: fields[11] as String?,
+      cidCode: fields[32] as String?,
       comorbidities: (fields[12] as List).cast<String>(),
       otherComorbidities: fields[30] as String?,
       developmentalDelay: fields[13] as bool?,
@@ -104,7 +105,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
   @override
   void write(BinaryWriter writer, Patient obj) {
     writer
-      ..writeByte(32)
+      ..writeByte(33)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -129,6 +130,8 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..write(obj.previouslyEvaluated)
       ..writeByte(11)
       ..write(obj.previousDiagnosis)
+      ..writeByte(32)
+      ..write(obj.cidCode)
       ..writeByte(12)
       ..write(obj.comorbidities)
       ..writeByte(30)

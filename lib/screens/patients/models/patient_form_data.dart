@@ -15,6 +15,7 @@ class PatientFormData {
   final TextEditingController referralReasonController;
   final TextEditingController referredByController;
   final TextEditingController previousDiagnosisController;
+  final TextEditingController cidCodeController;
   final TextEditingController otherComorbiditiesController;
   final TextEditingController otherScreeningsController;
   final TextEditingController repetitiveBehaviorsDescriptionController;
@@ -71,6 +72,7 @@ class PatientFormData {
       previousDiagnosisController = TextEditingController(
         text: patient?.previousDiagnosis ?? '',
       ),
+      cidCodeController = TextEditingController(text: patient?.cidCode ?? ''),
       otherComorbiditiesController = TextEditingController(
         text: patient?.otherComorbidities ?? '',
       ),
@@ -149,6 +151,7 @@ class PatientFormData {
     referralReasonController.dispose();
     referredByController.dispose();
     previousDiagnosisController.dispose();
+    cidCodeController.dispose();
     otherComorbiditiesController.dispose();
     otherScreeningsController.dispose();
     repetitiveBehaviorsDescriptionController.dispose();
@@ -186,6 +189,7 @@ class PatientFormData {
           previousDiagnosisController.text.isEmpty
               ? null
               : previousDiagnosisController.text,
+      cidCode: cidCodeController.text.isEmpty ? null : cidCodeController.text,
       comorbidities: comorbidities,
       otherComorbidities:
           comorbidities.contains('Outros') &&
@@ -266,6 +270,7 @@ class PatientFormData {
           previousDiagnosisController.text.isEmpty
               ? null
               : previousDiagnosisController.text,
+      cidCode: cidCodeController.text.isEmpty ? null : cidCodeController.text,
       comorbidities: comorbidities,
       otherComorbidities:
           comorbidities.contains('Outros') &&

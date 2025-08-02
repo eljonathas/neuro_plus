@@ -8,6 +8,7 @@ class PatientClinicalInfo extends StatelessWidget {
   final TextEditingController referralReasonController;
   final TextEditingController referredByController;
   final TextEditingController previousDiagnosisController;
+  final TextEditingController cidCodeController;
   final TextEditingController otherComorbiditiesController;
   final TextEditingController otherScreeningsController;
   final bool? previouslyEvaluated;
@@ -23,6 +24,7 @@ class PatientClinicalInfo extends StatelessWidget {
     required this.referralReasonController,
     required this.referredByController,
     required this.previousDiagnosisController,
+    required this.cidCodeController,
     required this.otherComorbiditiesController,
     required this.otherScreeningsController,
     required this.previouslyEvaluated,
@@ -67,14 +69,14 @@ class PatientClinicalInfo extends StatelessWidget {
             ),
 
             _buildField(
-              label: 'Já foi avaliado por outro profissional?',
+              label: 'Possui diagnóstico?',
               child: _buildBooleanSelector(
                 value: previouslyEvaluated,
                 onChanged: onPreviouslyEvaluatedChanged,
               ),
             ),
 
-            if (previouslyEvaluated == true)
+            if (previouslyEvaluated == true) ...[
               _buildField(
                 label: 'Diagnóstico anterior (se houver)',
                 child: CustomFormField(
@@ -85,6 +87,26 @@ class PatientClinicalInfo extends StatelessWidget {
                   maxLines: 3,
                 ),
               ),
+
+              _buildField(
+                label: 'Código CID (se houver)',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: cidCodeController,
+                  hintText: 'Ex: F84.0, F90.0, Z03.3',
+                  validator: (value) {
+                    // Validação opcional de formato CID
+                    if (value != null && value.isNotEmpty) {
+                      final cidPattern = RegExp(r'^[A-Z]\d{2}(\.\d)?$');
+                      if (!cidPattern.hasMatch(value.toUpperCase())) {
+                        return 'Formato inválido. Use: A00 ou A00.0';
+                      }
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
 
             _buildField(
               label: 'Comorbidades conhecidas',

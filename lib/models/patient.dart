@@ -110,6 +110,9 @@ class Patient extends HiveObject {
   @HiveField(11)
   final String? previousDiagnosis;
 
+  @HiveField(32)
+  final String? cidCode;
+
   @HiveField(12)
   final List<String> comorbidities;
 
@@ -183,6 +186,7 @@ class Patient extends HiveObject {
     this.referredBy,
     this.previouslyEvaluated,
     this.previousDiagnosis,
+    this.cidCode,
     this.comorbidities = const [],
     this.otherComorbidities,
     this.developmentalDelay,
@@ -241,6 +245,7 @@ class Patient extends HiveObject {
     String? referredBy,
     bool? previouslyEvaluated,
     String? previousDiagnosis,
+    String? cidCode,
     List<String>? comorbidities,
     String? otherComorbidities,
     bool? developmentalDelay,
@@ -273,6 +278,7 @@ class Patient extends HiveObject {
       referredBy: referredBy ?? this.referredBy,
       previouslyEvaluated: previouslyEvaluated ?? this.previouslyEvaluated,
       previousDiagnosis: previousDiagnosis ?? this.previousDiagnosis,
+      cidCode: cidCode ?? this.cidCode,
       comorbidities: comorbidities ?? this.comorbidities,
       otherComorbidities: otherComorbidities ?? this.otherComorbidities,
       developmentalDelay: developmentalDelay ?? this.developmentalDelay,
@@ -314,6 +320,7 @@ class Patient extends HiveObject {
       'referredBy': referredBy,
       'previouslyEvaluated': previouslyEvaluated,
       'previousDiagnosis': previousDiagnosis,
+      'cidCode': cidCode,
       'comorbidities': comorbidities,
       'otherComorbidities': otherComorbidities,
       'developmentalDelay': developmentalDelay,
@@ -355,6 +362,7 @@ class Patient extends HiveObject {
       referredBy: json['referredBy'],
       previouslyEvaluated: json['previouslyEvaluated'],
       previousDiagnosis: json['previousDiagnosis'],
+      cidCode: json['cidCode'],
       comorbidities: List<String>.from(json['comorbidities'] ?? []),
       otherComorbidities: json['otherComorbidities'],
       developmentalDelay: json['developmentalDelay'],
