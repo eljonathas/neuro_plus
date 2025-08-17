@@ -20,18 +20,17 @@ class ProtocolAdapter extends TypeAdapter<Protocol> {
       id: fields[0] as String?,
       name: fields[1] as String,
       description: fields[2] as String?,
-      categories: (fields[3] as List).cast<String>(),
-      items: (fields[4] as List).cast<ProtocolItem>(),
-      template: fields[5] as String,
-      createdAt: fields[6] as DateTime?,
-      updatedAt: fields[7] as DateTime?,
+      items: (fields[3] as List).cast<ProtocolItem>(),
+      template: fields[4] as String,
+      createdAt: fields[5] as DateTime?,
+      updatedAt: fields[6] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Protocol obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -39,14 +38,12 @@ class ProtocolAdapter extends TypeAdapter<Protocol> {
       ..writeByte(2)
       ..write(obj.description)
       ..writeByte(3)
-      ..write(obj.categories)
-      ..writeByte(4)
       ..write(obj.items)
-      ..writeByte(5)
+      ..writeByte(4)
       ..write(obj.template)
-      ..writeByte(6)
+      ..writeByte(5)
       ..write(obj.createdAt)
-      ..writeByte(7)
+      ..writeByte(6)
       ..write(obj.updatedAt);
   }
 

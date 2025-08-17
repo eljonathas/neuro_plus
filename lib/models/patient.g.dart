@@ -115,7 +115,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
   @override
   void write(BinaryWriter writer, Patient obj) {
     writer
-      ..writeByte(44)
+      ..writeByte(43)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -178,6 +178,10 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..write(obj.screeningsPerformed)
       ..writeByte(31)
       ..write(obj.otherScreenings)
+      ..writeByte(28)
+      ..write(obj.createdAt)
+      ..writeByte(29)
+      ..write(obj.updatedAt)
       ..writeByte(33)
       ..write(obj.motorDelay)
       ..writeByte(34)
@@ -197,11 +201,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..writeByte(41)
       ..write(obj.sensoryChanges)
       ..writeByte(42)
-      ..write(obj.sensoryChangesDescription)
-      ..writeByte(28)
-      ..write(obj.createdAt)
-      ..writeByte(29)
-      ..write(obj.updatedAt);
+      ..write(obj.sensoryChangesDescription);
   }
 
   @override

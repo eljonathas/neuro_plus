@@ -4,12 +4,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final VoidCallback onBack;
   final bool? isBackButtonVisible;
+  final bool hideTitle;
 
   const CustomAppBar({
     super.key,
     required this.title,
     required this.onBack,
     this.isBackButtonVisible,
+    this.hideTitle = false,
   });
 
   @override
@@ -44,18 +46,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
             else
               const SizedBox(width: 48),
-            Expanded(
-              child: Center(
-                child: Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+            if (!hideTitle)
+              Expanded(
+                child: Center(
+                  child: Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
               ),
-            ),
             // Espaço vazio para manter o título centralizado
             const SizedBox(width: 48),
           ],

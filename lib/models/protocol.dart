@@ -15,25 +15,21 @@ class Protocol extends HiveObject {
   final String? description;
 
   @HiveField(3)
-  final List<String> categories;
-
-  @HiveField(4)
   final List<ProtocolItem> items;
 
-  @HiveField(5)
+  @HiveField(4)
   final String template;
 
-  @HiveField(6)
+  @HiveField(5)
   final DateTime createdAt;
 
-  @HiveField(7)
+  @HiveField(6)
   final DateTime updatedAt;
 
   Protocol({
     String? id,
     required this.name,
     this.description,
-    this.categories = const [],
     this.items = const [],
     required this.template,
     DateTime? createdAt,
@@ -45,7 +41,6 @@ class Protocol extends HiveObject {
   Protocol copyWith({
     String? name,
     String? description,
-    List<String>? categories,
     List<ProtocolItem>? items,
     String? template,
   }) {
@@ -53,7 +48,6 @@ class Protocol extends HiveObject {
       id: id,
       name: name ?? this.name,
       description: description ?? this.description,
-      categories: categories ?? this.categories,
       items: items ?? this.items,
       template: template ?? this.template,
       createdAt: createdAt,
@@ -66,7 +60,6 @@ class Protocol extends HiveObject {
       'id': id,
       'name': name,
       'description': description,
-      'categories': categories,
       'items': items.map((item) => item.toJson()).toList(),
       'template': template,
       'createdAt': createdAt.toIso8601String(),
@@ -79,7 +72,6 @@ class Protocol extends HiveObject {
       id: json['id'],
       name: json['name'],
       description: json['description'],
-      categories: List<String>.from(json['categories'] ?? []),
       items:
           (json['items'] as List?)
               ?.map((item) => ProtocolItem.fromJson(item))

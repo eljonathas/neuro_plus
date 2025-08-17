@@ -5,6 +5,7 @@ import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/widgets/custom_card.dart';
 import 'package:neuro_plus/models/appointment.dart';
+import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/models/protocol.dart';
 import 'package:neuro_plus/screens/appointments_create/controllers/appointment_form_controller.dart';
 import 'package:neuro_plus/screens/appointments_create/utils/appointment_type_helper.dart';
@@ -70,6 +71,15 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
+  }
+
+  String _getGuardianName(List<Guardian> guardians) {
+    if (guardians.isEmpty) return '';
+    if (guardians.length == 1) return guardians.first.name;
+    final List<String> firstGuardianNames = guardians.first.name.split(' ');
+    final firstName = firstGuardianNames.first;
+    final lastName = firstGuardianNames.last;
+    return '$firstName $lastName e ${guardians.length - 1} outro${guardians.length - 1 > 1 ? 's' : ''}';
   }
 
   Future<void> _handleSave() async {
@@ -238,7 +248,9 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
-                subtitle: Text('${patient.age} anos • ${patient.guardians}'),
+                subtitle: Text(
+                  '${patient.age} anos • ${_getGuardianName(patient.guardians)}',
+                ),
                 trailing:
                     isSelected
                         ? Icon(

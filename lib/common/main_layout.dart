@@ -7,6 +7,7 @@ class MainLayout extends StatelessWidget {
   final String title;
   final int navIndex;
   final bool isBackButtonVisible;
+  final bool hideTitle;
 
   const MainLayout({
     super.key,
@@ -14,6 +15,7 @@ class MainLayout extends StatelessWidget {
     required this.child,
     required this.title,
     required this.navIndex,
+    this.hideTitle = false,
   });
 
   @override
@@ -23,6 +25,7 @@ class MainLayout extends StatelessWidget {
         title: title,
         onBack: () => Navigator.of(context).pop(),
         isBackButtonVisible: isBackButtonVisible,
+        hideTitle: hideTitle,
       ),
       body: child,
       bottomNavigationBar: CustomBottomNavBar(currentIndex: navIndex),

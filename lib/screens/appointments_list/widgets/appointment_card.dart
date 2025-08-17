@@ -52,6 +52,18 @@ class AppointmentCard extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Text(
+                                '${appointment.formattedDate} às ${appointment.time}',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.gray[600],
+                                ),
+                              ),
                               if (isToday) ...[
                                 const SizedBox(width: 8),
                                 Container(
@@ -77,56 +89,55 @@ class AppointmentCard extends StatelessWidget {
                               ],
                             ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${appointment.formattedDate} às ${appointment.time}',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: AppColors.gray[600],
-                            ),
-                          ),
                         ],
                       ),
                     ),
-                    _buildStatusChip(appointment.status),
+
                     _buildPopupMenu(),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  spacing: 8,
                   children: [
-                    Icon(
-                      Icons.medical_services,
-                      size: 16,
-                      color: AppColors.gray[500],
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      appointment.typeText,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.gray[600],
-                      ),
-                    ),
-                    if (appointment.hasProtocol) ...[
-                      const SizedBox(width: 16),
-                      Icon(
-                        Icons.assignment,
-                        size: 16,
-                        color: AppColors.gray[500],
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: Text(
-                          appointment.protocolNames?.join(', ') ?? '',
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.medical_services,
+                          size: 16,
+                          color: AppColors.gray[500],
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          appointment.typeText,
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.gray[600],
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                        if (appointment.hasProtocol) ...[
+                          const SizedBox(width: 16),
+                          Icon(
+                            Icons.assignment,
+                            size: 16,
+                            color: AppColors.gray[500],
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              appointment.protocolNames?.join(', ') ?? '',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.gray[600],
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    _buildStatusChip(appointment.status),
                   ],
                 ),
                 if (appointment.notes != null &&

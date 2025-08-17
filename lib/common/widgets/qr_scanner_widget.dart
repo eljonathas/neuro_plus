@@ -124,7 +124,6 @@ class _QrScannerWidgetState extends State<QrScannerWidget> {
                 if (protocol.description?.isNotEmpty == true)
                   Text('Descrição: ${protocol.description}'),
                 Text('Itens: ${protocol.items.length}'),
-                Text('Categorias: ${protocol.categories.join(', ')}'),
               ],
             ),
             actions: [

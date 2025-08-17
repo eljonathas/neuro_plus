@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 
 enum InputVariant { filled, outlined, link, ghost, icon }
@@ -18,6 +19,7 @@ class CustomFormField extends StatelessWidget {
   final int maxLines;
   final bool expands;
   final TextInputAction? textInputAction;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomFormField({
     super.key,
@@ -35,6 +37,7 @@ class CustomFormField extends StatelessWidget {
     this.maxLines = 1,
     this.expands = false,
     this.textInputAction,
+    this.inputFormatters,
   });
 
   bool get isTextArea => maxLines > 1 || expands;
@@ -139,6 +142,7 @@ class CustomFormField extends StatelessWidget {
       minLines: isTextArea ? minLines : 1,
       maxLines: isTextArea ? maxLines : 1,
       expands: expands,
+      inputFormatters: inputFormatters,
       decoration: _buildDecoration().copyWith(
         errorStyle: const TextStyle(color: Colors.red),
         errorBorder: _outlineBorder(Colors.red),

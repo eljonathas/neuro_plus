@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
+import 'package:neuro_plus/common/utils/phone_formatter.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/screens/patients/widgets/guardian_form_widget.dart';
 import 'package:intl/intl.dart';
@@ -77,6 +78,7 @@ class PatientBasicInfo extends StatelessWidget {
                 hintText: '(11) 99999-9999',
                 inputType: TextInputType.phone,
                 validator: phoneValidator,
+                inputFormatters: [BrazilianPhoneFormatter()],
               ),
             ),
 

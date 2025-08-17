@@ -5,6 +5,7 @@ import 'package:neuro_plus/common/main_layout.dart';
 import 'package:neuro_plus/common/widgets/custom_calendar.dart';
 import 'package:neuro_plus/common/services/appointments/appointments_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
+import 'package:neuro_plus/common/widgets/logo.dart';
 
 import 'package:neuro_plus/screens/home/widgets/appointment_card.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
@@ -80,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
+      hideTitle: true,
       title: "Página Inicial",
       navIndex: 0,
       child: SingleChildScrollView(
@@ -87,6 +89,15 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              decoration: const NeuralLogoDecoration(
+                color: AppColors.primarySwatch,
+              ),
+              height: 16,
+              width: 100,
+              margin: const EdgeInsets.only(top: 16),
+            ),
+            const SizedBox(height: 32),
             const Text(
               'Calendário',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),

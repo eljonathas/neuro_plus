@@ -46,6 +46,7 @@ class ProtocolItemsSection extends StatelessWidget {
             onOptionsChanged: (options) => onUpdateItemOptions(item, options),
           );
         }),
+        const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: TextButton.icon(

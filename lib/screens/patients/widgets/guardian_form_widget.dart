@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
+import 'package:neuro_plus/common/utils/phone_formatter.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class GuardianFormWidget extends StatefulWidget {
@@ -187,6 +188,7 @@ class _GuardianFormWidgetState extends State<GuardianFormWidget> {
         hintText: '(11) 99999-9999',
         inputType: TextInputType.phone,
         validator: widget.phoneValidator,
+        inputFormatters: [BrazilianPhoneFormatter()],
       ),
     );
   }

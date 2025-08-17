@@ -1,3 +1,5 @@
+import 'package:neuro_plus/common/utils/phone_formatter.dart';
+
 class PatientFormValidators {
   static String? requiredValidator(String? value) {
     return (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
@@ -10,15 +12,12 @@ class PatientFormValidators {
   }
 
   static String? phoneValidator(String? value) {
-    if (value?.isEmpty ?? true) return 'Este campo é obrigatório';
-    final phoneRegex = RegExp(r'^\+?[0-9\s\-()]{8,20}$');
-    return phoneRegex.hasMatch(value!) ? null : 'Telefone inválido';
+    return BrazilianPhoneValidator.validate(value);
   }
 
   static String? optionalPhoneValidator(String? value) {
     if (value?.isEmpty ?? true) return null;
-    final phoneRegex = RegExp(r'^\+?[0-9\s\-()]{8,20}$');
-    return phoneRegex.hasMatch(value!) ? null : 'Telefone inválido';
+    return BrazilianPhoneValidator.validate(value);
   }
 
   static String? numericValidator(String? value) {

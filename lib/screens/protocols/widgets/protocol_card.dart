@@ -111,39 +111,10 @@ class ProtocolCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (protocol.categories.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                _buildCategories(protocol.categories),
-              ],
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildCategories(List<String> categories) {
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children:
-          categories.take(3).map((category) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primarySwatch.withAlpha(25),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                category,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.primarySwatch,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            );
-          }).toList(),
     );
   }
 

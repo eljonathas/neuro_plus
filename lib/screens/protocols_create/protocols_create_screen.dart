@@ -22,7 +22,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
-  late List<String> _categories;
   late String _selectedTemplate;
   late List<ProtocolItem> _items;
   final Map<String, TextEditingController> _itemControllers = {};
@@ -32,7 +31,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
 
   // Cache para validadores
   late final String? Function(String?) _requiredValidator;
-  late final String? Function(List<String>?) _categoriesValidator;
 
   @override
   void initState() {
@@ -45,9 +43,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     _requiredValidator =
         (String? value) =>
             (value?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
-    _categoriesValidator =
-        (List<String>? categories) =>
-            (categories?.isEmpty ?? true) ? 'Este campo é obrigatório' : null;
   }
 
   void _initializeData() {
@@ -56,7 +51,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     _descriptionController = TextEditingController(
       text: protocol?.description ?? '',
     );
-    _categories = List.from(protocol?.categories ?? []);
     _selectedTemplate = protocol?.template ?? 'NOVO';
     _items = List.from(protocol?.items ?? []);
 
@@ -82,10 +76,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
       controller.dispose();
     }
     super.dispose();
-  }
-
-  void _onCategoriesChanged(List<String> categories) {
-    _categories = categories;
   }
 
   void _onTemplateChanged(String template) {
@@ -196,7 +186,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
                     _descriptionController.text.isEmpty
                         ? null
                         : _descriptionController.text,
-                categories: _categories,
                 items: updatedItems,
               )
               : Protocol(
@@ -205,7 +194,6 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
                     _descriptionController.text.isEmpty
                         ? null
                         : _descriptionController.text,
-                categories: _categories,
                 items: updatedItems,
                 template: _selectedTemplate,
               );
@@ -258,10 +246,7 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
               ProtocolBasicFields(
                 nameController: _nameController,
                 descriptionController: _descriptionController,
-                categories: _categories,
-                onCategoriesChanged: _onCategoriesChanged,
                 nameValidator: _requiredValidator,
-                categoriesValidator: _categoriesValidator,
               ),
               if (!_isEditing)
                 ProtocolTemplateSelector(
