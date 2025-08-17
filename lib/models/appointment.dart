@@ -45,10 +45,22 @@ class Appointment extends HiveObject {
   final DateTime updatedAt;
 
   @HiveField(13)
-  final int duration; // em minutos
+  final int duration;
 
   @HiveField(14)
   final String? location;
+
+  @HiveField(15)
+  final String? soapSubjective;
+
+  @HiveField(16)
+  final String? soapObjective;
+
+  @HiveField(17)
+  final String? soapAssessment;
+
+  @HiveField(18)
+  final String? soapPlan;
 
   Appointment({
     String? id,
@@ -66,10 +78,13 @@ class Appointment extends HiveObject {
     DateTime? updatedAt,
     this.duration = 60,
     this.location,
-  }) : 
-    id = id ?? const Uuid().v4(),
-    createdAt = createdAt ?? DateTime.now(),
-    updatedAt = updatedAt ?? DateTime.now();
+    this.soapSubjective,
+    this.soapObjective,
+    this.soapAssessment,
+    this.soapPlan,
+  }) : id = id ?? const Uuid().v4(),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   Appointment copyWith({
     String? patientId,
@@ -84,6 +99,10 @@ class Appointment extends HiveObject {
     Map<String, Map<String, dynamic>>? protocolResponses,
     int? duration,
     String? location,
+    String? soapSubjective,
+    String? soapObjective,
+    String? soapAssessment,
+    String? soapPlan,
   }) {
     return Appointment(
       id: id,
@@ -101,6 +120,10 @@ class Appointment extends HiveObject {
       updatedAt: DateTime.now(),
       duration: duration ?? this.duration,
       location: location ?? this.location,
+      soapSubjective: soapSubjective ?? this.soapSubjective,
+      soapObjective: soapObjective ?? this.soapObjective,
+      soapAssessment: soapAssessment ?? this.soapAssessment,
+      soapPlan: soapPlan ?? this.soapPlan,
     );
   }
 
@@ -146,16 +169,16 @@ class Appointment extends HiveObject {
 enum AppointmentStatus {
   @HiveField(0)
   scheduled,
-  
+
   @HiveField(1)
   inProgress,
-  
+
   @HiveField(2)
   completed,
-  
+
   @HiveField(3)
   cancelled,
-  
+
   @HiveField(4)
   noShow,
 }
@@ -164,13 +187,13 @@ enum AppointmentStatus {
 enum AppointmentType {
   @HiveField(0)
   evaluation,
-  
+
   @HiveField(1)
   therapy,
-  
+
   @HiveField(2)
   followUp,
-  
+
   @HiveField(3)
   consultation,
-} 
+}

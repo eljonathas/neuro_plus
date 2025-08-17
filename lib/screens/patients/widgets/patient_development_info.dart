@@ -1,12 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
+import 'package:neuro_plus/common/widgets/tri_state_selector.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class PatientDevelopmentInfo extends StatefulWidget {
   final GlobalKey<FormState> formKey;
+  final String gender;
   final TextEditingController repetitiveBehaviorsDescriptionController;
   final TextEditingController developmentalDelayController;
+  final TextEditingController motorDelayController;
+  final TextEditingController speechDelayController;
+  final TextEditingController sittingAgeMonthsController;
+  final TextEditingController firstStepAgeMonthsController;
+  final TextEditingController languageRegressionController;
+  final TextEditingController languageRegressionDescriptionController;
+  final TextEditingController feedingSelectivityController;
+  final TextEditingController feedingSelectivityDescriptionController;
+  final TextEditingController sensoryChangesController;
+  final TextEditingController sensoryChangesDescriptionController;
   final TextEditingController firstWordAgeController;
   final TextEditingController eyeContactController;
   final TextEditingController repetitiveBehaviorsController;
@@ -17,8 +29,19 @@ class PatientDevelopmentInfo extends StatefulWidget {
   const PatientDevelopmentInfo({
     super.key,
     required this.formKey,
+    required this.gender,
     required this.repetitiveBehaviorsDescriptionController,
     required this.developmentalDelayController,
+    required this.motorDelayController,
+    required this.speechDelayController,
+    required this.sittingAgeMonthsController,
+    required this.firstStepAgeMonthsController,
+    required this.languageRegressionController,
+    required this.languageRegressionDescriptionController,
+    required this.feedingSelectivityController,
+    required this.feedingSelectivityDescriptionController,
+    required this.sensoryChangesController,
+    required this.sensoryChangesDescriptionController,
     required this.firstWordAgeController,
     required this.eyeContactController,
     required this.repetitiveBehaviorsController,
@@ -37,6 +60,11 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
     super.initState();
     // Adiciona listeners para rebuilds automáticos
     widget.developmentalDelayController.addListener(_onControllerChanged);
+    widget.motorDelayController.addListener(_onControllerChanged);
+    widget.speechDelayController.addListener(_onControllerChanged);
+    widget.languageRegressionController.addListener(_onControllerChanged);
+    widget.feedingSelectivityController.addListener(_onControllerChanged);
+    widget.sensoryChangesController.addListener(_onControllerChanged);
     widget.eyeContactController.addListener(_onControllerChanged);
     widget.repetitiveBehaviorsController.addListener(_onControllerChanged);
     widget.routineResistanceController.addListener(_onControllerChanged);
@@ -48,6 +76,11 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
   void dispose() {
     // Remove os listeners
     widget.developmentalDelayController.removeListener(_onControllerChanged);
+    widget.motorDelayController.removeListener(_onControllerChanged);
+    widget.speechDelayController.removeListener(_onControllerChanged);
+    widget.languageRegressionController.removeListener(_onControllerChanged);
+    widget.feedingSelectivityController.removeListener(_onControllerChanged);
+    widget.sensoryChangesController.removeListener(_onControllerChanged);
     widget.eyeContactController.removeListener(_onControllerChanged);
     widget.repetitiveBehaviorsController.removeListener(_onControllerChanged);
     widget.routineResistanceController.removeListener(_onControllerChanged);
@@ -72,28 +105,57 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle('Desenvolvimento'),
+
             const SizedBox(height: 16),
 
             _buildField(
-              label: 'Apresentou atraso motor ou de fala?',
-              child: _buildBooleanSelector(
-                controller: widget.developmentalDelayController,
-              ),
+              label: 'Atraso motor',
+              child: TriStateSelector(controller: widget.motorDelayController),
             ),
 
             _buildField(
-              label: 'Idade da primeira palavra (meses)',
+              label: 'Atraso de linguagem',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TriStateSelector(controller: widget.speechDelayController),
+                ],
+              ),
+            ),
+
+            if (widget.speechDelayController.text == 'true')
+              _buildField(
+                label: 'Idade da primeira palavra (meses)',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.firstWordAgeController,
+                  hintText: 'Ex: 18',
+                  inputType: TextInputType.number,
+                  validator: (value) {
+                    if (value?.isEmpty ?? true) return null;
+                    final number = int.tryParse(value!);
+                    if (number == null) return 'Digite um número válido';
+                    if (number < 0 || number > 120) {
+                      return 'Digite um valor entre 0 e 120 meses';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+            _buildField(
+              label: 'Quando sentou? (meses)',
               child: CustomFormField(
                 variant: InputVariant.outlined,
-                controller: widget.firstWordAgeController,
-                hintText: 'Ex: 18',
+                controller: widget.sittingAgeMonthsController,
+                hintText: 'Ex: 6',
                 inputType: TextInputType.number,
                 validator: (value) {
                   if (value?.isEmpty ?? true) return null;
                   final number = int.tryParse(value!);
                   if (number == null) return 'Digite um número válido';
-                  if (number < 0 || number > 120) {
-                    return 'Digite um valor entre 0 e 120 meses';
+                  if (number < 0 || number > 24) {
+                    return 'Digite um valor entre 0 e 24 meses';
                   }
                   return null;
                 },
@@ -101,7 +163,26 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
             ),
 
             _buildField(
-              label: 'Contato visual presente?',
+              label: 'Idade do primeiro passo (meses)',
+              child: CustomFormField(
+                variant: InputVariant.outlined,
+                controller: widget.firstStepAgeMonthsController,
+                hintText: 'Ex: 12',
+                inputType: TextInputType.number,
+                validator: (value) {
+                  if (value?.isEmpty ?? true) return null;
+                  final number = int.tryParse(value!);
+                  if (number == null) return 'Digite um número válido';
+                  if (number < 0 || number > 48) {
+                    return 'Digite um valor entre 0 e 48 meses';
+                  }
+                  return null;
+                },
+              ),
+            ),
+
+            _buildField(
+              label: 'Mantém contato visual?',
               child: _buildSingleChoiceSelector(
                 options: PatientEnums.eyeContactOptions,
                 controller: widget.eyeContactController,
@@ -110,7 +191,7 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
 
             _buildField(
               label: 'Comportamentos repetitivos observados?',
-              child: _buildBooleanSelector(
+              child: TriStateSelector(
                 controller: widget.repetitiveBehaviorsController,
               ),
             ),
@@ -129,7 +210,7 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
 
             _buildField(
               label: 'Apresenta resistência à mudança/rotinas?',
-              child: _buildBooleanSelector(
+              child: TriStateSelector(
                 controller: widget.routineResistanceController,
               ),
             ),
@@ -143,12 +224,61 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
             ),
 
             _buildField(
-              label: 'Sensory hypersensitivity present?',
-              child: _buildSingleChoiceSelector(
-                options: PatientEnums.sensoryHypersensitivityOptions,
-                controller: widget.sensoryHypersensitivityController,
+              label: 'Perda de vocabulário (regressão de linguagem)?',
+              child: TriStateSelector(
+                controller: widget.languageRegressionController,
               ),
             ),
+
+            if (widget.languageRegressionController.text == 'true')
+              _buildField(
+                label: 'Descreva a perda de vocabulário',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.languageRegressionDescriptionController,
+                  hintText: 'Descreva brevemente',
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+              ),
+
+            _buildField(
+              label: 'Seletividade alimentar presente?',
+              child: TriStateSelector(
+                controller: widget.feedingSelectivityController,
+              ),
+            ),
+
+            if (widget.feedingSelectivityController.text == 'true')
+              _buildField(
+                label: 'Descreva a seletividade alimentar',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.feedingSelectivityDescriptionController,
+                  hintText: 'Descreva brevemente',
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+              ),
+
+            _buildField(
+              label: 'Alterações sensoriais presentes?',
+              child: TriStateSelector(
+                controller: widget.sensoryChangesController,
+              ),
+            ),
+
+            if (widget.sensoryChangesController.text == 'true')
+              _buildField(
+                label: 'Descreva as alterações sensoriais',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.sensoryChangesDescriptionController,
+                  hintText: 'Descreva brevemente',
+                  minLines: 2,
+                  maxLines: 4,
+                ),
+              ),
 
             const SizedBox(height: 32),
           ],
@@ -186,31 +316,6 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
           child,
         ],
       ),
-    );
-  }
-
-  Widget _buildBooleanSelector({required TextEditingController controller}) {
-    final value =
-        controller.text == 'true'
-            ? true
-            : (controller.text == 'false' ? false : null);
-
-    return Row(
-      children: [
-        _buildRadioOption(
-          label: 'Sim',
-          value: true,
-          groupValue: value,
-          onChanged: (val) => controller.text = val.toString(),
-        ),
-        const SizedBox(width: 24),
-        _buildRadioOption(
-          label: 'Não',
-          value: false,
-          groupValue: value,
-          onChanged: (val) => controller.text = val.toString(),
-        ),
-      ],
     );
   }
 

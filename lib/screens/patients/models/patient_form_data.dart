@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class PatientFormData {
-  // Controllers para campos básicos
   final TextEditingController fullNameController;
   final TextEditingController contactPhoneController;
   final TextEditingController contactEmailController;
   final TextEditingController addressController;
 
-  // Lista de responsáveis
   List<Guardian> guardians;
 
-  // Controllers para informações clínicas
   final TextEditingController referralReasonController;
   final TextEditingController referredByController;
   final TextEditingController previousDiagnosisController;
@@ -22,8 +19,17 @@ class PatientFormData {
   final TextEditingController schoolObservationsController;
   final TextEditingController guardiansObservationsController;
 
-  // Controllers para informações de desenvolvimento
   final TextEditingController developmentalDelayController;
+  final TextEditingController motorDelayController;
+  final TextEditingController speechDelayController;
+  final TextEditingController sittingAgeMonthsController;
+  final TextEditingController firstStepAgeMonthsController;
+  final TextEditingController languageRegressionController;
+  final TextEditingController languageRegressionDescriptionController;
+  final TextEditingController feedingSelectivityController;
+  final TextEditingController feedingSelectivityDescriptionController;
+  final TextEditingController sensoryChangesController;
+  final TextEditingController sensoryChangesDescriptionController;
   final TextEditingController firstWordAgeController;
   final TextEditingController eyeContactController;
   final TextEditingController repetitiveBehaviorsController;
@@ -31,7 +37,6 @@ class PatientFormData {
   final TextEditingController socialInteractionController;
   final TextEditingController sensoryHypersensitivityController;
 
-  // Dados do formulário
   DateTime birthDate;
   String gender;
   List<String> comorbidities;
@@ -90,6 +95,51 @@ class PatientFormData {
       ),
       developmentalDelayController = TextEditingController(
         text: patient?.developmentalDelay?.toString() ?? '',
+      ),
+      motorDelayController = TextEditingController(
+        text:
+            patient?.motorDelay == null
+                ? ''
+                : (patient!.motorDelay! ? 'true' : 'false'),
+      ),
+      speechDelayController = TextEditingController(
+        text:
+            patient?.speechDelay == null
+                ? ''
+                : (patient!.speechDelay! ? 'true' : 'false'),
+      ),
+      sittingAgeMonthsController = TextEditingController(
+        text: patient?.sittingAgeMonths?.toString() ?? '',
+      ),
+      firstStepAgeMonthsController = TextEditingController(
+        text: patient?.firstStepAgeMonths?.toString() ?? '',
+      ),
+      languageRegressionController = TextEditingController(
+        text:
+            patient?.languageRegression == null
+                ? ''
+                : (patient!.languageRegression! ? 'true' : 'false'),
+      ),
+      languageRegressionDescriptionController = TextEditingController(
+        text: patient?.languageRegressionDescription ?? '',
+      ),
+      feedingSelectivityController = TextEditingController(
+        text:
+            patient?.feedingSelectivity == null
+                ? ''
+                : (patient!.feedingSelectivity! ? 'true' : 'false'),
+      ),
+      feedingSelectivityDescriptionController = TextEditingController(
+        text: patient?.feedingSelectivityDescription ?? '',
+      ),
+      sensoryChangesController = TextEditingController(
+        text:
+            patient?.sensoryChanges == null
+                ? ''
+                : (patient!.sensoryChanges! ? 'true' : 'false'),
+      ),
+      sensoryChangesDescriptionController = TextEditingController(
+        text: patient?.sensoryChangesDescription ?? '',
       ),
       firstWordAgeController = TextEditingController(
         text: patient?.firstWordAge?.toString() ?? '',
@@ -158,6 +208,16 @@ class PatientFormData {
     schoolObservationsController.dispose();
     guardiansObservationsController.dispose();
     developmentalDelayController.dispose();
+    motorDelayController.dispose();
+    speechDelayController.dispose();
+    sittingAgeMonthsController.dispose();
+    firstStepAgeMonthsController.dispose();
+    languageRegressionController.dispose();
+    languageRegressionDescriptionController.dispose();
+    feedingSelectivityController.dispose();
+    feedingSelectivityDescriptionController.dispose();
+    sensoryChangesController.dispose();
+    sensoryChangesDescriptionController.dispose();
     firstWordAgeController.dispose();
     eyeContactController.dispose();
     repetitiveBehaviorsController.dispose();
@@ -196,28 +256,45 @@ class PatientFormData {
                   otherComorbiditiesController.text.trim().isNotEmpty
               ? otherComorbiditiesController.text.trim()
               : null,
-      developmentalDelay:
-          developmentalDelayController.text.isEmpty
+      developmentalDelay: _computeDevelopmentalDelay(),
+      motorDelay: _parseBoolFromController(motorDelayController),
+      speechDelay: _parseBoolFromController(speechDelayController),
+      sittingAgeMonths:
+          sittingAgeMonthsController.text.isEmpty
               ? null
-              : bool.tryParse(developmentalDelayController.text),
+              : int.tryParse(sittingAgeMonthsController.text),
+      firstStepAgeMonths:
+          firstStepAgeMonthsController.text.isEmpty
+              ? null
+              : int.tryParse(firstStepAgeMonthsController.text),
+      languageRegression: _parseBoolFromController(
+        languageRegressionController,
+      ),
+      languageRegressionDescription:
+          languageRegressionDescriptionController.text.isEmpty
+              ? null
+              : languageRegressionDescriptionController.text,
+      feedingSelectivity: _parseBoolFromController(
+        feedingSelectivityController,
+      ),
+      feedingSelectivityDescription:
+          feedingSelectivityDescriptionController.text.isEmpty
+              ? null
+              : feedingSelectivityDescriptionController.text,
       firstWordAge:
           firstWordAgeController.text.isEmpty
               ? null
               : int.tryParse(firstWordAgeController.text),
       eyeContact:
           eyeContactController.text.isEmpty ? null : eyeContactController.text,
-      repetitiveBehaviors:
-          repetitiveBehaviorsController.text.isEmpty
-              ? null
-              : bool.tryParse(repetitiveBehaviorsController.text),
+      repetitiveBehaviors: _parseBoolFromController(
+        repetitiveBehaviorsController,
+      ),
       repetitiveBehaviorsDescription:
           repetitiveBehaviorsDescriptionController.text.isEmpty
               ? null
               : repetitiveBehaviorsDescriptionController.text,
-      routineResistance:
-          routineResistanceController.text.isEmpty
-              ? null
-              : bool.tryParse(routineResistanceController.text),
+      routineResistance: _parseBoolFromController(routineResistanceController),
       socialInteractionWithChildren:
           socialInteractionController.text.isEmpty
               ? null
@@ -226,6 +303,11 @@ class PatientFormData {
           sensoryHypersensitivityController.text.isEmpty
               ? null
               : sensoryHypersensitivityController.text,
+      sensoryChanges: _parseBoolFromController(sensoryChangesController),
+      sensoryChangesDescription:
+          sensoryChangesDescriptionController.text.isEmpty
+              ? null
+              : sensoryChangesDescriptionController.text,
       attendsSchool: attendsSchool,
       schoolType: schoolType,
       schoolShift: schoolShift,
@@ -277,28 +359,45 @@ class PatientFormData {
                   otherComorbiditiesController.text.trim().isNotEmpty
               ? otherComorbiditiesController.text.trim()
               : null,
-      developmentalDelay:
-          developmentalDelayController.text.isEmpty
+      developmentalDelay: _computeDevelopmentalDelay(),
+      motorDelay: _parseBoolFromController(motorDelayController),
+      speechDelay: _parseBoolFromController(speechDelayController),
+      sittingAgeMonths:
+          sittingAgeMonthsController.text.isEmpty
               ? null
-              : bool.tryParse(developmentalDelayController.text),
+              : int.tryParse(sittingAgeMonthsController.text),
+      firstStepAgeMonths:
+          firstStepAgeMonthsController.text.isEmpty
+              ? null
+              : int.tryParse(firstStepAgeMonthsController.text),
+      languageRegression: _parseBoolFromController(
+        languageRegressionController,
+      ),
+      languageRegressionDescription:
+          languageRegressionDescriptionController.text.isEmpty
+              ? null
+              : languageRegressionDescriptionController.text,
+      feedingSelectivity: _parseBoolFromController(
+        feedingSelectivityController,
+      ),
+      feedingSelectivityDescription:
+          feedingSelectivityDescriptionController.text.isEmpty
+              ? null
+              : feedingSelectivityDescriptionController.text,
       firstWordAge:
           firstWordAgeController.text.isEmpty
               ? null
               : int.tryParse(firstWordAgeController.text),
       eyeContact:
           eyeContactController.text.isEmpty ? null : eyeContactController.text,
-      repetitiveBehaviors:
-          repetitiveBehaviorsController.text.isEmpty
-              ? null
-              : bool.tryParse(repetitiveBehaviorsController.text),
+      repetitiveBehaviors: _parseBoolFromController(
+        repetitiveBehaviorsController,
+      ),
       repetitiveBehaviorsDescription:
           repetitiveBehaviorsDescriptionController.text.isEmpty
               ? null
               : repetitiveBehaviorsDescriptionController.text,
-      routineResistance:
-          routineResistanceController.text.isEmpty
-              ? null
-              : bool.tryParse(routineResistanceController.text),
+      routineResistance: _parseBoolFromController(routineResistanceController),
       socialInteractionWithChildren:
           socialInteractionController.text.isEmpty
               ? null
@@ -307,6 +406,11 @@ class PatientFormData {
           sensoryHypersensitivityController.text.isEmpty
               ? null
               : sensoryHypersensitivityController.text,
+      sensoryChanges: _parseBoolFromController(sensoryChangesController),
+      sensoryChangesDescription:
+          sensoryChangesDescriptionController.text.isEmpty
+              ? null
+              : sensoryChangesDescriptionController.text,
       attendsSchool: attendsSchool,
       schoolType: schoolType,
       schoolShift: schoolShift,
@@ -326,5 +430,20 @@ class PatientFormData {
               ? otherScreeningsController.text.trim()
               : null,
     );
+  }
+
+  bool? _parseBoolFromController(TextEditingController controller) {
+    if (controller.text == 'true') return true;
+    if (controller.text == 'false') return false;
+    return null;
+  }
+
+  bool? _computeDevelopmentalDelay() {
+    final bool? motor = _parseBoolFromController(motorDelayController);
+    final bool? speech = _parseBoolFromController(speechDelayController);
+    if (motor == true || speech == true) return true;
+    if (motor == false && speech == false) return false;
+    if (developmentalDelayController.text.isEmpty) return null;
+    return bool.tryParse(developmentalDelayController.text);
   }
 }

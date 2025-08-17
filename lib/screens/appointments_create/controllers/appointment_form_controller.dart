@@ -70,6 +70,26 @@ class AppointmentFormController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateSoapSubjective(String? value) {
+    _formData = _formData.copyWith(soapSubjective: value);
+    notifyListeners();
+  }
+
+  void updateSoapObjective(String? value) {
+    _formData = _formData.copyWith(soapObjective: value);
+    notifyListeners();
+  }
+
+  void updateSoapAssessment(String? value) {
+    _formData = _formData.copyWith(soapAssessment: value);
+    notifyListeners();
+  }
+
+  void updateSoapPlan(String? value) {
+    _formData = _formData.copyWith(soapPlan: value);
+    notifyListeners();
+  }
+
   void addProtocol(Protocol protocol) {
     final newProtocols = List<Protocol>.from(_formData.selectedProtocols);
     if (!newProtocols.contains(protocol)) {

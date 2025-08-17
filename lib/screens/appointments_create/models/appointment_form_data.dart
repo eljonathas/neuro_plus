@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/models/patient.dart';
@@ -13,6 +14,12 @@ class AppointmentFormData {
   int duration;
   String? location;
   String? notes;
+
+  // Notas SOAP (Fase 1 - apenas UI e serialização em notes)
+  String? soapSubjective;
+  String? soapObjective;
+  String? soapAssessment;
+  String? soapPlan;
 
   // Estado do formulário
   int currentStep;
@@ -31,6 +38,10 @@ class AppointmentFormData {
     this.duration = 60,
     this.location,
     this.notes,
+    this.soapSubjective,
+    this.soapObjective,
+    this.soapAssessment,
+    this.soapPlan,
     this.currentStep = 0,
     this.isLoading = false,
     this.patients = const [],
@@ -91,6 +102,25 @@ class AppointmentFormData {
     final timeString =
         '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}';
 
+    // Serializa SOAP dentro de notes como JSON-like mantendo notes de texto
+    String? combinedNotes;
+    final hasSoap =
+        (soapSubjective?.trim().isNotEmpty == true) ||
+        (soapObjective?.trim().isNotEmpty == true) ||
+        (soapAssessment?.trim().isNotEmpty == true) ||
+        (soapPlan?.trim().isNotEmpty == true);
+    if (hasSoap || (notes?.isNotEmpty ?? false)) {
+      combinedNotes = jsonEncode({
+        'SOAP': {
+          'S': soapSubjective?.trim(),
+          'O': soapObjective?.trim(),
+          'A': soapAssessment?.trim(),
+          'P': soapPlan?.trim(),
+        },
+        'text': notes?.trim(),
+      });
+    }
+
     return Appointment(
       id: existingId,
       patientId: selectedPatient!.id,
@@ -108,7 +138,7 @@ class AppointmentFormData {
               : null,
       duration: duration,
       location: location,
-      notes: notes,
+      notes: combinedNotes,
       status: existingStatus ?? AppointmentStatus.scheduled,
       protocolResponses: protocolResponses,
       createdAt: createdAt,
@@ -124,6 +154,10 @@ class AppointmentFormData {
     int? duration,
     String? location,
     String? notes,
+    String? soapSubjective,
+    String? soapObjective,
+    String? soapAssessment,
+    String? soapPlan,
     int? currentStep,
     bool? isLoading,
     List<Patient>? patients,
@@ -138,6 +172,10 @@ class AppointmentFormData {
       duration: duration ?? this.duration,
       location: location ?? this.location,
       notes: notes ?? this.notes,
+      soapSubjective: soapSubjective ?? this.soapSubjective,
+      soapObjective: soapObjective ?? this.soapObjective,
+      soapAssessment: soapAssessment ?? this.soapAssessment,
+      soapPlan: soapPlan ?? this.soapPlan,
       currentStep: currentStep ?? this.currentStep,
       isLoading: isLoading ?? this.isLoading,
       patients: patients ?? this.patients,

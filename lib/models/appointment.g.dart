@@ -27,19 +27,25 @@ class AppointmentAdapter extends TypeAdapter<Appointment> {
       status: fields[7] as AppointmentStatus,
       type: fields[8] as AppointmentType,
       notes: fields[9] as String?,
-      protocolResponses: (fields[10] as Map?)?.map((dynamic k, dynamic v) =>
-          MapEntry(k as String, (v as Map).cast<String, dynamic>())),
+      protocolResponses: (fields[10] as Map?)?.map(
+        (dynamic k, dynamic v) =>
+            MapEntry(k as String, (v as Map).cast<String, dynamic>()),
+      ),
       createdAt: fields[11] as DateTime?,
       updatedAt: fields[12] as DateTime?,
       duration: fields[13] as int,
       location: fields[14] as String?,
+      soapSubjective: fields[15] as String?,
+      soapObjective: fields[16] as String?,
+      soapAssessment: fields[17] as String?,
+      soapPlan: fields[18] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Appointment obj) {
     writer
-      ..writeByte(15)
+      ..writeByte(19)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -69,7 +75,15 @@ class AppointmentAdapter extends TypeAdapter<Appointment> {
       ..writeByte(13)
       ..write(obj.duration)
       ..writeByte(14)
-      ..write(obj.location);
+      ..write(obj.location)
+      ..writeByte(15)
+      ..write(obj.soapSubjective)
+      ..writeByte(16)
+      ..write(obj.soapObjective)
+      ..writeByte(17)
+      ..write(obj.soapAssessment)
+      ..writeByte(18)
+      ..write(obj.soapPlan);
   }
 
   @override

@@ -97,6 +97,16 @@ class PatientAdapter extends TypeAdapter<Patient> {
       guardiansObservations: fields[26] as String?,
       screeningsPerformed: (fields[27] as List).cast<String>(),
       otherScreenings: fields[31] as String?,
+      motorDelay: fields[33] as bool?,
+      speechDelay: fields[34] as bool?,
+      sittingAgeMonths: fields[35] as int?,
+      firstStepAgeMonths: fields[36] as int?,
+      languageRegression: fields[37] as bool?,
+      languageRegressionDescription: fields[38] as String?,
+      feedingSelectivity: fields[39] as bool?,
+      feedingSelectivityDescription: fields[40] as String?,
+      sensoryChanges: fields[41] as bool?,
+      sensoryChangesDescription: fields[42] as String?,
       createdAt: fields[28] as DateTime?,
       updatedAt: fields[29] as DateTime?,
     );
@@ -105,7 +115,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
   @override
   void write(BinaryWriter writer, Patient obj) {
     writer
-      ..writeByte(33)
+      ..writeByte(44)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -168,6 +178,26 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..write(obj.screeningsPerformed)
       ..writeByte(31)
       ..write(obj.otherScreenings)
+      ..writeByte(33)
+      ..write(obj.motorDelay)
+      ..writeByte(34)
+      ..write(obj.speechDelay)
+      ..writeByte(35)
+      ..write(obj.sittingAgeMonths)
+      ..writeByte(36)
+      ..write(obj.firstStepAgeMonths)
+      ..writeByte(37)
+      ..write(obj.languageRegression)
+      ..writeByte(38)
+      ..write(obj.languageRegressionDescription)
+      ..writeByte(39)
+      ..write(obj.feedingSelectivity)
+      ..writeByte(40)
+      ..write(obj.feedingSelectivityDescription)
+      ..writeByte(41)
+      ..write(obj.sensoryChanges)
+      ..writeByte(42)
+      ..write(obj.sensoryChangesDescription)
       ..writeByte(28)
       ..write(obj.createdAt)
       ..writeByte(29)

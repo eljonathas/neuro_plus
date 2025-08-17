@@ -173,6 +173,37 @@ class Patient extends HiveObject {
   @HiveField(29)
   final DateTime updatedAt;
 
+  // Novos campos (Fase 2)
+  @HiveField(33)
+  final bool? motorDelay;
+
+  @HiveField(34)
+  final bool? speechDelay;
+
+  @HiveField(35)
+  final int? sittingAgeMonths;
+
+  @HiveField(36)
+  final int? firstStepAgeMonths;
+
+  @HiveField(37)
+  final bool? languageRegression;
+
+  @HiveField(38)
+  final String? languageRegressionDescription;
+
+  @HiveField(39)
+  final bool? feedingSelectivity;
+
+  @HiveField(40)
+  final String? feedingSelectivityDescription;
+
+  @HiveField(41)
+  final bool? sensoryChanges;
+
+  @HiveField(42)
+  final String? sensoryChangesDescription;
+
   Patient({
     String? id,
     required this.fullName,
@@ -205,6 +236,16 @@ class Patient extends HiveObject {
     this.guardiansObservations,
     this.screeningsPerformed = const [],
     this.otherScreenings,
+    this.motorDelay,
+    this.speechDelay,
+    this.sittingAgeMonths,
+    this.firstStepAgeMonths,
+    this.languageRegression,
+    this.languageRegressionDescription,
+    this.feedingSelectivity,
+    this.feedingSelectivityDescription,
+    this.sensoryChanges,
+    this.sensoryChangesDescription,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
@@ -264,6 +305,16 @@ class Patient extends HiveObject {
     String? guardiansObservations,
     List<String>? screeningsPerformed,
     String? otherScreenings,
+    bool? motorDelay,
+    bool? speechDelay,
+    int? sittingAgeMonths,
+    int? firstStepAgeMonths,
+    bool? languageRegression,
+    String? languageRegressionDescription,
+    bool? feedingSelectivity,
+    String? feedingSelectivityDescription,
+    bool? sensoryChanges,
+    String? sensoryChangesDescription,
   }) {
     return Patient(
       id: id,
@@ -301,6 +352,19 @@ class Patient extends HiveObject {
           guardiansObservations ?? this.guardiansObservations,
       screeningsPerformed: screeningsPerformed ?? this.screeningsPerformed,
       otherScreenings: otherScreenings ?? this.otherScreenings,
+      motorDelay: motorDelay ?? this.motorDelay,
+      speechDelay: speechDelay ?? this.speechDelay,
+      sittingAgeMonths: sittingAgeMonths ?? this.sittingAgeMonths,
+      firstStepAgeMonths: firstStepAgeMonths ?? this.firstStepAgeMonths,
+      languageRegression: languageRegression ?? this.languageRegression,
+      languageRegressionDescription:
+          languageRegressionDescription ?? this.languageRegressionDescription,
+      feedingSelectivity: feedingSelectivity ?? this.feedingSelectivity,
+      feedingSelectivityDescription:
+          feedingSelectivityDescription ?? this.feedingSelectivityDescription,
+      sensoryChanges: sensoryChanges ?? this.sensoryChanges,
+      sensoryChangesDescription:
+          sensoryChangesDescription ?? this.sensoryChangesDescription,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );
@@ -339,6 +403,16 @@ class Patient extends HiveObject {
       'guardiansObservations': guardiansObservations,
       'screeningsPerformed': screeningsPerformed,
       'otherScreenings': otherScreenings,
+      'motorDelay': motorDelay,
+      'speechDelay': speechDelay,
+      'sittingAgeMonths': sittingAgeMonths,
+      'firstStepAgeMonths': firstStepAgeMonths,
+      'languageRegression': languageRegression,
+      'languageRegressionDescription': languageRegressionDescription,
+      'feedingSelectivity': feedingSelectivity,
+      'feedingSelectivityDescription': feedingSelectivityDescription,
+      'sensoryChanges': sensoryChanges,
+      'sensoryChangesDescription': sensoryChangesDescription,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -381,13 +455,22 @@ class Patient extends HiveObject {
       guardiansObservations: json['guardiansObservations'],
       screeningsPerformed: List<String>.from(json['screeningsPerformed'] ?? []),
       otherScreenings: json['otherScreenings'],
+      motorDelay: json['motorDelay'],
+      speechDelay: json['speechDelay'],
+      sittingAgeMonths: json['sittingAgeMonths'],
+      firstStepAgeMonths: json['firstStepAgeMonths'],
+      languageRegression: json['languageRegression'],
+      languageRegressionDescription: json['languageRegressionDescription'],
+      feedingSelectivity: json['feedingSelectivity'],
+      feedingSelectivityDescription: json['feedingSelectivityDescription'],
+      sensoryChanges: json['sensoryChanges'],
+      sensoryChangesDescription: json['sensoryChangesDescription'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
 }
 
-// Enums para as opções do formulário
 class PatientEnums {
   static const List<String> genderOptions = ['Masculino', 'Feminino', 'Outro'];
 
@@ -399,12 +482,18 @@ class PatientEnums {
     'Outros',
   ];
 
-  static const List<String> eyeContactOptions = ['Sim', 'Não', 'Parcial'];
+  static const List<String> eyeContactOptions = [
+    'Sim',
+    'Não',
+    'Parcial',
+    'Não observado',
+  ];
 
   static const List<String> socialInteractionOptions = [
     'Sim',
     'Não',
     'Parcial',
+    'Não observado',
   ];
 
   static const List<String> sensoryHypersensitivityOptions = [

@@ -204,10 +204,28 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
   Widget _buildDevelopmentInfoPage() {
     return PatientDevelopmentInfo(
       formKey: _developmentInfoFormKey,
+      gender: _controller.formData!.gender,
       repetitiveBehaviorsDescriptionController:
           _controller.formData!.repetitiveBehaviorsDescriptionController,
       developmentalDelayController:
           _controller.formData!.developmentalDelayController,
+      motorDelayController: _controller.formData!.motorDelayController,
+      speechDelayController: _controller.formData!.speechDelayController,
+      sittingAgeMonthsController:
+          _controller.formData!.sittingAgeMonthsController,
+      firstStepAgeMonthsController:
+          _controller.formData!.firstStepAgeMonthsController,
+      languageRegressionController:
+          _controller.formData!.languageRegressionController,
+      languageRegressionDescriptionController:
+          _controller.formData!.languageRegressionDescriptionController,
+      feedingSelectivityController:
+          _controller.formData!.feedingSelectivityController,
+      feedingSelectivityDescriptionController:
+          _controller.formData!.feedingSelectivityDescriptionController,
+      sensoryChangesController: _controller.formData!.sensoryChangesController,
+      sensoryChangesDescriptionController:
+          _controller.formData!.sensoryChangesDescriptionController,
       firstWordAgeController: _controller.formData!.firstWordAgeController,
       eyeContactController: _controller.formData!.eyeContactController,
       repetitiveBehaviorsController:

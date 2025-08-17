@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 
-/// A reusable tri-state selector widget for "Sim", "Não" e "Não observado".
-///
-/// Modo controlado vs não controlado:
-/// - Controlado: informe um `controller`. O widget reflete `controller.text`
-///   e grava 'true', 'false' ou '' conforme a seleção do usuário.
-/// - Não controlado: omita `controller`. O widget gerencia estado interno a
-///   partir de `defaultValue`.
-///
-/// Seleção padrão:
-/// - Por padrão, quando o valor é vazio (''), nenhuma opção é pré-selecionada
-///   (evita selecionar "Não observado" automaticamente).
-/// - Para manter o comportamento antigo ('' seleciona "Não observado"), defina
-///   `treatEmptyAsUnselected: false`.
 class TriStateSelector extends StatefulWidget {
   final TextEditingController? controller;
   final EdgeInsetsGeometry? padding;
