@@ -26,7 +26,7 @@ class MainLayout extends StatelessWidget {
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: CustomAppBar(
         title: title,
-        onBack: () => Navigator.of(context).pop(),
+        onBack: () => Navigator.of(context).pop(true),
         isBackButtonVisible: isBackButtonVisible,
         hideTitle: hideTitle,
       ),
