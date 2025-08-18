@@ -25,7 +25,8 @@ class AppointmentTabs extends StatelessWidget {
       child: Row(
         children: [
           _buildTabItem('Detalhes', 0),
-          if (hasProtocol) _buildTabItem('Protocolos', 1),
+          _buildTabItem('Notas SOAP', 1),
+          if (hasProtocol) _buildTabItem('Protocolos', 2),
         ],
       ),
     );

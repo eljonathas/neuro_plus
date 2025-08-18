@@ -22,9 +22,15 @@ class AppointmentDetailsTab extends StatelessWidget {
             _buildProtocolInfoCard(),
           ],
 
-          if (appointment.notes != null && appointment.notes!.isNotEmpty) ...[
+          if (appointment.hasSoapNotes) ...[
             const SizedBox(height: 16),
-            _buildNotesCard(),
+            _buildSoapNotesCard(),
+          ],
+
+          if (appointment.readableNotes != null &&
+              appointment.readableNotes!.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildObservationsCard(),
           ],
         ],
       ),
@@ -110,7 +116,97 @@ class AppointmentDetailsTab extends StatelessWidget {
     );
   }
 
-  Widget _buildNotesCard() {
+  Widget _buildSoapNotesCard() {
+    final hasSubjective = appointment.soapSubjective?.trim().isNotEmpty == true;
+    final hasObjective = appointment.soapObjective?.trim().isNotEmpty == true;
+    final hasAssessment = appointment.soapAssessment?.trim().isNotEmpty == true;
+    final hasPlan = appointment.soapPlan?.trim().isNotEmpty == true;
+
+    final filledSections =
+        [
+          hasSubjective,
+          hasObjective,
+          hasAssessment,
+          hasPlan,
+        ].where((filled) => filled).length;
+
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.medical_services_outlined,
+                  size: 20,
+                  color: AppColors.gray[600],
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Notas SOAP',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.gray[800],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _buildDetailRow('Seções Preenchidas', '$filledSections de 4'),
+            if (hasSubjective)
+              _buildSoapSection('Subjetivo (S)', appointment.soapSubjective!),
+            if (hasObjective)
+              _buildSoapSection('Objetivo (O)', appointment.soapObjective!),
+            if (hasAssessment)
+              _buildSoapSection('Avaliação (A)', appointment.soapAssessment!),
+            if (hasPlan) _buildSoapSection('Plano (P)', appointment.soapPlan!),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSoapSection(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: AppColors.gray[700],
+            ),
+          ),
+          const SizedBox(height: 4),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.gray[50],
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: AppColors.gray[200]!),
+            ),
+            child: Text(
+              content.trim(),
+              style: TextStyle(
+                fontSize: 13,
+                color: AppColors.gray[700],
+                height: 1.3,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildObservationsCard() {
     return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -119,18 +215,41 @@ class AppointmentDetailsTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Observações',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.gray[800],
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.note_outlined,
+                    size: 20,
+                    color: AppColors.gray[600],
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Observações',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.gray[800],
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 12),
-              Text(
-                appointment.notes!,
-                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.gray[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.gray[200]!),
+                ),
+                child: Text(
+                  appointment.readableNotes!,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.gray[700],
+                    height: 1.4,
+                  ),
+                ),
               ),
             ],
           ),

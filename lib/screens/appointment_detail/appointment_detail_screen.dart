@@ -5,6 +5,7 @@ import 'package:neuro_plus/models/appointment.dart';
 import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_header.dart';
 import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_tabs.dart';
 import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_details_tab.dart';
+import 'package:neuro_plus/screens/appointment_detail/widgets/soap_notes_tab.dart';
 import 'package:neuro_plus/screens/appointment_detail/widgets/protocol_tab.dart';
 import 'package:neuro_plus/screens/appointment_detail/widgets/appointment_action_buttons.dart';
 
@@ -75,7 +76,12 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
   Widget _buildActiveTabContent() {
     if (_currentTabIndex == 0) {
       return AppointmentDetailsTab(appointment: _currentAppointment);
-    } else if (_currentTabIndex == 1 && _currentAppointment.hasProtocol) {
+    } else if (_currentTabIndex == 1) {
+      return SoapNotesTab(
+        appointment: _currentAppointment,
+        onNotesUpdated: _reloadAppointment,
+      );
+    } else if (_currentTabIndex == 2 && _currentAppointment.hasProtocol) {
       return ProtocolTab(
         appointment: _currentAppointment,
         onProtocolUpdated: _reloadAppointment,

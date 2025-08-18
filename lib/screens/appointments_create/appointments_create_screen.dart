@@ -439,8 +439,6 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
           const SizedBox(height: 16),
           _buildLocationField(),
           const SizedBox(height: 16),
-          _buildSoapNotes(),
-          const SizedBox(height: 16),
           _buildNotesField(),
         ],
       ),
@@ -592,71 +590,6 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
               ),
               maxLines: 3,
               onChanged: _controller.updateNotes,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSoapNotes() {
-    return CustomCard(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Notas SOAP (opcional)',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.gray[800],
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              initialValue: _controller.formData.soapSubjective,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'S - Subjetivo',
-                hintText: 'Relato do paciente/responsável',
-              ),
-              maxLines: 2,
-              onChanged: _controller.updateSoapSubjective,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              initialValue: _controller.formData.soapObjective,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'O - Objetivo',
-                hintText: 'Achados observáveis/medidas',
-              ),
-              maxLines: 2,
-              onChanged: _controller.updateSoapObjective,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              initialValue: _controller.formData.soapAssessment,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'A - Avaliação',
-                hintText: 'Interpretação clínica',
-              ),
-              maxLines: 2,
-              onChanged: _controller.updateSoapAssessment,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              initialValue: _controller.formData.soapPlan,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'P - Plano',
-                hintText: 'Próximos passos/condutas',
-              ),
-              maxLines: 2,
-              onChanged: _controller.updateSoapPlan,
             ),
           ],
         ),
