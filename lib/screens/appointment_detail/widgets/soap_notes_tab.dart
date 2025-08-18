@@ -55,33 +55,38 @@ class _SoapNotesTabState extends State<SoapNotesTab> {
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSoapField(
-            'Subjetivo (S)',
-            _subjectiveController,
-            'Relato do paciente/responsável',
-          ),
-          const SizedBox(height: 16),
-          _buildSoapField(
-            'Objetivo (O)',
-            _objectiveController,
-            'Achados observáveis/medidas',
-          ),
-          const SizedBox(height: 16),
-          _buildSoapField(
-            'Avaliação (A)',
-            _assessmentController,
-            'Interpretação clínica',
-          ),
-          const SizedBox(height: 16),
-          _buildSoapField(
-            'Plano (P)',
-            _planController,
-            'Próximos passos/condutas',
-          ),
-        ],
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 100,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSoapField(
+              'Subjetivo (S)',
+              _subjectiveController,
+              'Relato do paciente/responsável',
+            ),
+            const SizedBox(height: 16),
+            _buildSoapField(
+              'Objetivo (O)',
+              _objectiveController,
+              'Achados observáveis/medidas',
+            ),
+            const SizedBox(height: 16),
+            _buildSoapField(
+              'Avaliação (A)',
+              _assessmentController,
+              'Interpretação clínica',
+            ),
+            const SizedBox(height: 16),
+            _buildSoapField(
+              'Plano (P)',
+              _planController,
+              'Próximos passos/condutas',
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ class MainLayout extends StatelessWidget {
   final int navIndex;
   final bool isBackButtonVisible;
   final bool hideTitle;
+  final bool resizeToAvoidBottomInset;
 
   const MainLayout({
     super.key,
@@ -16,11 +17,13 @@ class MainLayout extends StatelessWidget {
     required this.title,
     required this.navIndex,
     this.hideTitle = false,
+    this.resizeToAvoidBottomInset = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       appBar: CustomAppBar(
         title: title,
         onBack: () => Navigator.of(context).pop(),

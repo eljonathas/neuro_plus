@@ -97,6 +97,7 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
           '${_currentAppointment.formattedDate} (${_currentAppointment.time})',
       navIndex: 1,
       isBackButtonVisible: true,
+      resizeToAvoidBottomInset: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
