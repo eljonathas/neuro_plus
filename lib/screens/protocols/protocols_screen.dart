@@ -116,19 +116,17 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
   }
 
   void _showExportMenu() {
-    if (protocols.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nenhum protocolo disponível para exportar'),
-        ),
-      );
-      return;
-    }
+    final List<ExportOption> options = [
+      ExportOptions.scanQrCode(
+        title: 'Importar Protocolo',
+        description: 'Escanear QR Code para importar protocolo',
+        onTap: _navigateToScanner,
+      ),
+    ];
 
-    ExportMenuWidget.show(
-      context,
-      title: 'Exportar protocolos',
-      options: [
+    // Adicionar opções de exportação apenas se há protocolos
+    if (protocols.isNotEmpty) {
+      options.add(
         ExportOptions.csvExport(
           title: 'Exportar Lista (CSV)',
           data: protocols,
@@ -142,12 +140,16 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
             );
           },
         ),
-        ExportOptions.scanQrCode(
-          title: 'Importar Protocolo',
-          description: 'Escanear QR Code para importar protocolo',
-          onTap: _navigateToScanner,
-        ),
-      ],
+      );
+    }
+
+    ExportMenuWidget.show(
+      context,
+      title:
+          protocols.isNotEmpty
+              ? 'Importar e Exportar Protocolos'
+              : 'Importar Protocolo',
+      options: options,
     );
   }
 
@@ -176,7 +178,7 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
     }
 
     if (protocols.isEmpty) {
-      return const ProtocolsEmptyState();
+      return ProtocolsEmptyState(onProtocolImported: _loadProtocols);
     }
 
     return MainLayout(
