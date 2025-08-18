@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
+import 'package:neuro_plus/common/services/hive_service.dart';
 import 'package:neuro_plus/models/protocol.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ProtocolsService {
   static bool initialized = false;
@@ -9,9 +9,7 @@ class ProtocolsService {
   static Future<void> init() async {
     if (initialized) return;
 
-    final appDocDir = await getApplicationDocumentsDirectory();
-
-    Hive.init(appDocDir.path);
+    await HiveService.init();
 
     Hive.registerAdapter(ProtocolAdapter());
     Hive.registerAdapter(ProtocolItemAdapter());

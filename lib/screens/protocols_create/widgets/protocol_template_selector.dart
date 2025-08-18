@@ -32,15 +32,9 @@ class ProtocolTemplateSelector extends StatelessWidget {
               isSelected: selectedTemplate == 'PROTEA',
               onTap: () => onTemplateChanged('PROTEA'),
             ),
-            const SizedBox(width: 12),
-            TemplateOption(
-              label: 'DENVER II',
-              isSelected: selectedTemplate == 'DENVER',
-              onTap: () => onTemplateChanged('DENVER'),
-            ),
           ],
         ),
       ],
     );
   }
-} 
+}

@@ -79,6 +79,52 @@ class AppointmentFormData {
       minute: int.parse(timeParts[1]),
     );
 
+    // Extrair notas SOAP e texto do JSON se existir
+    String? notesText;
+    String? soapSubjective;
+    String? soapObjective;
+    String? soapAssessment;
+    String? soapPlan;
+
+    if (appointment.notes != null && appointment.notes!.isNotEmpty) {
+      try {
+        final notesData = jsonDecode(appointment.notes!);
+        if (notesData is Map<String, dynamic>) {
+          // Extrair texto simples
+          notesText = notesData['text'] as String?;
+
+          // Extrair dados SOAP
+          final soapData = notesData['SOAP'] as Map<String, dynamic>?;
+          if (soapData != null) {
+            soapSubjective = soapData['S'] as String?;
+            soapObjective = soapData['O'] as String?;
+            soapAssessment = soapData['A'] as String?;
+            soapPlan = soapData['P'] as String?;
+          }
+        } else {
+          // Se não for JSON, tratar como texto simples
+          notesText = appointment.notes;
+        }
+      } catch (e) {
+        // Se falhar ao decodificar JSON, tratar como texto simples
+        notesText = appointment.notes;
+      }
+    }
+
+    // Se não há dados SOAP no JSON, usar os campos diretos do appointment
+    if (soapSubjective == null && appointment.soapSubjective != null) {
+      soapSubjective = appointment.soapSubjective;
+    }
+    if (soapObjective == null && appointment.soapObjective != null) {
+      soapObjective = appointment.soapObjective;
+    }
+    if (soapAssessment == null && appointment.soapAssessment != null) {
+      soapAssessment = appointment.soapAssessment;
+    }
+    if (soapPlan == null && appointment.soapPlan != null) {
+      soapPlan = appointment.soapPlan;
+    }
+
     return AppointmentFormData(
       selectedPatient: selectedPatient,
       selectedDate: appointment.date,
@@ -87,7 +133,11 @@ class AppointmentFormData {
       selectedProtocols: selectedProtocols,
       duration: appointment.duration,
       location: appointment.location,
-      notes: appointment.notes,
+      notes: notesText,
+      soapSubjective: soapSubjective,
+      soapObjective: soapObjective,
+      soapAssessment: soapAssessment,
+      soapPlan: soapPlan,
       patients: patients,
       protocols: protocols,
     );
@@ -101,25 +151,6 @@ class AppointmentFormData {
   }) {
     final timeString =
         '${selectedTime!.hour.toString().padLeft(2, '0')}:${selectedTime!.minute.toString().padLeft(2, '0')}';
-
-    // Serializa SOAP dentro de notes como JSON-like mantendo notes de texto
-    String? combinedNotes;
-    final hasSoap =
-        (soapSubjective?.trim().isNotEmpty == true) ||
-        (soapObjective?.trim().isNotEmpty == true) ||
-        (soapAssessment?.trim().isNotEmpty == true) ||
-        (soapPlan?.trim().isNotEmpty == true);
-    if (hasSoap || (notes?.isNotEmpty ?? false)) {
-      combinedNotes = jsonEncode({
-        'SOAP': {
-          'S': soapSubjective?.trim(),
-          'O': soapObjective?.trim(),
-          'A': soapAssessment?.trim(),
-          'P': soapPlan?.trim(),
-        },
-        'text': notes?.trim(),
-      });
-    }
 
     return Appointment(
       id: existingId,
@@ -138,10 +169,23 @@ class AppointmentFormData {
               : null,
       duration: duration,
       location: location,
-      notes: combinedNotes,
+      notes: notes?.trim().isNotEmpty == true ? notes!.trim() : null,
       status: existingStatus ?? AppointmentStatus.scheduled,
       protocolResponses: protocolResponses,
       createdAt: createdAt,
+      soapSubjective:
+          soapSubjective?.trim().isNotEmpty == true
+              ? soapSubjective!.trim()
+              : null,
+      soapObjective:
+          soapObjective?.trim().isNotEmpty == true
+              ? soapObjective!.trim()
+              : null,
+      soapAssessment:
+          soapAssessment?.trim().isNotEmpty == true
+              ? soapAssessment!.trim()
+              : null,
+      soapPlan: soapPlan?.trim().isNotEmpty == true ? soapPlan!.trim() : null,
     );
   }
 

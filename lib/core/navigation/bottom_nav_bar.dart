@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
+import 'package:neuro_plus/core/navigation/app_routes.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -40,10 +41,10 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 
   static const Map<String, String> _labels = {
-    '/': 'Início',
-    '/schedule': 'Consultas',
-    '/protocols': 'Protocolos',
-    '/patients': 'Pacientes',
+    AppRoutes.home: 'Início',
+    AppRoutes.schedule: 'Consultas',
+    AppRoutes.protocols: 'Protocolos',
+    AppRoutes.patients: 'Pacientes',
   };
 
   static final List<Icon Function(bool)> _icons = [

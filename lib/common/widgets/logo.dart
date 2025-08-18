@@ -308,7 +308,7 @@ class _NeuralLogoPainter extends BoxPainter {
         offset & canvasSize,
         Paint()
           ..colorFilter = ColorFilter.mode(
-            const Color(0xFFFFFFFF).withOpacity(_config._opacity),
+            const Color(0xFFFFFFFF).withValues(alpha: _config._opacity),
             BlendMode.modulate,
           ),
       );

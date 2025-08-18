@@ -193,4 +193,12 @@ class AppointmentFormController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
+
+  bool get canProceed {
+    final validation = AppointmentFormValidators.validateStep(
+      _formData.currentStep,
+      _formData,
+    );
+    return validation == null;
+  }
 }

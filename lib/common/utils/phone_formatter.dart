@@ -17,7 +17,7 @@ class BrazilianPhoneFormatter extends TextInputFormatter {
     String formattedText = '';
 
     if (limitedDigits.length <= 2) {
-      formattedText = '(${limitedDigits}';
+      formattedText = '($limitedDigits)';
     } else if (limitedDigits.length <= 6) {
       formattedText =
           '(${limitedDigits.substring(0, 2)}) ${limitedDigits.substring(2)}';

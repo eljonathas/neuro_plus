@@ -17,8 +17,10 @@ class InfoBanner extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.primarySwatch.withOpacity(0.06),
-        border: Border.all(color: AppColors.primarySwatch.withOpacity(0.2)),
+        color: AppColors.primarySwatch.withValues(alpha: 0.06),
+        border: Border.all(
+          color: AppColors.primarySwatch.withValues(alpha: 0.2),
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

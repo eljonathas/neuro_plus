@@ -5,8 +5,8 @@ class AppointmentTypeHelper {
     switch (type) {
       case AppointmentType.evaluation:
         return 'Avaliação';
-      case AppointmentType.therapy:
-        return 'Terapia';
+      case AppointmentType.revaluation:
+        return 'Reavaliação';
       case AppointmentType.followUp:
         return 'Acompanhamento';
       case AppointmentType.consultation:

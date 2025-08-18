@@ -208,7 +208,6 @@ class _HomeScreenState extends State<HomeScreen> {
       title: appointment.typeText,
       subtitle: appointment.patientName,
       appointmentId: appointment.id.substring(0, 8),
-      isMultiple: appointment.type == AppointmentType.therapy,
       status: appointment.status,
       onTap: () => _navigateToDetail(appointment),
     );

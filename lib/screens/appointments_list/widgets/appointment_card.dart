@@ -39,20 +39,14 @@ class AppointmentCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  appointment.patientName,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            appointment.patientName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 4),
                           Row(
@@ -92,67 +86,112 @@ class AppointmentCard extends StatelessWidget {
                         ],
                       ),
                     ),
-
                     _buildPopupMenu(),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  spacing: 8,
                   children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.medical_services,
-                          size: 16,
-                          color: AppColors.gray[500],
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          appointment.typeText,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.gray[600],
-                          ),
-                        ),
-                        if (appointment.hasProtocol) ...[
-                          const SizedBox(width: 16),
+                    Expanded(
+                      child: Row(
+                        children: [
                           Icon(
-                            Icons.assignment,
+                            Icons.medical_services,
                             size: 16,
                             color: AppColors.gray[500],
                           ),
                           const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              appointment.protocolNames?.join(', ') ?? '',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.gray[600],
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            appointment.typeText,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: AppColors.gray[600],
                             ),
                           ),
+                          if (appointment.hasProtocol) ...[
+                            const SizedBox(width: 16),
+                            Icon(
+                              Icons.assignment,
+                              size: 16,
+                              color: AppColors.gray[500],
+                            ),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                appointment.protocolNames?.join(', ') ?? '',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.gray[600],
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
+                    const SizedBox(width: 8),
                     _buildStatusChip(appointment.status),
                   ],
                 ),
-                if (appointment.notes != null &&
-                    appointment.notes!.isNotEmpty) ...[
+                if (appointment.hasSoapNotes ||
+                    appointment.readableNotes != null) ...[
                   const SizedBox(height: 8),
-                  Text(
-                    appointment.notes!,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: AppColors.gray[500],
-                      fontStyle: FontStyle.italic,
+                  if (appointment.hasSoapNotes) ...[
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.gray[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColors.gray[200]!),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.medical_services_outlined,
+                                size: 14,
+                                color: AppColors.gray[600],
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Notas SOAP',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.gray[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            appointment.soapNotesSummary ?? '',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.gray[600],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
                     ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  ] else ...[
+                    Text(
+                      appointment.readableNotes ?? '',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: AppColors.gray[500],
+                        fontStyle: FontStyle.italic,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ],
               ],
             ),

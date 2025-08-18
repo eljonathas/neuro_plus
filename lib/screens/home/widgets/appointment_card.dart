@@ -8,7 +8,6 @@ class AppointmentCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String appointmentId;
-  final bool isMultiple;
   final AppointmentStatus? status;
   final VoidCallback onTap;
 
@@ -20,7 +19,6 @@ class AppointmentCard extends StatelessWidget {
     required this.subtitle,
     required this.appointmentId,
     required this.onTap,
-    this.isMultiple = false,
     this.status,
   });
 
@@ -102,25 +100,6 @@ class AppointmentCard extends StatelessWidget {
                             ),
                           ),
                         ),
-                        if (isMultiple)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.blueRibbon[100],
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'MULTIPLE',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.blueRibbon[600],
-                              ),
-                            ),
-                          ),
                       ],
                     ),
                     const SizedBox(height: 8),

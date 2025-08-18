@@ -14,6 +14,7 @@ class CustomButton extends StatelessWidget {
   final FontWeight fontWeight;
   final bool isLoading;
   final double? width;
+  final bool isDisabled;
 
   const CustomButton({
     super.key,
@@ -29,6 +30,7 @@ class CustomButton extends StatelessWidget {
     this.padding = const EdgeInsets.all(16),
     this.margin = 0,
     this.width,
+    this.isDisabled = false,
   });
 
   @override
@@ -37,7 +39,7 @@ class CustomButton extends StatelessWidget {
       margin: EdgeInsets.all(margin),
       width: width,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isDisabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           foregroundColor: foregroundColor,
@@ -45,7 +47,8 @@ class CustomButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          disabledBackgroundColor: backgroundColor?.withValues(alpha: 0.5),
+          disabledBackgroundColor: Colors.grey[400],
+          disabledForegroundColor: Colors.white,
           padding: padding,
         ),
         child:

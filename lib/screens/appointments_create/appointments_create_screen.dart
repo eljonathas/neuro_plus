@@ -141,6 +141,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
                 isLoading: _controller.formData.isLoading,
                 hasPatients: _controller.formData.hasPatients,
                 isEditing: _isEditing,
+                canProceed: _controller.canProceed,
                 onPrevious: _handlePrevious,
                 onNext: _handleNext,
                 onSave: _handleSave,

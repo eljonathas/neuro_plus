@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 
@@ -151,8 +152,8 @@ class Appointment extends HiveObject {
     switch (type) {
       case AppointmentType.evaluation:
         return 'Avaliação';
-      case AppointmentType.therapy:
-        return 'Terapia';
+      case AppointmentType.revaluation:
+        return 'Reavaliação';
       case AppointmentType.followUp:
         return 'Acompanhamento';
       case AppointmentType.consultation:
@@ -163,6 +164,118 @@ class Appointment extends HiveObject {
   bool get isCompleted => status == AppointmentStatus.completed;
   bool get canEdit => status == AppointmentStatus.scheduled;
   bool get hasProtocol => protocolIds != null && protocolIds!.isNotEmpty;
+
+  // Métodos para extrair notas SOAP
+  bool get hasSoapNotes {
+    return (soapSubjective?.trim().isNotEmpty == true) ||
+        (soapObjective?.trim().isNotEmpty == true) ||
+        (soapAssessment?.trim().isNotEmpty == true) ||
+        (soapPlan?.trim().isNotEmpty == true) ||
+        _hasSoapInNotes();
+  }
+
+  bool _hasSoapInNotes() {
+    if (notes == null || notes!.isEmpty) return false;
+    try {
+      final notesData = jsonDecode(notes!);
+      if (notesData is Map<String, dynamic>) {
+        final soapData = notesData['SOAP'] as Map<String, dynamic>?;
+        if (soapData != null) {
+          return (soapData['S'] as String?)?.trim().isNotEmpty == true ||
+              (soapData['O'] as String?)?.trim().isNotEmpty == true ||
+              (soapData['A'] as String?)?.trim().isNotEmpty == true ||
+              (soapData['P'] as String?)?.trim().isNotEmpty == true;
+        }
+      }
+    } catch (e) {
+      // Ignorar erros de JSON
+    }
+    return false;
+  }
+
+  String? get readableNotes {
+    if (notes == null || notes!.isEmpty) return null;
+
+    try {
+      final notesData = jsonDecode(notes!);
+      if (notesData is Map<String, dynamic>) {
+        return notesData['text'] as String?;
+      }
+    } catch (e) {
+      // Se não for JSON, retornar como texto simples
+    }
+    return notes;
+  }
+
+  String? get soapNotesSummary {
+    final List<String> summaries = [];
+
+    // Verificar campos diretos primeiro
+    if (soapSubjective?.trim().isNotEmpty == true) {
+      final text = soapSubjective!.trim();
+      summaries.add(
+        'S: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+      );
+    }
+    if (soapObjective?.trim().isNotEmpty == true) {
+      final text = soapObjective!.trim();
+      summaries.add(
+        'O: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+      );
+    }
+    if (soapAssessment?.trim().isNotEmpty == true) {
+      final text = soapAssessment!.trim();
+      summaries.add(
+        'A: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+      );
+    }
+    if (soapPlan?.trim().isNotEmpty == true) {
+      final text = soapPlan!.trim();
+      summaries.add(
+        'P: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+      );
+    }
+
+    // Se não há dados nos campos diretos, verificar no JSON
+    if (summaries.isEmpty && notes != null && notes!.isNotEmpty) {
+      try {
+        final notesData = jsonDecode(notes!);
+        if (notesData is Map<String, dynamic>) {
+          final soapData = notesData['SOAP'] as Map<String, dynamic>?;
+          if (soapData != null) {
+            if ((soapData['S'] as String?)?.trim().isNotEmpty == true) {
+              final text = (soapData['S'] as String).trim();
+              summaries.add(
+                'S: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+              );
+            }
+            if ((soapData['O'] as String?)?.trim().isNotEmpty == true) {
+              final text = (soapData['O'] as String).trim();
+              summaries.add(
+                'O: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+              );
+            }
+            if ((soapData['A'] as String?)?.trim().isNotEmpty == true) {
+              final text = (soapData['A'] as String).trim();
+              summaries.add(
+                'A: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+              );
+            }
+            if ((soapData['P'] as String?)?.trim().isNotEmpty == true) {
+              final text = (soapData['P'] as String).trim();
+              summaries.add(
+                'P: ${text.length > 30 ? '${text.substring(0, 30)}...' : text}',
+              );
+            }
+          }
+        }
+      } catch (e) {
+        // Ignorar erros de JSON
+      }
+    }
+
+    return summaries.isNotEmpty ? summaries.join(' • ') : null;
+  }
 }
 
 @HiveType(typeId: 5)
@@ -189,7 +302,7 @@ enum AppointmentType {
   evaluation,
 
   @HiveField(1)
-  therapy,
+  revaluation,
 
   @HiveField(2)
   followUp,

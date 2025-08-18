@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:neuro_plus/common/services/hive_service.dart';
 import 'package:neuro_plus/models/appointment.dart';
 
 class AppointmentsService {
@@ -7,6 +8,7 @@ class AppointmentsService {
 
   static Future<void> init() async {
     if (_box == null || !_box!.isOpen) {
+      await HiveService.init();
       // Registrar adaptadores se ainda não foram registrados
       if (!Hive.isAdapterRegistered(4)) {
         Hive.registerAdapter(AppointmentAdapter());

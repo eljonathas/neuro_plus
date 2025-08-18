@@ -9,6 +9,7 @@ class AppointmentNavigationButtons extends StatelessWidget {
   final bool isLoading;
   final bool hasPatients;
   final bool isEditing;
+  final bool canProceed;
   final VoidCallback onPrevious;
   final VoidCallback onNext;
   final VoidCallback onSave;
@@ -25,6 +26,7 @@ class AppointmentNavigationButtons extends StatelessWidget {
     required this.onPrevious,
     required this.onNext,
     required this.onSave,
+    required this.canProceed,
   });
 
   @override
@@ -49,6 +51,7 @@ class AppointmentNavigationButtons extends StatelessWidget {
                 text: _getButtonText(),
                 onPressed: isLastStep ? onSave : onNext,
                 isLoading: isLoading,
+                isDisabled: !canProceed,
               ),
             ),
         ],
