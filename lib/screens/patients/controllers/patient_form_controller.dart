@@ -108,13 +108,6 @@ class PatientFormController extends ChangeNotifier {
     }
   }
 
-  void updateAttachments(List<String> attachments) {
-    if (_formData != null) {
-      _formData!.attachments = attachments;
-      notifyListeners();
-    }
-  }
-
   bool validatePage(GlobalKey<FormState> formKey) {
     return formKey.currentState?.validate() ?? false;
   }

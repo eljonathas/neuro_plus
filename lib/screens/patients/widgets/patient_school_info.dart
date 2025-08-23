@@ -13,12 +13,10 @@ class PatientSchoolInfo extends StatefulWidget {
   final String? schoolType;
   final String? schoolShift;
   final String? hasCompanion;
-  final List<String> attachments;
   final ValueChanged<bool?> onAttendsSchoolChanged;
   final ValueChanged<String?> onSchoolTypeChanged;
   final ValueChanged<String?> onSchoolShiftChanged;
   final ValueChanged<String?> onHasCompanionChanged;
-  final ValueChanged<List<String>> onAttachmentsChanged;
 
   const PatientSchoolInfo({
     super.key,
@@ -31,12 +29,10 @@ class PatientSchoolInfo extends StatefulWidget {
     required this.schoolType,
     required this.schoolShift,
     required this.hasCompanion,
-    required this.attachments,
     required this.onAttendsSchoolChanged,
     required this.onSchoolTypeChanged,
     required this.onSchoolShiftChanged,
     required this.onHasCompanionChanged,
-    required this.onAttachmentsChanged,
   });
 
   @override
@@ -135,54 +131,6 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
                   maxLines: 6,
                 ),
               ),
-
-              _buildField(
-                label: 'Anexos',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: _handleAddAttachment,
-                      icon: const Icon(Icons.attach_file),
-                      label: const Text('Adicionar Anexo'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primarySwatch,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                    if (widget.attachments.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      ...widget.attachments.map(
-                        (attachment) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Row(
-                            children: [
-                              const Icon(Icons.file_present, size: 16),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  attachment,
-                                  style: const TextStyle(fontSize: 14),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, size: 16),
-                                onPressed: () => _removeAttachment(attachment),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(
-                                  minWidth: 24,
-                                  minHeight: 24,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ),
             ],
 
             const SizedBox(height: 32),
@@ -190,20 +138,6 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
         ),
       ),
     );
-  }
-
-  void _handleAddAttachment() {
-    // TODO: Implementar seleção de arquivo
-    // Por enquanto, adiciona um arquivo fictício para demonstração
-    final newAttachments = List<String>.from(widget.attachments)
-      ..add('documento_${DateTime.now().millisecondsSinceEpoch}.pdf');
-    widget.onAttachmentsChanged(newAttachments);
-  }
-
-  void _removeAttachment(String attachment) {
-    final newAttachments = List<String>.from(widget.attachments)
-      ..remove(attachment);
-    widget.onAttachmentsChanged(newAttachments);
   }
 
   Widget _buildSectionTitle(String title) {

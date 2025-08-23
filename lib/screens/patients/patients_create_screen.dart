@@ -254,12 +254,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       schoolType: _controller.formData!.schoolType,
       schoolShift: _controller.formData!.schoolShift,
       hasCompanion: _controller.formData!.hasCompanion,
-      attachments: _controller.formData!.attachments,
       onAttendsSchoolChanged: _controller.updateAttendsSchool,
       onSchoolTypeChanged: _controller.updateSchoolType,
       onSchoolShiftChanged: _controller.updateSchoolShift,
       onHasCompanionChanged: _controller.updateHasCompanion,
-      onAttachmentsChanged: _controller.updateAttachments,
     );
   }
 }

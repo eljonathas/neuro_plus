@@ -212,9 +212,6 @@ class Patient extends HiveObject {
   final String? teacherName;
 
   @HiveField(45)
-  final List<String>? attachments;
-
-  @HiveField(46)
   final String? otherSchoolType;
 
   Patient({
@@ -261,7 +258,6 @@ class Patient extends HiveObject {
     this.sensoryChangesDescription,
     this.schoolName,
     this.teacherName,
-    this.attachments,
     this.otherSchoolType,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -334,7 +330,6 @@ class Patient extends HiveObject {
     String? sensoryChangesDescription,
     String? schoolName,
     String? teacherName,
-    List<String>? attachments,
     String? otherSchoolType,
   }) {
     return Patient(
@@ -388,7 +383,6 @@ class Patient extends HiveObject {
           sensoryChangesDescription ?? this.sensoryChangesDescription,
       schoolName: schoolName ?? this.schoolName,
       teacherName: teacherName ?? this.teacherName,
-      attachments: attachments ?? this.attachments,
       otherSchoolType: otherSchoolType ?? this.otherSchoolType,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
@@ -440,7 +434,6 @@ class Patient extends HiveObject {
       'sensoryChangesDescription': sensoryChangesDescription,
       'schoolName': schoolName,
       'teacherName': teacherName,
-      'attachments': attachments,
       'otherSchoolType': otherSchoolType,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
@@ -496,10 +489,6 @@ class Patient extends HiveObject {
       sensoryChangesDescription: json['sensoryChangesDescription'],
       schoolName: json['schoolName'],
       teacherName: json['teacherName'],
-      attachments:
-          json['attachments'] != null
-              ? List<String>.from(json['attachments'])
-              : null,
       otherSchoolType: json['otherSchoolType'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),

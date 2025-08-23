@@ -51,7 +51,6 @@ class PatientFormData {
   String? schoolShift;
   String? hasCompanion;
   List<String> screeningsPerformed;
-  List<String> attachments;
 
   PatientFormData({Patient? patient})
     : fullNameController = TextEditingController(text: patient?.fullName),
@@ -184,8 +183,7 @@ class PatientFormData {
       schoolType = patient?.schoolType,
       schoolShift = patient?.schoolShift,
       hasCompanion = patient?.hasCompanion,
-      screeningsPerformed = List.from(patient?.screeningsPerformed ?? []),
-      attachments = List.from(patient?.attachments ?? []);
+      screeningsPerformed = List.from(patient?.screeningsPerformed ?? []);
 
   factory PatientFormData.fromPatient(Patient? patient) {
     return PatientFormData(patient: patient);
@@ -342,7 +340,7 @@ class PatientFormData {
                   otherSchoolTypeController.text.trim().isNotEmpty
               ? otherSchoolTypeController.text.trim()
               : null,
-      attachments: attachments.isNotEmpty ? attachments : null,
+
       schoolObservations:
           schoolObservationsController.text.isEmpty
               ? null
@@ -457,7 +455,7 @@ class PatientFormData {
                   otherSchoolTypeController.text.trim().isNotEmpty
               ? otherSchoolTypeController.text.trim()
               : null,
-      attachments: attachments.isNotEmpty ? attachments : null,
+
       schoolObservations:
           schoolObservationsController.text.isEmpty
               ? null

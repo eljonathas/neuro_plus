@@ -292,7 +292,7 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
                 variant: InputVariant.outlined,
                 controller: widget.guardiansObservationsController,
                 hintText:
-                    'Adicione qualquer informação adicional que considere importante sobre a criança',
+                    'Adicione qualquer informação adicional que considere importante sobre o indivíduo',
                 minLines: 3,
                 maxLines: 6,
               ),
