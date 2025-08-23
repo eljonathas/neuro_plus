@@ -422,6 +422,11 @@ class ProtocolResultsScreen extends StatelessWidget {
         label = 'Lista';
         color = Colors.green;
         break;
+      case ResponseType.multipleChoice:
+        icon = Icons.check_box;
+        label = 'Múltipla escolha';
+        color = Colors.purple;
+        break;
     }
 
     return Container(
@@ -456,6 +461,7 @@ class ProtocolResultsScreen extends StatelessWidget {
       case ResponseType.scale:
         return _buildScaleResponse(response);
       case ResponseType.checklist:
+      case ResponseType.multipleChoice:
         return _buildChecklistResponse(response);
     }
   }

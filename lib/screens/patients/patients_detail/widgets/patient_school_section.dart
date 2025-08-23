@@ -49,10 +49,10 @@ class PatientSchoolSection extends StatelessWidget {
                 value: patient.schoolShift!,
                 icon: Icons.access_time,
               ),
-            if (patient.hasMediator?.isNotEmpty == true)
+            if (patient.hasCompanion?.isNotEmpty == true)
               DetailInfoRow(
                 label: 'Possui mediador',
-                value: patient.hasMediator!,
+                value: patient.hasCompanion!,
                 icon: Icons.support_agent,
               ),
             if (patient.schoolObservations?.isNotEmpty == true)

@@ -78,9 +78,30 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
     super.dispose();
   }
 
-  void _onTemplateChanged(String template) {
+  void _onTemplateChanged(String? template) {
     setState(() {
-      _selectedTemplate = template;
+      _selectedTemplate = template ?? 'NOVO';
+    });
+  }
+
+  void _onProtocolSelected(List<ProtocolItem> items) {
+    setState(() {
+      _items =
+          items
+              .map(
+                (item) => ProtocolItem(
+                  id:
+                      const Uuid()
+                          .v4(), // Gerar novos IDs para evitar conflitos
+                  title: item.title,
+                  instruction: item.instruction,
+                  responseType: item.responseType,
+                  options: List.from(item.options), // Copiar opções
+                ),
+              )
+              .toList();
+
+      _initializeItemControllers();
     });
   }
 
@@ -160,13 +181,15 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
       }
     }
 
-    // Validar opções de checklist
+    // Validar opções de checklist e múltipla escolha
     for (final item in updatedItems) {
-      if (item.responseType == ResponseType.checklist && item.options.isEmpty) {
+      if ((item.responseType == ResponseType.checklist ||
+              item.responseType == ResponseType.multipleChoice) &&
+          item.options.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'O item "${item.title}" do tipo Checklist precisa ter pelo menos uma opção de resposta.',
+              'O item "${item.title}" do tipo ${item.responseType == ResponseType.checklist ? "Checklist" : "Múltipla escolha"} precisa ter pelo menos uma opção de resposta.',
             ),
             backgroundColor: Colors.red,
           ),
@@ -252,6 +275,7 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
                 ProtocolTemplateSelector(
                   selectedTemplate: _selectedTemplate,
                   onTemplateChanged: _onTemplateChanged,
+                  onProtocolSelected: _onProtocolSelected,
                 ),
               const SizedBox(height: 24),
               ProtocolItemsSection(

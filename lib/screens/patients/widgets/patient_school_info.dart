@@ -3,114 +3,207 @@ import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
 import 'package:neuro_plus/models/patient.dart';
 
-class PatientSchoolInfo extends StatelessWidget {
+class PatientSchoolInfo extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController schoolObservationsController;
-  final TextEditingController guardiansObservationsController;
+  final TextEditingController schoolNameController;
+  final TextEditingController teacherNameController;
+  final TextEditingController otherSchoolTypeController;
   final bool? attendsSchool;
   final String? schoolType;
   final String? schoolShift;
-  final String? hasMediator;
+  final String? hasCompanion;
+  final List<String> attachments;
   final ValueChanged<bool?> onAttendsSchoolChanged;
   final ValueChanged<String?> onSchoolTypeChanged;
   final ValueChanged<String?> onSchoolShiftChanged;
-  final ValueChanged<String?> onHasMediatorChanged;
+  final ValueChanged<String?> onHasCompanionChanged;
+  final ValueChanged<List<String>> onAttachmentsChanged;
 
   const PatientSchoolInfo({
     super.key,
     required this.formKey,
     required this.schoolObservationsController,
-    required this.guardiansObservationsController,
+    required this.schoolNameController,
+    required this.teacherNameController,
+    required this.otherSchoolTypeController,
     required this.attendsSchool,
     required this.schoolType,
     required this.schoolShift,
-    required this.hasMediator,
+    required this.hasCompanion,
+    required this.attachments,
     required this.onAttendsSchoolChanged,
     required this.onSchoolTypeChanged,
     required this.onSchoolShiftChanged,
-    required this.onHasMediatorChanged,
+    required this.onHasCompanionChanged,
+    required this.onAttachmentsChanged,
   });
 
   @override
+  State<PatientSchoolInfo> createState() => _PatientSchoolInfoState();
+}
+
+class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
+  @override
   Widget build(BuildContext context) {
     return Form(
-      key: formKey,
+      key: widget.formKey,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-          _buildSectionTitle('Informações Escolares'),
-          const SizedBox(height: 16),
-          
-          _buildField(
-            label: 'Está matriculada na escola?',
-            child: _buildBooleanSelector(
-              value: attendsSchool,
-              onChanged: onAttendsSchoolChanged,
-            ),
-          ),
-          
-          if (attendsSchool == true) ...[
+            _buildSectionTitle('Informações Escolares'),
+            const SizedBox(height: 16),
+
             _buildField(
-              label: 'Tipo de escola',
-              child: _buildSingleChoiceSelector(
-                options: PatientEnums.schoolTypeOptions,
-                selectedValue: schoolType,
-                onChanged: onSchoolTypeChanged,
+              label: 'Está matriculada na escola?',
+              child: _buildBooleanSelector(
+                value: widget.attendsSchool,
+                onChanged: widget.onAttendsSchoolChanged,
               ),
             ),
-            
-            _buildField(
-              label: 'Turno escolar',
-              child: _buildSingleChoiceSelector(
-                options: PatientEnums.schoolShiftOptions,
-                selectedValue: schoolShift,
-                onChanged: onSchoolShiftChanged,
+
+            if (widget.attendsSchool == true) ...[
+              _buildField(
+                label: 'Nome da escola',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.schoolNameController,
+                  hintText: 'Digite o nome da escola',
+                ),
               ),
-            ),
-            
-            _buildField(
-              label: 'Possui mediador escolar?',
-              child: _buildSingleChoiceSelector(
-                options: PatientEnums.mediatorOptions,
-                selectedValue: hasMediator,
-                onChanged: onHasMediatorChanged,
+
+              _buildField(
+                label: 'Tipo de escola',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSingleChoiceSelector(
+                      options: PatientEnums.schoolTypeOptions,
+                      selectedValue: widget.schoolType,
+                      onChanged: widget.onSchoolTypeChanged,
+                    ),
+                    if (widget.schoolType == 'Outra')
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: CustomFormField(
+                          variant: InputVariant.outlined,
+                          controller: widget.otherSchoolTypeController,
+                          hintText: 'Especifique o tipo de escola',
+                        ),
+                      ),
+                  ],
+                ),
               ),
-            ),
-            
-            _buildField(
-              label: 'Observações escolares',
-              child: CustomFormField(
-                variant: InputVariant.outlined,
-                controller: schoolObservationsController,
-                hintText: 'Descreva observações sobre o comportamento na escola, dificuldades, progressos, etc.',
-                minLines: 3,
-                maxLines: 6,
+
+              _buildField(
+                label: 'Turno escolar',
+                child: _buildSingleChoiceSelector(
+                  options: PatientEnums.schoolShiftOptions,
+                  selectedValue: widget.schoolShift,
+                  onChanged: widget.onSchoolShiftChanged,
+                ),
               ),
-            ),
-          ],
-          
-          const SizedBox(height: 24),
-          _buildSectionTitle('Observações Gerais'),
-          const SizedBox(height: 16),
-          
-          _buildField(
-            label: 'Observações dos responsáveis',
-            child: CustomFormField(
-              variant: InputVariant.outlined,
-              controller: guardiansObservationsController,
-              hintText: 'Adicione qualquer informação adicional que considere importante sobre a criança',
-              minLines: 3,
-              maxLines: 6,
-            ),
-          ),
-          
-          const SizedBox(height: 32),
+
+              _buildField(
+                label: 'Nome do professor(a)',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.teacherNameController,
+                  hintText: 'Digite o nome do(a) professor(a)',
+                ),
+              ),
+
+              _buildField(
+                label: 'Possui acompanhante escolar?',
+                child: _buildSingleChoiceSelector(
+                  options: PatientEnums.companionOptions,
+                  selectedValue: widget.hasCompanion,
+                  onChanged: widget.onHasCompanionChanged,
+                ),
+              ),
+
+              _buildField(
+                label: 'Observações escolares',
+                child: CustomFormField(
+                  variant: InputVariant.outlined,
+                  controller: widget.schoolObservationsController,
+                  hintText:
+                      'Descreva observações sobre o comportamento na escola, dificuldades, progressos, etc.',
+                  minLines: 3,
+                  maxLines: 6,
+                ),
+              ),
+
+              _buildField(
+                label: 'Anexos',
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _handleAddAttachment,
+                      icon: const Icon(Icons.attach_file),
+                      label: const Text('Adicionar Anexo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primarySwatch,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                    if (widget.attachments.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      ...widget.attachments.map(
+                        (attachment) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.file_present, size: 16),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  attachment,
+                                  style: const TextStyle(fontSize: 14),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.close, size: 16),
+                                onPressed: () => _removeAttachment(attachment),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(
+                                  minWidth: 24,
+                                  minHeight: 24,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 32),
           ],
         ),
       ),
     );
+  }
+
+  void _handleAddAttachment() {
+    // TODO: Implementar seleção de arquivo
+    // Por enquanto, adiciona um arquivo fictício para demonstração
+    final newAttachments = List<String>.from(widget.attachments)
+      ..add('documento_${DateTime.now().millisecondsSinceEpoch}.pdf');
+    widget.onAttachmentsChanged(newAttachments);
+  }
+
+  void _removeAttachment(String attachment) {
+    final newAttachments = List<String>.from(widget.attachments)
+      ..remove(attachment);
+    widget.onAttachmentsChanged(newAttachments);
   }
 
   Widget _buildSectionTitle(String title) {
@@ -176,14 +269,15 @@ class PatientSchoolInfo extends StatelessWidget {
     return Wrap(
       spacing: 16,
       runSpacing: 8,
-      children: options.map((option) {
-        return _buildRadioOption(
-          label: option,
-          value: option,
-          groupValue: selectedValue,
-          onChanged: onChanged,
-        );
-      }).toList(),
+      children:
+          options.map((option) {
+            return _buildRadioOption(
+              label: option,
+              value: option,
+              groupValue: selectedValue,
+              onChanged: onChanged,
+            );
+          }).toList(),
     );
   }
 
@@ -219,4 +313,4 @@ class PatientSchoolInfo extends StatelessWidget {
       ),
     );
   }
-} 
+}

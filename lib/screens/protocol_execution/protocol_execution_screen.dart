@@ -19,7 +19,8 @@ class ProtocolExecutionScreen extends StatefulWidget {
   });
 
   @override
-  State<ProtocolExecutionScreen> createState() => _ProtocolExecutionScreenState();
+  State<ProtocolExecutionScreen> createState() =>
+      _ProtocolExecutionScreenState();
 }
 
 class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
@@ -44,13 +45,15 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
           _responses[item.id] = 1;
           break;
         case ResponseType.checklist:
+        case ResponseType.multipleChoice:
           _responses[item.id] = <String>[];
           break;
       }
-      
+
       // Se já existem respostas salvas, sobrescrever com os valores salvos
       if (widget.appointment.protocolResponses != null) {
-        final protocolResponses = widget.appointment.protocolResponses![widget.protocol.id];
+        final protocolResponses =
+            widget.appointment.protocolResponses![widget.protocol.id];
         if (protocolResponses != null) {
           final existingResponse = protocolResponses[item.id];
           if (existingResponse != null) {
@@ -59,24 +62,27 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
                 _responses[item.id] = existingResponse.toString();
                 break;
               case ResponseType.scale:
-                _responses[item.id] = existingResponse is int ? existingResponse : 1;
+                _responses[item.id] =
+                    existingResponse is int ? existingResponse : 1;
                 break;
               case ResponseType.checklist:
-                _responses[item.id] = existingResponse is List 
-                    ? List<String>.from(existingResponse) 
-                    : <String>[];
+              case ResponseType.multipleChoice:
+                _responses[item.id] =
+                    existingResponse is List
+                        ? List<String>.from(existingResponse)
+                        : <String>[];
                 break;
             }
           }
         }
       }
-      
+
       // Criar controladores para campos de texto
       if (item.responseType == ResponseType.text) {
         _controllers[item.id] = TextEditingController(
-          text: _responses[item.id]?.toString() ?? ''
+          text: _responses[item.id]?.toString() ?? '',
         );
-        
+
         // Adicionar listener para atualizar as respostas em tempo real
         _controllers[item.id]!.addListener(() {
           _responses[item.id] = _controllers[item.id]!.text;
@@ -99,7 +105,7 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
     try {
       // Coletar todas as respostas atuais
       final finalResponses = <String, dynamic>{};
-      
+
       for (final item in widget.protocol.items) {
         switch (item.responseType) {
           case ResponseType.text:
@@ -110,6 +116,7 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
             finalResponses[item.id] = _responses[item.id] ?? 1;
             break;
           case ResponseType.checklist:
+          case ResponseType.multipleChoice:
             finalResponses[item.id] = _responses[item.id] ?? <String>[];
             break;
         }
@@ -130,9 +137,9 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro ao salvar protocolo: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Erro ao salvar protocolo: $e')));
       }
     }
   }
@@ -145,6 +152,8 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
         return _buildScaleResponse(item);
       case ResponseType.checklist:
         return _buildChecklistResponse(item);
+      case ResponseType.multipleChoice:
+        return _buildMultipleChoiceResponse(item);
     }
   }
 
@@ -157,19 +166,13 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
           children: [
             Text(
               item.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             if (item.instruction != null) ...[
               const SizedBox(height: 8),
               Text(
                 item.instruction!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.gray[600],
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
               ),
             ],
             const SizedBox(height: 16),
@@ -187,7 +190,7 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
 
   Widget _buildScaleResponse(ProtocolItem item) {
     final currentValue = _responses[item.id] as int? ?? 1;
-    
+
     return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -196,19 +199,13 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
           children: [
             Text(
               item.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             if (item.instruction != null) ...[
               const SizedBox(height: 8),
               Text(
                 item.instruction!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.gray[600],
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
               ),
             ],
             const SizedBox(height: 16),
@@ -256,7 +253,7 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
 
   Widget _buildChecklistResponse(ProtocolItem item) {
     final selectedOptions = _responses[item.id] as List<String>? ?? [];
-    
+
     return CustomCard(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -265,19 +262,13 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
           children: [
             Text(
               item.title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
             if (item.instruction != null) ...[
               const SizedBox(height: 8),
               Text(
                 item.instruction!,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.gray[600],
-                ),
+                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
               ),
             ],
             const SizedBox(height: 16),
@@ -286,10 +277,56 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: CheckboxListTile(
-                  title: Text(
-                    option,
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  title: Text(option, style: const TextStyle(fontSize: 14)),
+                  value: isSelected,
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value == true) {
+                        selectedOptions.add(option);
+                      } else {
+                        selectedOptions.remove(option);
+                      }
+                      _responses[item.id] = List<String>.from(selectedOptions);
+                    });
+                  },
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMultipleChoiceResponse(ProtocolItem item) {
+    final selectedOptions = _responses[item.id] as List<String>? ?? [];
+
+    return CustomCard(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              item.title,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            ),
+            if (item.instruction != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                item.instruction!,
+                style: TextStyle(fontSize: 14, color: AppColors.gray[600]),
+              ),
+            ],
+            const SizedBox(height: 16),
+            ...item.options.map((option) {
+              final isSelected = selectedOptions.contains(option);
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: CheckboxListTile(
+                  title: Text(option, style: const TextStyle(fontSize: 14)),
                   value: isSelected,
                   contentPadding: EdgeInsets.zero,
                   controlAffinity: ListTileControlAffinity.leading,
@@ -337,15 +374,12 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
                 const SizedBox(height: 8),
                 Text(
                   'Paciente: ${widget.appointment.patientName}',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.gray[600],
-                  ),
+                  style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
                 ),
               ],
             ),
           ),
-          
+
           // Lista de itens do protocolo
           Expanded(
             child: ListView.separated(
@@ -358,7 +392,7 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
               },
             ),
           ),
-          
+
           // Botões de ação
           Container(
             padding: const EdgeInsets.all(16),
@@ -387,4 +421,4 @@ class _ProtocolExecutionScreenState extends State<ProtocolExecutionScreen> {
       ),
     );
   }
-} 
+}

@@ -117,6 +117,8 @@ class ResponseTypeAdapter extends TypeAdapter<ResponseType> {
         return ResponseType.scale;
       case 2:
         return ResponseType.text;
+      case 3:
+        return ResponseType.multipleChoice;
       default:
         return ResponseType.checklist;
     }
@@ -133,6 +135,9 @@ class ResponseTypeAdapter extends TypeAdapter<ResponseType> {
         break;
       case ResponseType.text:
         writer.writeByte(2);
+        break;
+      case ResponseType.multipleChoice:
+        writer.writeByte(3);
         break;
     }
   }

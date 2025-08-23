@@ -37,6 +37,11 @@ class PatientFormData {
   final TextEditingController socialInteractionController;
   final TextEditingController sensoryHypersensitivityController;
 
+  // Novos controllers para informações escolares
+  final TextEditingController schoolNameController;
+  final TextEditingController teacherNameController;
+  final TextEditingController otherSchoolTypeController;
+
   DateTime birthDate;
   String gender;
   List<String> comorbidities;
@@ -44,8 +49,9 @@ class PatientFormData {
   bool? attendsSchool;
   String? schoolType;
   String? schoolShift;
-  String? hasMediator;
+  String? hasCompanion;
   List<String> screeningsPerformed;
+  List<String> attachments;
 
   PatientFormData({Patient? patient})
     : fullNameController = TextEditingController(text: patient?.fullName),
@@ -159,6 +165,15 @@ class PatientFormData {
       sensoryHypersensitivityController = TextEditingController(
         text: patient?.sensoryHypersensitivity ?? '',
       ),
+      schoolNameController = TextEditingController(
+        text: patient?.schoolName ?? '',
+      ),
+      teacherNameController = TextEditingController(
+        text: patient?.teacherName ?? '',
+      ),
+      otherSchoolTypeController = TextEditingController(
+        text: patient?.otherSchoolType ?? '',
+      ),
       birthDate =
           patient?.birthDate ??
           DateTime.now().subtract(const Duration(days: 365 * 3)),
@@ -168,8 +183,9 @@ class PatientFormData {
       attendsSchool = patient?.attendsSchool,
       schoolType = patient?.schoolType,
       schoolShift = patient?.schoolShift,
-      hasMediator = patient?.hasMediator,
-      screeningsPerformed = List.from(patient?.screeningsPerformed ?? []);
+      hasCompanion = patient?.hasCompanion,
+      screeningsPerformed = List.from(patient?.screeningsPerformed ?? []),
+      attachments = List.from(patient?.attachments ?? []);
 
   factory PatientFormData.fromPatient(Patient? patient) {
     return PatientFormData(patient: patient);
@@ -224,6 +240,9 @@ class PatientFormData {
     routineResistanceController.dispose();
     socialInteractionController.dispose();
     sensoryHypersensitivityController.dispose();
+    schoolNameController.dispose();
+    teacherNameController.dispose();
+    otherSchoolTypeController.dispose();
   }
 
   Patient toPatient() {
@@ -311,7 +330,19 @@ class PatientFormData {
       attendsSchool: attendsSchool,
       schoolType: schoolType,
       schoolShift: schoolShift,
-      hasMediator: hasMediator,
+      hasCompanion: hasCompanion,
+      schoolName:
+          schoolNameController.text.isEmpty ? null : schoolNameController.text,
+      teacherName:
+          teacherNameController.text.isEmpty
+              ? null
+              : teacherNameController.text,
+      otherSchoolType:
+          schoolType == 'Outra' &&
+                  otherSchoolTypeController.text.trim().isNotEmpty
+              ? otherSchoolTypeController.text.trim()
+              : null,
+      attachments: attachments.isNotEmpty ? attachments : null,
       schoolObservations:
           schoolObservationsController.text.isEmpty
               ? null
@@ -414,7 +445,19 @@ class PatientFormData {
       attendsSchool: attendsSchool,
       schoolType: schoolType,
       schoolShift: schoolShift,
-      hasMediator: hasMediator,
+      hasCompanion: hasCompanion,
+      schoolName:
+          schoolNameController.text.isEmpty ? null : schoolNameController.text,
+      teacherName:
+          teacherNameController.text.isEmpty
+              ? null
+              : teacherNameController.text,
+      otherSchoolType:
+          schoolType == 'Outra' &&
+                  otherSchoolTypeController.text.trim().isNotEmpty
+              ? otherSchoolTypeController.text.trim()
+              : null,
+      attachments: attachments.isNotEmpty ? attachments : null,
       schoolObservations:
           schoolObservationsController.text.isEmpty
               ? null

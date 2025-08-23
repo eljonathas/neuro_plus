@@ -27,10 +27,8 @@ class AppointmentAdapter extends TypeAdapter<Appointment> {
       status: fields[7] as AppointmentStatus,
       type: fields[8] as AppointmentType,
       notes: fields[9] as String?,
-      protocolResponses: (fields[10] as Map?)?.map(
-        (dynamic k, dynamic v) =>
-            MapEntry(k as String, (v as Map).cast<String, dynamic>()),
-      ),
+      protocolResponses: (fields[10] as Map?)?.map((dynamic k, dynamic v) =>
+          MapEntry(k as String, (v as Map).cast<String, dynamic>())),
       createdAt: fields[11] as DateTime?,
       updatedAt: fields[12] as DateTime?,
       duration: fields[13] as int,

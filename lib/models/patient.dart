@@ -153,7 +153,7 @@ class Patient extends HiveObject {
   final String? schoolShift;
 
   @HiveField(24)
-  final String? hasMediator;
+  final String? hasCompanion;
 
   @HiveField(25)
   final String? schoolObservations;
@@ -204,6 +204,19 @@ class Patient extends HiveObject {
   @HiveField(42)
   final String? sensoryChangesDescription;
 
+  // Novos campos para informações escolares (Fase 3)
+  @HiveField(43)
+  final String? schoolName;
+
+  @HiveField(44)
+  final String? teacherName;
+
+  @HiveField(45)
+  final List<String>? attachments;
+
+  @HiveField(46)
+  final String? otherSchoolType;
+
   Patient({
     String? id,
     required this.fullName,
@@ -231,7 +244,7 @@ class Patient extends HiveObject {
     this.attendsSchool,
     this.schoolType,
     this.schoolShift,
-    this.hasMediator,
+    this.hasCompanion,
     this.schoolObservations,
     this.guardiansObservations,
     this.screeningsPerformed = const [],
@@ -246,6 +259,10 @@ class Patient extends HiveObject {
     this.feedingSelectivityDescription,
     this.sensoryChanges,
     this.sensoryChangesDescription,
+    this.schoolName,
+    this.teacherName,
+    this.attachments,
+    this.otherSchoolType,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? const Uuid().v4(),
@@ -300,7 +317,7 @@ class Patient extends HiveObject {
     bool? attendsSchool,
     String? schoolType,
     String? schoolShift,
-    String? hasMediator,
+    String? hasCompanion,
     String? schoolObservations,
     String? guardiansObservations,
     List<String>? screeningsPerformed,
@@ -315,6 +332,10 @@ class Patient extends HiveObject {
     String? feedingSelectivityDescription,
     bool? sensoryChanges,
     String? sensoryChangesDescription,
+    String? schoolName,
+    String? teacherName,
+    List<String>? attachments,
+    String? otherSchoolType,
   }) {
     return Patient(
       id: id,
@@ -346,7 +367,7 @@ class Patient extends HiveObject {
       attendsSchool: attendsSchool ?? this.attendsSchool,
       schoolType: schoolType ?? this.schoolType,
       schoolShift: schoolShift ?? this.schoolShift,
-      hasMediator: hasMediator ?? this.hasMediator,
+      hasCompanion: hasCompanion ?? this.hasCompanion,
       schoolObservations: schoolObservations ?? this.schoolObservations,
       guardiansObservations:
           guardiansObservations ?? this.guardiansObservations,
@@ -365,6 +386,10 @@ class Patient extends HiveObject {
       sensoryChanges: sensoryChanges ?? this.sensoryChanges,
       sensoryChangesDescription:
           sensoryChangesDescription ?? this.sensoryChangesDescription,
+      schoolName: schoolName ?? this.schoolName,
+      teacherName: teacherName ?? this.teacherName,
+      attachments: attachments ?? this.attachments,
+      otherSchoolType: otherSchoolType ?? this.otherSchoolType,
       createdAt: createdAt,
       updatedAt: DateTime.now(),
     );
@@ -398,7 +423,7 @@ class Patient extends HiveObject {
       'attendsSchool': attendsSchool,
       'schoolType': schoolType,
       'schoolShift': schoolShift,
-      'hasMediator': hasMediator,
+      'hasCompanion': hasCompanion,
       'schoolObservations': schoolObservations,
       'guardiansObservations': guardiansObservations,
       'screeningsPerformed': screeningsPerformed,
@@ -413,6 +438,10 @@ class Patient extends HiveObject {
       'feedingSelectivityDescription': feedingSelectivityDescription,
       'sensoryChanges': sensoryChanges,
       'sensoryChangesDescription': sensoryChangesDescription,
+      'schoolName': schoolName,
+      'teacherName': teacherName,
+      'attachments': attachments,
+      'otherSchoolType': otherSchoolType,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
     };
@@ -450,7 +479,7 @@ class Patient extends HiveObject {
       attendsSchool: json['attendsSchool'],
       schoolType: json['schoolType'],
       schoolShift: json['schoolShift'],
-      hasMediator: json['hasMediator'],
+      hasCompanion: json['hasCompanion'],
       schoolObservations: json['schoolObservations'],
       guardiansObservations: json['guardiansObservations'],
       screeningsPerformed: List<String>.from(json['screeningsPerformed'] ?? []),
@@ -465,6 +494,13 @@ class Patient extends HiveObject {
       feedingSelectivityDescription: json['feedingSelectivityDescription'],
       sensoryChanges: json['sensoryChanges'],
       sensoryChangesDescription: json['sensoryChangesDescription'],
+      schoolName: json['schoolName'],
+      teacherName: json['teacherName'],
+      attachments:
+          json['attachments'] != null
+              ? List<String>.from(json['attachments'])
+              : null,
+      otherSchoolType: json['otherSchoolType'],
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );
@@ -502,15 +538,11 @@ class PatientEnums {
     'Não observado',
   ];
 
-  static const List<String> schoolTypeOptions = [
-    'Regular',
-    'Especial',
-    'Outra',
-  ];
+  static const List<String> schoolTypeOptions = ['Creche', 'Regular', 'Outra'];
 
   static const List<String> schoolShiftOptions = ['Manhã', 'Tarde', 'Integral'];
 
-  static const List<String> mediatorOptions = ['Sim', 'Não', 'Não informado'];
+  static const List<String> companionOptions = ['Sim', 'Não', 'Não informado'];
 
   static const List<String> screeningsOptions = [
     'M-CHAT',

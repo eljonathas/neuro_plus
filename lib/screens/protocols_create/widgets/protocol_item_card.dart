@@ -36,6 +36,7 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
   // Cache para response type options
   static const _responseTypeOptions = [
     ('Checklist', ResponseType.checklist),
+    ('Múltipla escolha', ResponseType.multipleChoice),
     ('Escala 0-5', ResponseType.scale),
     ('Texto livre', ResponseType.text),
   ];
@@ -155,7 +156,8 @@ class _ProtocolItemCardState extends State<ProtocolItemCard> {
               const Text('Tipo de resposta'),
               const SizedBox(height: 8),
               _buildResponseTypeSelector(),
-              if (widget.item.responseType == ResponseType.checklist) ...[
+              if (widget.item.responseType == ResponseType.checklist ||
+                  widget.item.responseType == ResponseType.multipleChoice) ...[
                 const SizedBox(height: 16),
                 _buildChecklistOptions(),
               ],

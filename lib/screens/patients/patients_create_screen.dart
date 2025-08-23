@@ -236,6 +236,8 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
           _controller.formData!.socialInteractionController,
       sensoryHypersensitivityController:
           _controller.formData!.sensoryHypersensitivityController,
+      guardiansObservationsController:
+          _controller.formData!.guardiansObservationsController,
     );
   }
 
@@ -244,16 +246,20 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       formKey: _schoolInfoFormKey,
       schoolObservationsController:
           _controller.formData!.schoolObservationsController,
-      guardiansObservationsController:
-          _controller.formData!.guardiansObservationsController,
+      schoolNameController: _controller.formData!.schoolNameController,
+      teacherNameController: _controller.formData!.teacherNameController,
+      otherSchoolTypeController:
+          _controller.formData!.otherSchoolTypeController,
       attendsSchool: _controller.formData!.attendsSchool,
       schoolType: _controller.formData!.schoolType,
       schoolShift: _controller.formData!.schoolShift,
-      hasMediator: _controller.formData!.hasMediator,
+      hasCompanion: _controller.formData!.hasCompanion,
+      attachments: _controller.formData!.attachments,
       onAttendsSchoolChanged: _controller.updateAttendsSchool,
       onSchoolTypeChanged: _controller.updateSchoolType,
       onSchoolShiftChanged: _controller.updateSchoolShift,
-      onHasMediatorChanged: _controller.updateHasMediator,
+      onHasCompanionChanged: _controller.updateHasCompanion,
+      onAttachmentsChanged: _controller.updateAttachments,
     );
   }
 }

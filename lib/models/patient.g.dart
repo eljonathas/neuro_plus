@@ -92,7 +92,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       attendsSchool: fields[21] as bool?,
       schoolType: fields[22] as String?,
       schoolShift: fields[23] as String?,
-      hasMediator: fields[24] as String?,
+      hasCompanion: fields[24] as String?,
       schoolObservations: fields[25] as String?,
       guardiansObservations: fields[26] as String?,
       screeningsPerformed: (fields[27] as List).cast<String>(),
@@ -107,6 +107,10 @@ class PatientAdapter extends TypeAdapter<Patient> {
       feedingSelectivityDescription: fields[40] as String?,
       sensoryChanges: fields[41] as bool?,
       sensoryChangesDescription: fields[42] as String?,
+      schoolName: fields[43] as String?,
+      teacherName: fields[44] as String?,
+      attachments: (fields[45] as List?)?.cast<String>(),
+      otherSchoolType: fields[46] as String?,
       createdAt: fields[28] as DateTime?,
       updatedAt: fields[29] as DateTime?,
     );
@@ -115,7 +119,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
   @override
   void write(BinaryWriter writer, Patient obj) {
     writer
-      ..writeByte(43)
+      ..writeByte(47)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -169,7 +173,7 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..writeByte(23)
       ..write(obj.schoolShift)
       ..writeByte(24)
-      ..write(obj.hasMediator)
+      ..write(obj.hasCompanion)
       ..writeByte(25)
       ..write(obj.schoolObservations)
       ..writeByte(26)
@@ -201,7 +205,15 @@ class PatientAdapter extends TypeAdapter<Patient> {
       ..writeByte(41)
       ..write(obj.sensoryChanges)
       ..writeByte(42)
-      ..write(obj.sensoryChangesDescription);
+      ..write(obj.sensoryChangesDescription)
+      ..writeByte(43)
+      ..write(obj.schoolName)
+      ..writeByte(44)
+      ..write(obj.teacherName)
+      ..writeByte(45)
+      ..write(obj.attachments)
+      ..writeByte(46)
+      ..write(obj.otherSchoolType);
   }
 
   @override

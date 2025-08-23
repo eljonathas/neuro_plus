@@ -8,6 +8,7 @@ class PatientDevelopmentInfo extends StatefulWidget {
   final GlobalKey<FormState> formKey;
   final String gender;
   final TextEditingController repetitiveBehaviorsDescriptionController;
+  final TextEditingController guardiansObservationsController;
   final TextEditingController developmentalDelayController;
   final TextEditingController motorDelayController;
   final TextEditingController speechDelayController;
@@ -31,6 +32,7 @@ class PatientDevelopmentInfo extends StatefulWidget {
     required this.formKey,
     required this.gender,
     required this.repetitiveBehaviorsDescriptionController,
+    required this.guardiansObservationsController,
     required this.developmentalDelayController,
     required this.motorDelayController,
     required this.speechDelayController,
@@ -279,6 +281,22 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
                   maxLines: 4,
                 ),
               ),
+
+            const SizedBox(height: 24),
+            _buildSectionTitle('Observações Gerais'),
+            const SizedBox(height: 16),
+
+            _buildField(
+              label: 'Observações dos responsáveis',
+              child: CustomFormField(
+                variant: InputVariant.outlined,
+                controller: widget.guardiansObservationsController,
+                hintText:
+                    'Adicione qualquer informação adicional que considere importante sobre a criança',
+                minLines: 3,
+                maxLines: 6,
+              ),
+            ),
 
             const SizedBox(height: 32),
           ],

@@ -101,9 +101,16 @@ class PatientFormController extends ChangeNotifier {
     }
   }
 
-  void updateHasMediator(String? hasMediator) {
+  void updateHasCompanion(String? hasCompanion) {
     if (_formData != null) {
-      _formData!.hasMediator = hasMediator;
+      _formData!.hasCompanion = hasCompanion;
+      notifyListeners();
+    }
+  }
+
+  void updateAttachments(List<String> attachments) {
+    if (_formData != null) {
+      _formData!.attachments = attachments;
       notifyListeners();
     }
   }

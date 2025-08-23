@@ -155,4 +155,7 @@ enum ResponseType {
 
   @HiveField(2)
   text,
+
+  @HiveField(3)
+  multipleChoice,
 }

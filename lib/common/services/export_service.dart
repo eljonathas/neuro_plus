@@ -192,7 +192,7 @@ class ExportService {
                 patient.attendsSchool?.toString() ?? '',
                 patient.schoolType ?? '',
                 patient.schoolShift ?? '',
-                patient.hasMediator ?? '',
+                patient.hasCompanion ?? '',
                 patient.schoolObservations ?? '',
                 patient.guardiansObservations ?? '',
                 patient.screeningsPerformed.join('; '),
