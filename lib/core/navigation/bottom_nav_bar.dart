@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/core/navigation/app_routes.dart';
@@ -14,7 +15,12 @@ class CustomBottomNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Container(
-          padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
+          padding: EdgeInsets.only(
+            top: 16,
+            left: 32,
+            right: 32,
+            bottom: kIsWeb ? 24 : 0,
+          ),
           decoration: BoxDecoration(color: Colors.white),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -15,19 +16,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(56); // Altura ajustada a fit-content (48 de conteúdo + 16 padding top/bottom)
+  Size get preferredSize => Size.fromHeight(kIsWeb ? 80 : 56);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+      padding: EdgeInsets.only(bottom: 8, left: 16, right: 16),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         borderRadius: const BorderRadius.only(bottomRight: Radius.circular(40)),
       ),
       child: SafeArea(
         bottom: false,
+        top: !kIsWeb,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -59,7 +61,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ),
               ),
-            // Espaço vazio para manter o título centralizado
             const SizedBox(width: 48),
           ],
         ),

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 import 'package:csv/csv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,8 +15,8 @@ import '../../models/protocol.dart';
 class ExportService {
   static const String _dateFormat = 'dd-MM-yyyy_HH-mm';
 
-  /// Solicita permissões de armazenamento se necessário
   static Future<bool> _requestStoragePermission() async {
+    if (kIsWeb) return true;
     if (Platform.isAndroid) {
       final permission = await Permission.storage.status;
       if (permission.isDenied) {
@@ -22,11 +25,11 @@ class ExportService {
       }
       return permission.isGranted;
     }
-    return true; // iOS não precisa dessa permissão
+    return true;
   }
 
-  /// Obtém o diretório para salvar arquivos
-  static Future<Directory> _getExportDirectory() async {
+  static Future<Directory?> _getExportDirectory() async {
+    if (kIsWeb) return null;
     if (Platform.isAndroid) {
       return await getExternalStorageDirectory() ??
           await getApplicationDocumentsDirectory();
@@ -34,21 +37,39 @@ class ExportService {
     return await getApplicationDocumentsDirectory();
   }
 
-  /// Gera nome do arquivo com timestamp
   static String _generateFileName(String baseName, String extension) {
     final timestamp = DateFormat(_dateFormat).format(DateTime.now());
     return '${baseName}_$timestamp.$extension';
   }
 
-  // EXPORTAÇÃO DE CONSULTAS
+  static void _downloadFileOnWeb(
+    String content,
+    String fileName,
+    String mimeType,
+  ) {
+    if (kIsWeb) {
+      final bytes = utf8.encode(content);
+      final blob = web.Blob(
+        [bytes.toJS].toJS,
+        web.BlobPropertyBag(type: mimeType),
+      );
+      final url = web.URL.createObjectURL(blob);
+      final anchor =
+          web.HTMLAnchorElement()
+            ..href = url
+            ..download = fileName
+            ..style.display = 'none';
+      web.document.body?.appendChild(anchor);
+      anchor.click();
+      web.document.body?.removeChild(anchor);
+      web.URL.revokeObjectURL(url);
+    }
+  }
 
-  /// Exporta lista de consultas para CSV
-  static Future<File> exportAppointmentsToCsv(
+  static Future<File?> exportAppointmentsToCsv(
     List<Appointment> appointments,
   ) async {
-    final directory = await _getExportDirectory();
     final fileName = _generateFileName('consultas', 'csv');
-    final file = File('${directory.path}/$fileName');
 
     final headers = [
       'ID',
@@ -88,18 +109,22 @@ class ExportService {
     final csvData = [headers, ...rows];
     final csvString = const ListToCsvConverter().convert(csvData);
 
-    await file.writeAsString(csvString);
-    return file;
+    if (kIsWeb) {
+      _downloadFileOnWeb(csvString, fileName, 'text/csv');
+      return null;
+    } else {
+      final directory = await _getExportDirectory();
+      final file = File('${directory!.path}/$fileName');
+      await file.writeAsString(csvString);
+      return file;
+    }
   }
 
-  /// Exporta dados de uma consulta específica para JSON
-  static Future<File> exportAppointmentToJson(Appointment appointment) async {
-    final directory = await _getExportDirectory();
+  static Future<File?> exportAppointmentToJson(Appointment appointment) async {
     final fileName = _generateFileName(
       'consulta_${appointment.patientName}',
       'json',
     );
-    final file = File('${directory.path}/$fileName');
 
     final jsonData = {
       'id': appointment.id,
@@ -119,17 +144,21 @@ class ExportService {
       'updatedAt': appointment.updatedAt.toIso8601String(),
     };
 
-    await file.writeAsString(jsonEncode(jsonData));
-    return file;
+    final jsonString = jsonEncode(jsonData);
+
+    if (kIsWeb) {
+      _downloadFileOnWeb(jsonString, fileName, 'application/json');
+      return null;
+    } else {
+      final directory = await _getExportDirectory();
+      final file = File('${directory!.path}/$fileName');
+      await file.writeAsString(jsonString);
+      return file;
+    }
   }
 
-  // EXPORTAÇÃO DE PACIENTES
-
-  /// Exporta lista de pacientes para CSV
-  static Future<File> exportPatientsToCsv(List<Patient> patients) async {
-    final directory = await _getExportDirectory();
+  static Future<File?> exportPatientsToCsv(List<Patient> patients) async {
     final fileName = _generateFileName('pacientes', 'csv');
-    final file = File('${directory.path}/$fileName');
 
     final headers = [
       'ID',
@@ -205,17 +234,19 @@ class ExportService {
     final csvData = [headers, ...rows];
     final csvString = const ListToCsvConverter().convert(csvData);
 
-    await file.writeAsString(csvString);
-    return file;
+    if (kIsWeb) {
+      _downloadFileOnWeb(csvString, fileName, 'text/csv');
+      return null;
+    } else {
+      final directory = await _getExportDirectory();
+      final file = File('${directory!.path}/$fileName');
+      await file.writeAsString(csvString);
+      return file;
+    }
   }
 
-  // EXPORTAÇÃO DE PROTOCOLOS
-
-  /// Exporta lista de protocolos para CSV
   static Future<File> exportProtocolsToCsv(List<Protocol> protocols) async {
-    final directory = await _getExportDirectory();
     final fileName = _generateFileName('protocolos', 'csv');
-    final file = File('${directory.path}/$fileName');
 
     final headers = [
       'ID',
@@ -245,22 +276,32 @@ class ExportService {
     final csvData = [headers, ...rows];
     final csvString = const ListToCsvConverter().convert(csvData);
 
-    await file.writeAsString(csvString);
-    return file;
+    if (kIsWeb) {
+      _downloadFileOnWeb(csvString, fileName, 'text/csv');
+      return File('');
+    } else {
+      final directory = await _getExportDirectory();
+      final file = File('${directory!.path}/$fileName');
+      await file.writeAsString(csvString);
+      return file;
+    }
   }
 
-  /// Exporta protocolo específico para JSON (usado no compartilhamento)
-  static Future<File> exportProtocolToJson(Protocol protocol) async {
-    final directory = await _getExportDirectory();
+  static Future<File?> exportProtocolToJson(Protocol protocol) async {
     final fileName = _generateFileName('protocolo_${protocol.name}', 'json');
-    final file = File('${directory.path}/$fileName');
+    final jsonString = jsonEncode(protocol.toJson());
 
-    final jsonData = protocol.toJson();
-    await file.writeAsString(jsonEncode(jsonData));
-    return file;
+    if (kIsWeb) {
+      _downloadFileOnWeb(jsonString, fileName, 'application/json');
+      return null;
+    } else {
+      final directory = await _getExportDirectory();
+      final file = File('${directory!.path}/$fileName');
+      await file.writeAsString(jsonString);
+      return file;
+    }
   }
 
-  /// Gera JSON string do protocolo para QR Code
   static String generateProtocolQrData(Protocol protocol) {
     final shareData = {
       'type': 'protocol_share',
@@ -271,7 +312,6 @@ class ExportService {
     return jsonEncode(shareData);
   }
 
-  /// Importa protocolo a partir de dados do QR Code
   static Protocol? importProtocolFromQrData(String qrData) {
     try {
       final data = jsonDecode(qrData);
@@ -286,32 +326,34 @@ class ExportService {
     }
   }
 
-  // MÉTODOS DE COMPARTILHAMENTO
+  static Future<void> shareFile(File? file, {String? subject}) async {
+    if (file == null || kIsWeb) return;
 
-  /// Compartilha arquivo usando o sistema nativo
-  static Future<void> shareFile(File file, {String? subject}) async {
     final xFile = XFile(file.path);
     await Share.shareXFiles([
       xFile,
     ], subject: subject ?? 'Dados exportados - Neuro Plus');
   }
 
-  /// Compartilha múltiplos arquivos
-  static Future<void> shareFiles(List<File> files, {String? subject}) async {
-    final xFiles = files.map((file) => XFile(file.path)).toList();
+  static Future<void> shareFiles(List<File?> files, {String? subject}) async {
+    if (kIsWeb) return;
+
+    final validFiles = files.whereType<File>().toList();
+    if (validFiles.isEmpty) return;
+
+    final xFiles = validFiles.map((file) => XFile(file.path)).toList();
     await Share.shareXFiles(
       xFiles,
       subject: subject ?? 'Dados exportados - Neuro Plus',
     );
   }
 
-  /// Salva arquivo no dispositivo (com permissão)
-  static Future<bool> saveFileToDevice(File file) async {
+  static Future<bool> saveFileToDevice(File? file) async {
+    if (file == null || kIsWeb) return true;
+
     final hasPermission = await _requestStoragePermission();
     if (!hasPermission) return false;
 
-    // O arquivo já está salvo no diretório de documentos da aplicação
-    // Retorna true indicando sucesso
     return true;
   }
 }

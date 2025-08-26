@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../models/protocol.dart';
@@ -23,22 +24,54 @@ class _QrScannerWidgetState extends State<QrScannerWidget> {
       appBar: AppBar(
         title: const Text('Escanear QR Code'),
         actions: [
-          IconButton(
-            onPressed: () => controller.toggleTorch(),
-            icon: const Icon(Icons.flash_on),
-          ),
-          IconButton(
-            onPressed: () => controller.switchCamera(),
-            icon: const Icon(Icons.flip_camera_ios),
-          ),
+          if (!kIsWeb) ...[
+            IconButton(
+              onPressed: () => controller.toggleTorch(),
+              icon: const Icon(Icons.flash_on),
+            ),
+            IconButton(
+              onPressed: () => controller.switchCamera(),
+              icon: const Icon(Icons.flip_camera_ios),
+            ),
+          ],
         ],
       ),
       body: Stack(
         children: [
-          MobileScanner(controller: controller, onDetect: _onDetect),
-          _buildOverlay(),
+          if (kIsWeb)
+            _buildWebFallback()
+          else
+            MobileScanner(controller: controller, onDetect: _onDetect),
+          if (!kIsWeb) _buildOverlay(),
           if (isProcessing) _buildLoadingOverlay(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildWebFallback() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.qr_code_scanner, size: 80, color: Colors.grey),
+            const SizedBox(height: 24),
+            const Text(
+              'Scanner QR na Web',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'O scanner de QR Code tem funcionalidade limitada na versão web.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            MobileScanner(controller: controller, onDetect: _onDetect),
+          ],
+        ),
       ),
     );
   }
