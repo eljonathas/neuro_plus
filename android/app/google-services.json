@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "660210884987",
+    "project_id": "neuro-plus",
+    "storage_bucket": "neuro-plus.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:660210884987:android:42f961ca6655b372d59dde",
+        "android_client_info": {
+          "package_name": "com.neuroplus.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBr4hRvjXyhO5SDsyWgOt7Pex-974dB4gk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
