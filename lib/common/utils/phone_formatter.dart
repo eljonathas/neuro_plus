@@ -42,24 +42,53 @@ class BrazilianPhoneValidator {
       return 'Telefone é obrigatório';
     }
 
-    final digits = value.replaceAll(RegExp(r'[^\d]'), '');
+    final original = value.trim();
+    final digits = original.replaceAll(RegExp(r'[^\d]'), '');
 
-    if (digits.length < 10 || digits.length > 11) {
-      return 'Telefone deve ter 10 ou 11 dígitos';
+    // Verificar se há caracteres inválidos (que não sejam dígitos, espaços, parentêses, hífens)
+    final allowedChars = RegExp(r'^[\d\s\(\)\-]+$');
+    if (!allowedChars.hasMatch(original)) {
+      final invalidChars = original.replaceAll(RegExp(r'[\d\s\(\)\-]'), '');
+      final uniqueInvalid = invalidChars.split('').toSet().join('');
+      return 'Telefone contém caractere(s) inválido(s): "$uniqueInvalid"';
     }
 
-    final ddd = int.tryParse(digits.substring(0, 2));
-    if (ddd == null || ddd < 11 || ddd > 99) {
-      return 'DDD inválido';
+    if (digits.isEmpty) {
+      return 'Telefone deve conter pelo menos um número';
+    }
+
+    if (digits.length < 10) {
+      final missing = 10 - digits.length;
+      return 'Telefone muito curto. Faltam $missing dígito(s)';
+    }
+
+    if (digits.length > 11) {
+      final extra = digits.length - 11;
+      return 'Telefone muito longo. Remova $extra dígito(s)';
+    }
+
+    final ddd = digits.substring(0, 2);
+    final dddNumber = int.tryParse(ddd);
+
+    if (dddNumber == null || dddNumber < 11 || dddNumber > 99) {
+      return 'DDD "$ddd" é inválido. Use DDD entre 11 e 99';
     }
 
     if (digits.length == 11) {
       if (digits[2] != '9') {
-        return 'Celular deve começar com 9 após o DDD';
+        final thirdDigit = digits[2];
+        return 'Celular deve começar com "9" após o DDD, mas encontrou "$thirdDigit"';
       }
     } else if (digits.length == 10) {
       if (digits[2] == '9') {
-        return 'Telefone fixo não deve começar com 9';
+        return 'Telefone fixo não deve começar com "9" após o DDD';
+      }
+      // Verificar se o primeiro dígito do telefone fixo é válido (2-5)
+      final firstPhoneDigit = int.tryParse(digits[2]);
+      if (firstPhoneDigit == null ||
+          firstPhoneDigit < 2 ||
+          firstPhoneDigit > 5) {
+        return 'Telefone fixo deve começar com dígito entre 2 e 5 após o DDD';
       }
     }
 

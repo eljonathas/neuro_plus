@@ -13,7 +13,7 @@ class TriStateSelector extends StatefulWidget {
     this.controller,
     this.padding,
     this.defaultValue,
-    this.treatEmptyAsUnselected = true,
+    this.treatEmptyAsUnselected = false,
     this.onChanged,
   });
 
@@ -65,7 +65,7 @@ class _TriStateSelectorState extends State<TriStateSelector> {
   String? _selectedLabelFor(String textValue) {
     if (textValue == 'true') return 'Sim';
     if (textValue == 'false') return 'Não';
-    if (textValue.isEmpty) {
+    if (textValue.isEmpty || textValue == 'not_observed') {
       return widget.treatEmptyAsUnselected ? null : 'Não observado';
     }
     return null;
@@ -106,7 +106,7 @@ class _TriStateSelectorState extends State<TriStateSelector> {
           _buildRadio(
             label: 'Não observado',
             groupValue: groupLabel,
-            onChanged: () => _setValue(''),
+            onChanged: () => _setValue('not_observed'),
           ),
         ],
       ),

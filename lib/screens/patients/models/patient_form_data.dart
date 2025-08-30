@@ -104,13 +104,13 @@ class PatientFormData {
       motorDelayController = TextEditingController(
         text:
             patient?.motorDelay == null
-                ? ''
+                ? 'not_observed'
                 : (patient!.motorDelay! ? 'true' : 'false'),
       ),
       speechDelayController = TextEditingController(
         text:
             patient?.speechDelay == null
-                ? ''
+                ? 'not_observed'
                 : (patient!.speechDelay! ? 'true' : 'false'),
       ),
       sittingAgeMonthsController = TextEditingController(
@@ -122,7 +122,7 @@ class PatientFormData {
       languageRegressionController = TextEditingController(
         text:
             patient?.languageRegression == null
-                ? ''
+                ? 'not_observed'
                 : (patient!.languageRegression! ? 'true' : 'false'),
       ),
       languageRegressionDescriptionController = TextEditingController(
@@ -131,7 +131,7 @@ class PatientFormData {
       feedingSelectivityController = TextEditingController(
         text:
             patient?.feedingSelectivity == null
-                ? ''
+                ? 'not_observed'
                 : (patient!.feedingSelectivity! ? 'true' : 'false'),
       ),
       feedingSelectivityDescriptionController = TextEditingController(
@@ -140,7 +140,7 @@ class PatientFormData {
       sensoryChangesController = TextEditingController(
         text:
             patient?.sensoryChanges == null
-                ? ''
+                ? 'not_observed'
                 : (patient!.sensoryChanges! ? 'true' : 'false'),
       ),
       sensoryChangesDescriptionController = TextEditingController(
@@ -153,10 +153,16 @@ class PatientFormData {
         text: patient?.eyeContact ?? '',
       ),
       repetitiveBehaviorsController = TextEditingController(
-        text: patient?.repetitiveBehaviors?.toString() ?? '',
+        text:
+            patient?.repetitiveBehaviors == null
+                ? 'not_observed'
+                : (patient!.repetitiveBehaviors! ? 'true' : 'false'),
       ),
       routineResistanceController = TextEditingController(
-        text: patient?.routineResistance?.toString() ?? '',
+        text:
+            patient?.routineResistance == null
+                ? 'not_observed'
+                : (patient!.routineResistance! ? 'true' : 'false'),
       ),
       socialInteractionController = TextEditingController(
         text: patient?.socialInteractionWithChildren ?? '',
@@ -476,6 +482,9 @@ class PatientFormData {
   bool? _parseBoolFromController(TextEditingController controller) {
     if (controller.text == 'true') return true;
     if (controller.text == 'false') return false;
+    if (controller.text == 'not_observed' || controller.text.isEmpty) {
+      return null;
+    }
     return null;
   }
 
