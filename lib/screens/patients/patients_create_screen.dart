@@ -116,6 +116,7 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       title: "${_isEditing ? 'Editar' : 'Novo'} paciente",
       isBackButtonVisible: true,
       navIndex: 3,
+      resizeToAvoidBottomInset: false,
       child: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {

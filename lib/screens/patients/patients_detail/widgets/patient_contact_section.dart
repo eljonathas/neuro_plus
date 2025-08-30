@@ -67,7 +67,7 @@ class PatientContactSection extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Responsáveis',
+                  'Responsáveis/Cuidadores',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -102,7 +102,7 @@ class PatientContactSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Responsável $number',
+            'Responsável/Cuidador $number',
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,

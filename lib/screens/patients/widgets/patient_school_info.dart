@@ -49,11 +49,11 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle('Informações Escolares'),
+            _buildSectionTitle('Informações Educacionais'),
             const SizedBox(height: 16),
 
             _buildField(
-              label: 'Está matriculada na escola?',
+              label: 'Está matriculado(a) em instituição de ensino?',
               child: _buildBooleanSelector(
                 value: widget.attendsSchool,
                 onChanged: widget.onAttendsSchoolChanged,
@@ -62,16 +62,16 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
 
             if (widget.attendsSchool == true) ...[
               _buildField(
-                label: 'Nome da escola',
+                label: 'Nome da instituição de ensino',
                 child: CustomFormField(
                   variant: InputVariant.outlined,
                   controller: widget.schoolNameController,
-                  hintText: 'Digite o nome da escola',
+                  hintText: 'Digite o nome da instituição de ensino',
                 ),
               ),
 
               _buildField(
-                label: 'Tipo de escola',
+                label: 'Tipo de instituição',
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,7 +86,7 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
                         child: CustomFormField(
                           variant: InputVariant.outlined,
                           controller: widget.otherSchoolTypeController,
-                          hintText: 'Especifique o tipo de escola',
+                          hintText: 'Especifique o tipo de instituição',
                         ),
                       ),
                   ],
@@ -94,7 +94,7 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
               ),
 
               _buildField(
-                label: 'Turno escolar',
+                label: 'Turno de estudos',
                 child: _buildSingleChoiceSelector(
                   options: PatientEnums.schoolShiftOptions,
                   selectedValue: widget.schoolShift,
@@ -112,7 +112,7 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
               ),
 
               _buildField(
-                label: 'Possui acompanhante escolar?',
+                label: 'Possui acompanhante educacional?',
                 child: _buildSingleChoiceSelector(
                   options: PatientEnums.companionOptions,
                   selectedValue: widget.hasCompanion,
@@ -121,12 +121,12 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
               ),
 
               _buildField(
-                label: 'Observações escolares',
+                label: 'Observações educacionais',
                 child: CustomFormField(
                   variant: InputVariant.outlined,
                   controller: widget.schoolObservationsController,
                   hintText:
-                      'Descreva observações sobre o comportamento na escola, dificuldades, progressos, etc.',
+                      'Descreva observações sobre o comportamento na instituição de ensino, dificuldades, progressos, etc.',
                   minLines: 3,
                   maxLines: 6,
                 ),

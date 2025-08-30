@@ -64,7 +64,8 @@ class PatientClinicalInfo extends StatelessWidget {
               child: CustomFormField(
                 variant: InputVariant.outlined,
                 controller: referredByController,
-                hintText: 'Ex: Dr. João Silva - Pediatra',
+                hintText:
+                    'Ex: Dr. João Silva - Neurologista/Psiquiatra/Clínico Geral',
               ),
             ),
 

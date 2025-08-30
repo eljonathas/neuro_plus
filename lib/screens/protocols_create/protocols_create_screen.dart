@@ -258,6 +258,7 @@ class _ProtocolsCreateScreenState extends State<ProtocolsCreateScreen> {
       title: "${_isEditing ? 'Editar' : 'Novo'} protocolo",
       isBackButtonVisible: true,
       navIndex: 2,
+      resizeToAvoidBottomInset: false,
       child: Form(
         key: _formKey,
         child: SingleChildScrollView(

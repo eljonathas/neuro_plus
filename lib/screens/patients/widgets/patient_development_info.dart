@@ -218,7 +218,7 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
             ),
 
             _buildField(
-              label: 'Brinca com outras crianças?',
+              label: 'Interage com outras pessoas?',
               child: _buildSingleChoiceSelector(
                 options: PatientEnums.socialInteractionOptions,
                 controller: widget.socialInteractionController,
@@ -287,12 +287,12 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
             const SizedBox(height: 16),
 
             _buildField(
-              label: 'Observações dos responsáveis',
+              label: 'Observações dos responsáveis/cuidadores',
               child: CustomFormField(
                 variant: InputVariant.outlined,
                 controller: widget.guardiansObservationsController,
                 hintText:
-                    'Adicione qualquer informação adicional que considere importante sobre o indivíduo',
+                    'Adicione qualquer informação adicional que considere importante sobre a pessoa',
                 minLines: 3,
                 maxLines: 6,
               ),

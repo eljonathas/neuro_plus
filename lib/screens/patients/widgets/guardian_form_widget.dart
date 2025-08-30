@@ -150,7 +150,7 @@ class _GuardianFormWidgetState extends State<GuardianFormWidget> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Responsável ${widget.index + 1}',
+          'Responsável/Cuidador ${widget.index + 1}',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -161,7 +161,7 @@ class _GuardianFormWidgetState extends State<GuardianFormWidget> {
           IconButton(
             onPressed: widget.onRemove,
             icon: const Icon(Icons.delete_outline, color: Colors.red, size: 20),
-            tooltip: 'Remover responsável',
+            tooltip: 'Remover responsável/cuidador',
           ),
       ],
     );

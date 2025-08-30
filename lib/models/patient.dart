@@ -527,7 +527,15 @@ class PatientEnums {
     'Não observado',
   ];
 
-  static const List<String> schoolTypeOptions = ['Creche', 'Regular', 'Outra'];
+  static const List<String> schoolTypeOptions = [
+    'Creche',
+    'Ensino Fundamental',
+    'Ensino Médio',
+    'Ensino Superior',
+    'Ensino Técnico/Profissionalizante',
+    'Educação de Jovens e Adultos (EJA)',
+    'Outra',
+  ];
 
   static const List<String> schoolShiftOptions = ['Manhã', 'Tarde', 'Integral'];
 

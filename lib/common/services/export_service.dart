@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:js_interop';
-import 'package:web/web.dart' as web;
 import 'package:csv/csv.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
@@ -48,21 +46,12 @@ class ExportService {
     String mimeType,
   ) {
     if (kIsWeb) {
-      final bytes = utf8.encode(content);
-      final blob = web.Blob(
-        [bytes.toJS].toJS,
-        web.BlobPropertyBag(type: mimeType),
-      );
-      final url = web.URL.createObjectURL(blob);
-      final anchor =
-          web.HTMLAnchorElement()
-            ..href = url
-            ..download = fileName
-            ..style.display = 'none';
-      web.document.body?.appendChild(anchor);
-      anchor.click();
-      web.document.body?.removeChild(anchor);
-      web.URL.revokeObjectURL(url);
+      // Web download functionality disabled for now
+      // TODO: Implement web download when needed
+      if (kDebugMode) {
+        print('Web download would happen here: $fileName');
+        print('Content length: ${content.length} characters');
+      }
     }
   }
 

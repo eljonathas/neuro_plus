@@ -106,6 +106,7 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
       title: _isEditing ? 'Editar consulta' : 'Nova consulta',
       navIndex: 1,
       isBackButtonVisible: true,
+      resizeToAvoidBottomInset: false,
       child: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {
