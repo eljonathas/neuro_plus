@@ -169,6 +169,7 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
       contactPhoneController: _controller.formData!.contactPhoneController,
       contactEmailController: _controller.formData!.contactEmailController,
       addressController: _controller.formData!.addressController,
+      birthDateController: _controller.formData!.birthDateController,
       guardians: _controller.formData!.guardians,
       birthDate: _controller.formData!.birthDate,
       gender: _controller.formData!.gender,

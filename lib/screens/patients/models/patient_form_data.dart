@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/models/patient.dart';
+import 'package:neuro_plus/common/utils/date_formatter.dart';
 
 class PatientFormData {
   final TextEditingController fullNameController;
   final TextEditingController contactPhoneController;
   final TextEditingController contactEmailController;
   final TextEditingController addressController;
+  final TextEditingController birthDateController;
 
   List<Guardian> guardians;
 
@@ -37,7 +39,6 @@ class PatientFormData {
   final TextEditingController socialInteractionController;
   final TextEditingController sensoryHypersensitivityController;
 
-  // Novos controllers para informações escolares
   final TextEditingController schoolNameController;
   final TextEditingController teacherNameController;
   final TextEditingController otherSchoolTypeController;
@@ -54,6 +55,12 @@ class PatientFormData {
 
   PatientFormData({Patient? patient})
     : fullNameController = TextEditingController(text: patient?.fullName),
+      birthDateController = TextEditingController(
+        text:
+            patient?.birthDate != null
+                ? BrazilianDateValidator.formatDate(patient!.birthDate)
+                : '',
+      ),
       guardians =
           patient?.guardians.isNotEmpty == true
               ? List.from(patient!.guardians)
@@ -215,6 +222,7 @@ class PatientFormData {
 
   void dispose() {
     fullNameController.dispose();
+    birthDateController.dispose();
     contactPhoneController.dispose();
     contactEmailController.dispose();
     addressController.dispose();
@@ -252,7 +260,9 @@ class PatientFormData {
   Patient toPatient() {
     return Patient(
       fullName: fullNameController.text,
-      birthDate: birthDate,
+      birthDate:
+          BrazilianDateValidator.parseDate(birthDateController.text) ??
+          birthDate,
       gender: gender,
       guardians: guardians,
       contactPhone: contactPhoneController.text,
@@ -367,7 +377,9 @@ class PatientFormData {
   Patient updatePatient(Patient existingPatient) {
     return existingPatient.copyWith(
       fullName: fullNameController.text,
-      birthDate: birthDate,
+      birthDate:
+          BrazilianDateValidator.parseDate(birthDateController.text) ??
+          birthDate,
       gender: gender,
       guardians: guardians,
       contactPhone: contactPhoneController.text,

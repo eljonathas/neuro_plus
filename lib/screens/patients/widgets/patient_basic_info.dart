@@ -3,9 +3,9 @@ import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
 import 'package:neuro_plus/common/widgets/custom_button.dart';
 import 'package:neuro_plus/common/utils/phone_formatter.dart';
+import 'package:neuro_plus/common/utils/date_formatter.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/screens/patients/widgets/guardian_form_widget.dart';
-import 'package:intl/intl.dart';
 
 class PatientBasicInfo extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -13,6 +13,7 @@ class PatientBasicInfo extends StatelessWidget {
   final TextEditingController contactPhoneController;
   final TextEditingController contactEmailController;
   final TextEditingController addressController;
+  final TextEditingController birthDateController;
   final List<Guardian> guardians;
   final DateTime birthDate;
   final String gender;
@@ -30,6 +31,7 @@ class PatientBasicInfo extends StatelessWidget {
     required this.contactPhoneController,
     required this.contactEmailController,
     required this.addressController,
+    required this.birthDateController,
     required this.guardians,
     required this.birthDate,
     required this.gender,
@@ -208,29 +210,37 @@ class PatientBasicInfo extends StatelessWidget {
   }
 
   Widget _buildDateField(BuildContext context) {
-    final dateFormat = DateFormat('dd/MM/yyyy');
+    return Row(
+      children: [
+        Expanded(
+          child: CustomFormField(
+            variant: InputVariant.outlined,
+            controller: birthDateController,
+            hintText: 'DD/MM/AAAA',
+            inputType: TextInputType.number,
+            inputFormatters: [BrazilianDateFormatter()],
+            validator: (value) {
+              final dateError = BrazilianDateValidator.validate(value);
+              if (dateError != null) return dateError;
 
-    return InkWell(
-      onTap: () => _selectDate(context),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        decoration: BoxDecoration(
-          border: Border.all(color: AppColors.gray[300]!),
-          borderRadius: BorderRadius.circular(8),
-          color: Colors.white,
+              // Atualizar a data se válida
+              final parsedDate = BrazilianDateValidator.parseDate(value);
+              if (parsedDate != null && parsedDate != birthDate) {
+                // Usar Future.microtask para evitar setState durante build
+                Future.microtask(() => onDateChanged(parsedDate));
+              }
+
+              return null;
+            },
+          ),
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(
-                dateFormat.format(birthDate),
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-            Icon(Icons.calendar_today, color: AppColors.gray[600]),
-          ],
+        const SizedBox(width: 8),
+        IconButton(
+          onPressed: () => _selectDate(context),
+          icon: Icon(Icons.calendar_today, color: AppColors.gray[600]),
+          tooltip: 'Selecionar data',
         ),
-      ),
+      ],
     );
   }
 
@@ -280,6 +290,8 @@ class PatientBasicInfo extends StatelessWidget {
     );
 
     if (picked != null && picked != birthDate) {
+      // Atualizar o controller com a data formatada
+      birthDateController.text = BrazilianDateValidator.formatDate(picked);
       onDateChanged(picked);
     }
   }
