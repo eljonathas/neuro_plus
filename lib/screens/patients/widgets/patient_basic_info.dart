@@ -6,6 +6,7 @@ import 'package:neuro_plus/common/utils/phone_formatter.dart';
 import 'package:neuro_plus/common/utils/date_formatter.dart';
 import 'package:neuro_plus/models/patient.dart';
 import 'package:neuro_plus/screens/patients/widgets/guardian_form_widget.dart';
+import 'package:neuro_plus/common/widgets/keyboard_aware_scroll_view.dart';
 
 class PatientBasicInfo extends StatelessWidget {
   final GlobalKey<FormState> formKey;
@@ -47,8 +48,13 @@ class PatientBasicInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      child: KeyboardAwareScrollView(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: 32,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

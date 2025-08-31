@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
+import 'package:neuro_plus/common/widgets/keyboard_aware_scroll_view.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class PatientClinicalInfo extends StatelessWidget {
@@ -39,8 +40,13 @@ class PatientClinicalInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Form(
       key: formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      child: KeyboardAwareScrollView(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: 32,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -95,16 +101,6 @@ class PatientClinicalInfo extends StatelessWidget {
                   variant: InputVariant.outlined,
                   controller: cidCodeController,
                   hintText: 'Ex: F84.0, F90.0, Z03.3',
-                  validator: (value) {
-                    // Validação opcional de formato CID
-                    if (value != null && value.isNotEmpty) {
-                      final cidPattern = RegExp(r'^[A-Z]\d{2}(\.\d)?$');
-                      if (!cidPattern.hasMatch(value.toUpperCase())) {
-                        return 'Formato inválido. Use: A00 ou A00.0';
-                      }
-                    }
-                    return null;
-                  },
                 ),
               ),
             ],

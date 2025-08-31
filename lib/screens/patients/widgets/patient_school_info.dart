@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:neuro_plus/common/config/theme.dart';
 import 'package:neuro_plus/common/widgets/custom_form_field.dart';
+import 'package:neuro_plus/common/widgets/keyboard_aware_scroll_view.dart';
 import 'package:neuro_plus/models/patient.dart';
 
 class PatientSchoolInfo extends StatefulWidget {
@@ -44,8 +45,13 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
   Widget build(BuildContext context) {
     return Form(
       key: widget.formKey,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      child: KeyboardAwareScrollView(
+        padding: const EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 16,
+          bottom: 32,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
