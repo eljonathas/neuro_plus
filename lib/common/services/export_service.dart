@@ -10,6 +10,9 @@ import '../../models/appointment.dart';
 import '../../models/patient.dart';
 import '../../models/protocol.dart';
 
+// ignore: deprecated_member_use, avoid_web_libraries_in_flutter
+import 'dart:html' as html show AnchorElement, Blob, Url;
+
 class ExportService {
   static const String _dateFormat = 'dd-MM-yyyy_HH-mm';
 
@@ -46,12 +49,13 @@ class ExportService {
     String mimeType,
   ) {
     if (kIsWeb) {
-      // Web download functionality disabled for now
-      // TODO: Implement web download when needed
-      if (kDebugMode) {
-        print('Web download would happen here: $fileName');
-        print('Content length: ${content.length} characters');
-      }
+      final bytes = utf8.encode(content);
+      final blob = html.Blob([bytes], mimeType);
+      final url = html.Url.createObjectUrlFromBlob(blob);
+      (html.AnchorElement(href: url)
+        ..setAttribute('download', fileName)
+        ..click());
+      html.Url.revokeObjectUrl(url);
     }
   }
 

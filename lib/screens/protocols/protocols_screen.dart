@@ -131,14 +131,6 @@ class _ProtocolsScreenState extends State<ProtocolsScreen> {
           title: 'Exportar Lista (CSV)',
           data: protocols,
           exportFunction: ExportService.exportProtocolsToCsv,
-          onSuccess: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Lista de protocolos exportada com sucesso!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
         ),
       );
     }
