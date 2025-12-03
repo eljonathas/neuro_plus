@@ -111,7 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const Text(
                   'Agendamentos',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                 ),

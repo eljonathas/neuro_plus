@@ -19,6 +19,7 @@ class AppointmentsScreen extends StatefulWidget {
 class _AppointmentsScreenState extends State<AppointmentsScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<Appointment> _filteredAppointments = [];
+  Map<String, int> _stats = {};
   bool _isLoading = true;
   AppointmentStatus? _selectedStatus;
 
@@ -40,10 +41,12 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
     try {
       final appointments = AppointmentsService.getAllAppointments();
+      final stats = AppointmentsService.getAppointmentStats();
 
       if (mounted) {
         setState(() {
           _filteredAppointments = appointments;
+          _stats = stats;
           _isLoading = false;
         });
       }
@@ -251,7 +254,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
         spacing: 8,
         children: [
           AppointmentsHeader(
-            stats: AppointmentsService.getAppointmentStats(),
+            stats: _stats,
             onAddPressed: _navigateToCreateAppointment,
           ),
           AppointmentsFilters(
