@@ -7,11 +7,13 @@ import 'package:neuro_plus/common/services/appointments/appointments_service.dar
 class SoapNotesTab extends StatefulWidget {
   final Appointment appointment;
   final VoidCallback? onNotesUpdated;
+  final Widget? topContent;
 
   const SoapNotesTab({
     super.key,
     required this.appointment,
     this.onNotesUpdated,
+    this.topContent,
   });
 
   @override
@@ -50,7 +52,20 @@ class _SoapNotesTabState extends State<SoapNotesTab> {
   @override
   Widget build(BuildContext context) {
     if (widget.appointment.status == AppointmentStatus.scheduled) {
-      return _buildScheduledState();
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            if (widget.topContent != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: widget.topContent!,
+              ),
+              const SizedBox(height: 24),
+            ],
+            _buildScheduledState(),
+          ],
+        ),
+      );
     }
 
     return SingleChildScrollView(
@@ -62,6 +77,10 @@ class _SoapNotesTabState extends State<SoapNotesTab> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.topContent != null) ...[
+              widget.topContent!,
+              const SizedBox(height: 24),
+            ],
             _buildSoapField(
               'Subjetivo (S)',
               _subjectiveController,

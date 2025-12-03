@@ -5,8 +5,13 @@ import 'package:neuro_plus/models/appointment.dart';
 
 class AppointmentDetailsTab extends StatelessWidget {
   final Appointment appointment;
+  final Widget? topContent;
 
-  const AppointmentDetailsTab({super.key, required this.appointment});
+  const AppointmentDetailsTab({
+    super.key,
+    required this.appointment,
+    this.topContent,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +20,10 @@ class AppointmentDetailsTab extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (topContent != null) ...[
+            topContent!,
+            const SizedBox(height: 24),
+          ],
           _buildAppointmentInfoCard(),
 
           if (appointment.hasProtocol) ...[

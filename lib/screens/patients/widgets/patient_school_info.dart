@@ -18,6 +18,7 @@ class PatientSchoolInfo extends StatefulWidget {
   final ValueChanged<String?> onSchoolTypeChanged;
   final ValueChanged<String?> onSchoolShiftChanged;
   final ValueChanged<String?> onHasCompanionChanged;
+  final Widget? topContent;
 
   const PatientSchoolInfo({
     super.key,
@@ -34,6 +35,7 @@ class PatientSchoolInfo extends StatefulWidget {
     required this.onSchoolTypeChanged,
     required this.onSchoolShiftChanged,
     required this.onHasCompanionChanged,
+    this.topContent,
   });
 
   @override
@@ -55,6 +57,10 @@ class _PatientSchoolInfoState extends State<PatientSchoolInfo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.topContent != null) ...[
+              widget.topContent!,
+              const SizedBox(height: 16),
+            ],
             _buildSectionTitle('Informações Educacionais'),
             const SizedBox(height: 16),
 

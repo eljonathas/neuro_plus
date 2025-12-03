@@ -24,6 +24,7 @@ class PatientBasicInfo extends StatelessWidget {
   final String? Function(String?) requiredValidator;
   final String? Function(String?) emailValidator;
   final String? Function(String?) phoneValidator;
+  final Widget? topContent;
 
   const PatientBasicInfo({
     super.key,
@@ -42,6 +43,7 @@ class PatientBasicInfo extends StatelessWidget {
     required this.requiredValidator,
     required this.emailValidator,
     required this.phoneValidator,
+    this.topContent,
   });
 
   @override
@@ -58,6 +60,10 @@ class PatientBasicInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (topContent != null) ...[
+              topContent!,
+              const SizedBox(height: 16),
+            ],
             _buildSectionTitle('Informações Básicas'),
             const SizedBox(height: 16),
 

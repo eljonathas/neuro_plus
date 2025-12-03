@@ -9,12 +9,14 @@ class ProtocolTab extends StatefulWidget {
   final Appointment appointment;
   final bool isLoading;
   final VoidCallback? onProtocolUpdated;
+  final Widget? topContent;
 
   const ProtocolTab({
     super.key,
     required this.appointment,
     this.isLoading = false,
     this.onProtocolUpdated,
+    this.topContent,
   });
 
   @override
@@ -69,15 +71,54 @@ class _ProtocolTabState extends State<ProtocolTab> {
   @override
   Widget build(BuildContext context) {
     if (widget.isLoading || _isLoadingProtocols) {
-      return const Center(child: CircularProgressIndicator());
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            if (widget.topContent != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: widget.topContent!,
+              ),
+              const SizedBox(height: 24),
+            ],
+            const Center(child: CircularProgressIndicator()),
+          ],
+        ),
+      );
     }
 
     if (!widget.appointment.hasProtocol) {
-      return _buildNoProtocolsState();
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            if (widget.topContent != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: widget.topContent!,
+              ),
+              const SizedBox(height: 24),
+            ],
+            _buildNoProtocolsState(),
+          ],
+        ),
+      );
     }
 
     if (_protocols.isEmpty) {
-      return _buildProtocolsNotFound();
+      return SingleChildScrollView(
+        child: Column(
+          children: [
+            if (widget.topContent != null) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: widget.topContent!,
+              ),
+              const SizedBox(height: 24),
+            ],
+            _buildProtocolsNotFound(),
+          ],
+        ),
+      );
     }
 
     return SingleChildScrollView(
@@ -85,6 +126,10 @@ class _ProtocolTabState extends State<ProtocolTab> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.topContent != null) ...[
+            widget.topContent!,
+            const SizedBox(height: 24),
+          ],
           ..._protocols.map(
             (protocol) => Padding(
               padding: const EdgeInsets.only(bottom: 16),

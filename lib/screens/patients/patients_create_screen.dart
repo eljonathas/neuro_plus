@@ -128,10 +128,6 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
             key: _formKey,
             child: Column(
               children: [
-                PatientFormProgress(
-                  currentPage: _currentPage,
-                  totalPages: _totalPages,
-                ),
                 Expanded(
                   child: PageView(
                     controller: _pageController,
@@ -164,6 +160,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
 
   Widget _buildBasicInfoPage() {
     return PatientBasicInfo(
+      topContent: PatientFormProgress(
+        currentPage: _currentPage,
+        totalPages: _totalPages,
+      ),
       formKey: _basicInfoFormKey,
       fullNameController: _controller.formData!.fullNameController,
       contactPhoneController: _controller.formData!.contactPhoneController,
@@ -184,6 +184,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
 
   Widget _buildClinicalInfoPage() {
     return PatientClinicalInfo(
+      topContent: PatientFormProgress(
+        currentPage: _currentPage,
+        totalPages: _totalPages,
+      ),
       formKey: _clinicalInfoFormKey,
       referralReasonController: _controller.formData!.referralReasonController,
       referredByController: _controller.formData!.referredByController,
@@ -205,6 +209,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
 
   Widget _buildDevelopmentInfoPage() {
     return PatientDevelopmentInfo(
+      topContent: PatientFormProgress(
+        currentPage: _currentPage,
+        totalPages: _totalPages,
+      ),
       formKey: _developmentInfoFormKey,
       gender: _controller.formData!.gender,
       repetitiveBehaviorsDescriptionController:
@@ -245,6 +253,10 @@ class _PatientsCreateScreenState extends State<PatientsCreateScreen> {
 
   Widget _buildSchoolInfoPage() {
     return PatientSchoolInfo(
+      topContent: PatientFormProgress(
+        currentPage: _currentPage,
+        totalPages: _totalPages,
+      ),
       formKey: _schoolInfoFormKey,
       schoolObservationsController:
           _controller.formData!.schoolObservationsController,

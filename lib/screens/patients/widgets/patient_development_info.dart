@@ -27,6 +27,7 @@ class PatientDevelopmentInfo extends StatefulWidget {
   final TextEditingController routineResistanceController;
   final TextEditingController socialInteractionController;
   final TextEditingController sensoryHypersensitivityController;
+  final Widget? topContent;
 
   const PatientDevelopmentInfo({
     super.key,
@@ -51,6 +52,7 @@ class PatientDevelopmentInfo extends StatefulWidget {
     required this.routineResistanceController,
     required this.socialInteractionController,
     required this.sensoryHypersensitivityController,
+    this.topContent,
   });
 
   @override
@@ -112,6 +114,10 @@ class _PatientDevelopmentInfoState extends State<PatientDevelopmentInfo> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (widget.topContent != null) ...[
+              widget.topContent!,
+              const SizedBox(height: 16),
+            ],
             _buildSectionTitle('Desenvolvimento'),
 
             const SizedBox(height: 16),

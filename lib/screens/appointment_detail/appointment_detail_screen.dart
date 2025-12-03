@@ -73,18 +73,38 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
     }
   }
 
+  Widget _buildTopContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppointmentHeader(appointment: _currentAppointment),
+        AppointmentTabs(
+          currentTabIndex: _currentTabIndex,
+          hasProtocol: _currentAppointment.hasProtocol,
+          onTabChanged: _onTabChanged,
+        ),
+      ],
+    );
+  }
+
   Widget _buildActiveTabContent() {
+    final topContent = _buildTopContent();
     if (_currentTabIndex == 0) {
-      return AppointmentDetailsTab(appointment: _currentAppointment);
+      return AppointmentDetailsTab(
+        appointment: _currentAppointment,
+        topContent: topContent,
+      );
     } else if (_currentTabIndex == 1) {
       return SoapNotesTab(
         appointment: _currentAppointment,
         onNotesUpdated: _reloadAppointment,
+        topContent: topContent,
       );
     } else if (_currentTabIndex == 2 && _currentAppointment.hasProtocol) {
       return ProtocolTab(
         appointment: _currentAppointment,
         onProtocolUpdated: _reloadAppointment,
+        topContent: topContent,
       );
     }
     return Container();
@@ -101,13 +121,6 @@ class _AppointmentDetailScreenState extends State<AppointmentDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppointmentHeader(appointment: _currentAppointment),
-          AppointmentTabs(
-            currentTabIndex: _currentTabIndex,
-            hasProtocol: _currentAppointment.hasProtocol,
-            onTabChanged: _onTabChanged,
-          ),
-          const SizedBox(height: 24),
           Expanded(child: _buildActiveTabContent()),
           AppointmentActionButtons(
             appointment: _currentAppointment,

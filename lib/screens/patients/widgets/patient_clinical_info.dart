@@ -18,6 +18,7 @@ class PatientClinicalInfo extends StatelessWidget {
   final ValueChanged<bool?> onPreviouslyEvaluatedChanged;
   final ValueChanged<List<String>> onComorbiditiesChanged;
   final ValueChanged<List<String>> onScreeningsChanged;
+  final Widget? topContent;
 
   const PatientClinicalInfo({
     super.key,
@@ -34,6 +35,7 @@ class PatientClinicalInfo extends StatelessWidget {
     required this.onPreviouslyEvaluatedChanged,
     required this.onComorbiditiesChanged,
     required this.onScreeningsChanged,
+    this.topContent,
   });
 
   @override
@@ -50,6 +52,10 @@ class PatientClinicalInfo extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (topContent != null) ...[
+              topContent!,
+              const SizedBox(height: 16),
+            ],
             _buildSectionTitle('Informações Clínicas'),
 
             const SizedBox(height: 16),

@@ -116,10 +116,6 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
 
           return Column(
             children: [
-              AppointmentStepIndicator(
-                currentStep: _controller.formData.currentStep,
-                totalSteps: _totalSteps,
-              ),
               Expanded(
                 child: Form(
                   key: _formKey,
@@ -155,31 +151,41 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
   }
 
   Widget _buildPatientSelectionStep() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Selecionar paciente',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.gray[800],
+    return Column(
+      children: [
+        AppointmentStepIndicator(
+          currentStep: _controller.formData.currentStep,
+          totalSteps: _totalSteps,
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Selecionar paciente',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray[800],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Escolha o paciente para esta consulta',
+                  style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
+                ),
+                const SizedBox(height: 24),
+                if (!_controller.formData.hasPatients)
+                  _buildEmptyPatientsState()
+                else
+                  _buildPatientsList(),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Escolha o paciente para esta consulta',
-            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
-          ),
-          const SizedBox(height: 24),
-          if (!_controller.formData.hasPatients)
-            _buildEmptyPatientsState()
-          else
-            _buildPatientsList(),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -271,31 +277,41 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
 
   Widget _buildDateTimeStep() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Data e horário',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.gray[800],
+          AppointmentStepIndicator(
+            currentStep: _controller.formData.currentStep,
+            totalSteps: _totalSteps,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Data e horário',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray[800],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Defina quando será a consulta',
+                  style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
+                ),
+                const SizedBox(height: 24),
+                _buildDateSelector(),
+                const SizedBox(height: 16),
+                _buildTimeSelector(),
+                const SizedBox(height: 16),
+                _buildTypeSelector(),
+                const SizedBox(height: 16),
+                _buildDurationSelector(),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Defina quando será a consulta',
-            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
-          ),
-          const SizedBox(height: 24),
-          _buildDateSelector(),
-          const SizedBox(height: 16),
-          _buildTimeSelector(),
-          const SizedBox(height: 16),
-          _buildTypeSelector(),
-          const SizedBox(height: 16),
-          _buildDurationSelector(),
         ],
       ),
     );
@@ -418,29 +434,39 @@ class _AppointmentsCreateScreenState extends State<AppointmentsCreateScreen> {
 
   Widget _buildDetailsStep() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Detalhes da consulta',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppColors.gray[800],
+          AppointmentStepIndicator(
+            currentStep: _controller.formData.currentStep,
+            totalSteps: _totalSteps,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Detalhes da consulta',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.gray[800],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Informações adicionais e protocolo',
+                  style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
+                ),
+                const SizedBox(height: 24),
+                _buildProtocolSelector(),
+                const SizedBox(height: 16),
+                _buildLocationField(),
+                const SizedBox(height: 16),
+                _buildNotesField(),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Informações adicionais e protocolo',
-            style: TextStyle(fontSize: 16, color: AppColors.gray[600]),
-          ),
-          const SizedBox(height: 24),
-          _buildProtocolSelector(),
-          const SizedBox(height: 16),
-          _buildLocationField(),
-          const SizedBox(height: 16),
-          _buildNotesField(),
         ],
       ),
     );
