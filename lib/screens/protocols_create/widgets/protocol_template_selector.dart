@@ -175,12 +175,14 @@ class _ProtocolTemplateSelectorState extends State<ProtocolTemplateSelector> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Usar protocolo existente como modelo:',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.gray[800],
+              Expanded(
+                child: Text(
+                  'Usar protocolo existente como modelo:',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.gray[800],
+                  ),
                 ),
               ),
               if (_filteredProtocols.isNotEmpty)

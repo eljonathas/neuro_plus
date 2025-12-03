@@ -35,7 +35,17 @@ class CustomBottomNavBar extends StatelessWidget {
                 isActive: isActive,
                 onTap: () {
                   if (!isActive) {
-                    Navigator.of(context).pushNamed(pathname);
+                    final builder = AppRoutes.routes[pathname];
+                    if (builder != null) {
+                      Navigator.of(context).push(
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  builder(context, null),
+                          settings: RouteSettings(name: pathname),
+                        ),
+                      );
+                    }
                   }
                 },
               );
